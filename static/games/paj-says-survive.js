@@ -42,6 +42,10 @@
   var OVERTIME = 7;            // seconds a wave may drag on before reinforcements
   var REINFORCE_EVERY = 2.4;
 
+  // --- the boss -----------------------------------------------------------
+  var BOSS_EVERY = 5;          // waves
+  var BOSS_NAME = 'CARRION KING';
+
   // --- levelling ----------------------------------------------------------
   var ORB_RADIUS = 46;
   var ORB_SPIN = 2.3;
@@ -370,6 +374,142 @@
           ctx.globalAlpha = 1;
         }
       }
+    },
+
+    /* Every fifth wave. It works a loop of three attacks with a long, readable
+     * wind-up before each: nothing it does should ever be a surprise, only a
+     * problem. Its arena is penned so it cannot wander off the page. */
+    boss: {
+      r: 52, hp: 1, speed: [58, 58], points: 600, cost: 0, from: 999, xp: 12,
+      penned: true,
+      hpFor: function (wave) { return 84 + wave * 15; },
+
+      move: function (e, game, dt) {
+        var rage = e.hp / e.maxhp < 0.4 ? 1.45 : 1;
+        var toPlayer = Math.atan2(game.py - e.y, game.px - e.x);
+        e.vx = 0;
+        e.vy = 0;
+        e.phaseIn -= dt * rage;
+
+        if (e.phase === 'stalk') {
+          e.vx = Math.cos(toPlayer) * e.speed;
+          e.vy = Math.sin(toPlayer) * e.speed;
+          if (e.phaseIn <= 0) {
+            var order = ['wind', 'burst', 'summon'];
+            e.phase = order[e.cycle % order.length];
+            e.cycle += 1;
+            e.phaseIn = e.phase === 'wind' ? 0.85 : (e.phase === 'burst' ? 1.5 : 0.9);
+            e.shotIn = 0.15;
+            e.summoned = false;
+          }
+
+        } else if (e.phase === 'wind') {
+          e.lock = toPlayer;                       // tracks you until it commits
+          if (e.phaseIn <= 0) { e.phase = 'charge'; e.phaseIn = 0.85; }
+
+        } else if (e.phase === 'charge') {
+          e.vx = Math.cos(e.lock) * 350;
+          e.vy = Math.sin(e.lock) * 350;
+          if (e.phaseIn <= 0) { e.phase = 'stalk'; e.phaseIn = 1.5; }
+
+        } else if (e.phase === 'burst') {
+          e.shotIn -= dt * rage;
+          if (e.shotIn <= 0) {
+            e.shotIn = 0.6;
+            e.flare = 0.2;
+            var count = 14;
+            for (var i = 0; i < count; i++) {
+              var a = i / count * TAU + e.cycle * 0.22;
+              game.foeShots.push({
+                x: e.x + Math.cos(a) * (e.r + 8), y: e.y + Math.sin(a) * (e.r + 8),
+                vx: Math.cos(a) * 152, vy: Math.sin(a) * 152,
+                life: 4.5, r: 7
+              });
+            }
+          }
+          if (e.phaseIn <= 0) { e.phase = 'stalk'; e.phaseIn = 1.3; }
+
+        } else if (e.phase === 'summon') {
+          if (!e.summoned) {
+            e.summoned = true;
+            var kind = game.wave >= 10 ? 'swarm' : 'rusher';
+            var many = game.wave >= 10 ? 6 : 4;
+            for (var j = 0; j < many; j++) spawn(game, kind, { x: e.x, y: e.y });
+            particles(game, e.x, e.y, 18, '#111114', 220);
+          }
+          if (e.phaseIn <= 0) { e.phase = 'stalk'; e.phaseIn = 1.4; }
+        }
+      },
+
+      draw: function (ctx, game, e) {
+        var beat = Math.sin(e.t * 4) * 0.5 + 0.5;
+        var charging = e.phase === 'charge';
+
+        // the wind-up, drawn in the world so you can read where it will go
+        if (e.phase === 'wind') {
+          var grow = 1 - Math.max(0, e.phaseIn) / 0.85;
+          ctx.save();
+          ctx.rotate(e.lock);
+          ctx.globalAlpha = 0.25 + grow * 0.45;
+          ctx.fillStyle = '#ff2d55';
+          ctx.beginPath();
+          ctx.moveTo(0, 0);
+          ctx.arc(0, 0, 250 * grow, -0.32, 0.32);
+          ctx.closePath();
+          ctx.fill();
+          ctx.restore();
+          ctx.globalAlpha = 1;
+        }
+
+        ctx.rotate(Math.atan2(game.py - e.y, game.px - e.x) + Math.PI / 2);
+        outline(ctx, 5);
+        // Something this big is under fire constantly, so it flares at the
+        // edges instead of flashing red all over and drowning the arena.
+        if (e.hurt > 0) ctx.strokeStyle = '#fffdf8';
+        ctx.fillStyle = '#111114';
+
+        // wings, spread wide and beating slowly
+        var reach = 42 + beat * 14 + (charging ? 16 : 0);
+        for (var side = -1; side <= 1; side += 2) {
+          ctx.beginPath();
+          ctx.moveTo(side * 12, -14);
+          ctx.quadraticCurveTo(side * (reach + 22), -34, side * reach, 16);
+          ctx.quadraticCurveTo(side * (reach * 0.5), 6, side * 10, 20);
+          ctx.closePath();
+          ctx.fill();
+          ctx.stroke();
+        }
+
+        ctx.beginPath();                          // body, a long hooded shape
+        ctx.moveTo(0, -46);
+        ctx.lineTo(20, -8);
+        ctx.lineTo(14, 34);
+        ctx.lineTo(0, 44);
+        ctx.lineTo(-14, 34);
+        ctx.lineTo(-20, -8);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.strokeStyle = '#111114';
+        ctx.fillStyle = '#ff2d55';                // a crown of three spikes
+        for (var k = -1; k <= 1; k++) {
+          ctx.beginPath();
+          ctx.moveTo(k * 13, -34);
+          ctx.lineTo(k * 13 + 5, -56 - Math.abs(k) * -8);
+          ctx.lineTo(k * 13 - 5, -56 - Math.abs(k) * -8);
+          ctx.closePath();
+          ctx.fill();
+        }
+
+        ctx.fillStyle = e.flare > 0 ? '#fffdf8' : '#ff2d55';
+        ctx.beginPath();                          // the eye
+        ctx.arc(0, -18, 9 + (charging ? 3 : 0), 0, TAU);
+        ctx.fill();
+        ctx.strokeStyle = '#111114';
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      }
     }
   };
 
@@ -398,8 +538,16 @@
       y: spot.y + (Math.random() - 0.5) * 34,
       vx: 0, vy: 0,
       r: type.r,
-      hp: Math.max(1, Math.round(type.hp * (type.hp > 2 ? tough : 1))),
+      hp: type.hpFor ? type.hpFor(game.wave)
+        : Math.max(1, Math.round(type.hp * (type.hp > 2 ? tough : 1))),
       maxhp: 1,
+      phase: 'stalk',
+      phaseIn: 1.1,
+      cycle: 0,
+      lock: 0,
+      shotIn: 0,
+      summoned: false,
+      entered: false,
       speed: (type.speed[0] + Math.random() * (type.speed[1] - type.speed[0])) * speedUp,
       range: type.range,
       reload: type.reload,
@@ -434,19 +582,35 @@
 
   function startWave(game, wave) {
     game.wave = wave;
-    game.budget = waveBudget(wave);
     game.spawnIn = 0.35;
     game.overtime = 0;
     game.reinforceIn = REINFORCE_EVERY;
+    game.headline = null;
+
+    if (wave % BOSS_EVERY === 0) {
+      game.budget = 0;
+      game.mode = 'boss';
+      game.banner = { text: 'BOSS', under: BOSS_NAME, life: 2.4, max: 2.4 };
+      spawn(game, 'boss', { x: W / 2, y: -90 });
+      return;
+    }
+
+    game.budget = waveBudget(wave);
     game.mode = 'wave';
     game.banner = { text: 'WAVE ' + wave, life: 1.6, max: 1.6 };
 
     // A kind of enemy that turns up for the first time this wave leads it, so
     // the new thing is the first thing you meet rather than a surprise later.
-    game.headline = null;
     for (var i = 0; i < TYPE_NAMES.length; i++) {
       if (TYPES[TYPE_NAMES[i]].from === wave) game.headline = TYPE_NAMES[i];
     }
+  }
+
+  function bossIn(game) {
+    for (var i = 0; i < game.enemies.length; i++) {
+      if (game.enemies[i].name === 'boss') return game.enemies[i];
+    }
+    return null;
   }
 
   function spendBudget(game) {
@@ -576,9 +740,20 @@
     game.enemies.splice(index, 1);
     game.kills += 1;
     game.score += e.type.points;
+    dropGems(game, e);
+
+    if (e.name === 'boss') {
+      game.bosses += 1;
+      game.shake = 0.9;
+      game.flash = { color: '#fffdf8', life: 0.5 };
+      game.banner = { text: 'DOWN', under: BOSS_NAME, life: 1.8, max: 1.8 };
+      particles(game, e.x, e.y, 60, '#111114', 400);
+      particles(game, e.x, e.y, 30, '#ff2d55', 300);
+      return;
+    }
+
     game.shake = Math.max(game.shake, e.r > 20 ? 0.3 : 0.12);
     particles(game, e.x, e.y, e.r > 20 ? 22 : 10, '#111114', 150 + e.r * 4);
-    dropGems(game, e);
   }
 
   /** One point of damage landing on one enemy. True when it died. */
@@ -717,7 +892,33 @@
 
     ctx.fillStyle = '#fffdf8';
     ctx.fillText(banner.text, 0, 3);
+
+    if (banner.under) {
+      ctx.font = '400 22px Anton, Impact, sans-serif';
+      ctx.fillStyle = '#111114';
+      ctx.fillText(banner.under, 0, 56);
+    }
     ctx.restore();
+  }
+
+  /** The boss's health, across the top of the arena. */
+  function drawBossBar(ctx, boss) {
+    var x = 46, y = 44, w = W - 92, h = 15;
+    ctx.fillStyle = '#111114';
+    ctx.fillRect(x + 4, y + 4, w, h);
+    ctx.fillStyle = '#fffdf8';
+    ctx.fillRect(x, y, w, h);
+    ctx.fillStyle = '#ff2d55';
+    ctx.fillRect(x, y, w * Math.max(0, boss.hp / boss.maxhp), h);
+    ctx.strokeStyle = '#111114';
+    ctx.lineWidth = 3;
+    ctx.strokeRect(x, y, w, h);
+
+    ctx.font = '400 17px Anton, Impact, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#111114';
+    ctx.fillText(BOSS_NAME, W / 2, y - 6);
   }
 
   // --- the level-up panel ---------------------------------------------------
@@ -855,6 +1056,7 @@
       game.flash = null;
       game.banner = null;
       game.kills = 0;
+      game.bosses = 0;
       game.survived = 0;
       game.maxLives = 3;
       game.bullets = [];
@@ -894,7 +1096,8 @@
       return 'Survived ' + clockFace(game.survived)
         + '  •  wave ' + game.wave
         + '  •  ' + game.kills + ' down'
-        + '  •  level ' + game.level;
+        + '  •  level ' + game.level
+        + (game.bosses ? '  •  ' + game.bosses + ' king' + (game.bosses > 1 ? 's' : '') + ' felled' : '');
     },
 
     keyPress: function (key, game) {
@@ -1020,6 +1223,15 @@
           game.pressure = 0;
           game.overtime = 0;
         }
+      } else if (game.mode === 'boss') {
+        // No budget, no pressure, no reinforcements: the wave is the boss, and
+        // it ends the moment the boss does. Whatever it summoned lives on into
+        // the breather rather than leaving you to hunt stragglers.
+        if (!bossIn(game)) {
+          game.score += WAVE_CLEAR_POINTS * game.wave * 3;
+          game.mode = 'breather';
+          game.breather = BREATHER;
+        }
       } else if (game.mode === 'breather') {
         game.breather -= dt;
         if (game.breather <= 0) startWave(game, game.wave + 1);
@@ -1043,6 +1255,16 @@
 
         e.x += e.vx * dt;
         e.y += e.vy * dt;
+
+        if (e.type.penned) {
+          var inside = e.x > e.r && e.x < W - e.r && e.y > e.r && e.y < H - e.r;
+          if (e.entered) {
+            e.x = Math.min(W - e.r, Math.max(e.r, e.x));
+            e.y = Math.min(H - e.r, Math.max(e.r, e.y));
+          } else if (inside) {
+            e.entered = true;
+          }
+        }
 
         var dead = false;
         for (j = game.bullets.length - 1; j >= 0; j--) {
@@ -1238,6 +1460,9 @@
       });
 
       drawPlayer(ctx, game);
+
+      var boss = bossIn(game);
+      if (boss && boss.entered) drawBossBar(ctx, boss);
 
       if (game.banner && game.state === 'playing') drawBanner(ctx, game.banner);
 
