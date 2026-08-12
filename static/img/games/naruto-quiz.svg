@@ -1,44 +1,57 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A ninja headband with an engraved metal plate">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A ninja headband with a leaf cut into the metal plate">
   <defs>
     <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#f0a35a"/><stop offset="55%" stop-color="#e3763f"/>
-      <stop offset="100%" stop-color="#a8452f"/>
+      <stop offset="0%" stop-color="#f3ad60"/><stop offset="52%" stop-color="#e3763f"/>
+      <stop offset="100%" stop-color="#9f3f2c"/>
     </linearGradient>
     <linearGradient id="cloth" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#2c4d80"/><stop offset="100%" stop-color="#182f52"/>
+      <stop offset="0%" stop-color="#31558c"/><stop offset="100%" stop-color="#16294a"/>
     </linearGradient>
-    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0%" stop-color="#e9edf1"/><stop offset="46%" stop-color="#b8c2cc"/>
-      <stop offset="54%" stop-color="#9aa6b3"/><stop offset="100%" stop-color="#cdd6de"/>
+    <linearGradient id="plate" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0%" stop-color="#f2f5f8"/><stop offset="42%" stop-color="#c3ccd6"/>
+      <stop offset="52%" stop-color="#96a2b0"/><stop offset="100%" stop-color="#dbe3ea"/>
     </linearGradient>
   </defs>
 
   <rect width="400" height="300" fill="url(#dusk)"/>
-  <circle cx="312" cy="76" r="46" fill="#ffe6b8" opacity=".55"/>
-  <circle cx="312" cy="76" r="30" fill="#fff3d6"/>
-  <g fill="#8c3a2c" opacity=".35">
-    <path d="M0 250 l80 -34 90 26 120 -40 110 30 v68 H0 Z"/>
+  <circle cx="322" cy="70" r="52" fill="#ffe6b8" opacity=".5"/>
+  <circle cx="322" cy="70" r="32" fill="#fff4da"/>
+  <g fill="#8c3a2c" opacity=".32">
+    <path d="M0 244 l86 -36 92 28 118 -42 104 32 v74 H0 Z"/>
   </g>
 
-  <!-- cloth strap, slightly waving -->
-  <path d="M8 150 q60 -22 120 -6 h144 q60 -16 120 6 v52 q-60 -22 -120 -6 H128 q-60 16 -120 -6 z" fill="url(#cloth)"/>
-  <path d="M8 150 q60 -22 120 -6 h144 q60 -16 120 6" fill="none" stroke="#0f1f38" stroke-width="3"/>
-  <path d="M8 202 q60 -22 120 -6 h144 q60 -16 120 6" fill="none" stroke="#0f1f38" stroke-width="3" opacity=".6"/>
-  <g stroke="#3a5f96" stroke-width="2" opacity=".5">
-    <path d="M40 150 v46"/><path d="M74 146 v48"/><path d="M330 148 v48"/><path d="M362 152 v46"/>
+  <!-- cloth strap -->
+  <path d="M2 148 q62 -24 124 -8 h148 q62 -18 124 8 v58 q-62 -24 -124 -8 H126 q-62 18 -124 -8 z" fill="url(#cloth)"/>
+  <path d="M2 148 q62 -24 124 -8 h148 q62 -18 124 8" fill="none" stroke="#0c1d38" stroke-width="3.5"/>
+  <path d="M2 206 q62 -24 124 -8 h148 q62 -18 124 8" fill="none" stroke="#0c1d38" stroke-width="3.5" opacity=".55"/>
+  <g stroke="#41689e" stroke-width="2" opacity=".45">
+    <path d="M34 150 v52"/><path d="M70 145 v54"/><path d="M334 147 v54"/><path d="M368 152 v52"/>
   </g>
 
-  <!-- metal plate -->
-  <rect x="128" y="132" width="144" height="76" rx="8" fill="url(#plate)"/>
-  <rect x="128" y="132" width="144" height="76" rx="8" fill="none" stroke="#6f7c8a" stroke-width="3"/>
-  <g fill="#7d8996">
-    <circle cx="146" cy="150" r="4"/><circle cx="254" cy="150" r="4"/>
-    <circle cx="146" cy="190" r="4"/><circle cx="254" cy="190" r="4"/>
+  <!-- the plate, front and centre -->
+  <rect x="118" y="126" width="164" height="88" rx="9" fill="url(#plate)"/>
+  <rect x="118" y="126" width="164" height="88" rx="9" fill="none" stroke="#69757f" stroke-width="3.5"/>
+  <path d="M128 134 l52 0 -52 34 z" fill="#ffffff" opacity=".4"/>
+  <g fill="#7c8894">
+    <circle cx="136" cy="145" r="4.5"/><circle cx="264" cy="145" r="4.5"/>
+    <circle cx="136" cy="195" r="4.5"/><circle cx="264" cy="195" r="4.5"/>
   </g>
-  <!-- an engraved mark of my own: a spiral cut, not the series' emblem -->
-  <path d="M200 152 a18 18 0 1 1 -17 22 a11 11 0 1 0 11 -13"
-        fill="none" stroke="#5d6874" stroke-width="7" stroke-linecap="round"/>
-  <path d="M200 152 a18 18 0 1 1 -17 22 a11 11 0 1 0 11 -13"
-        fill="none" stroke="#eef2f6" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
-  <path d="M136 140 l40 0 -40 26 z" fill="#ffffff" opacity=".35"/>
+  <g stroke="#aab5c0" stroke-width="1.5" opacity=".7">
+    <path d="M150 202 l26 -12"/><path d="M236 140 l18 -8"/>
+  </g>
+
+  <!-- a leaf, cut into the steel: dark bed, bright chisel edge -->
+  <g transform="translate(200 170) rotate(-12)">
+    <path d="M0 -40 C 26 -20, 34 12, 0 40 C -34 12, -26 -20, 0 -40 Z" fill="#5a6673"/>
+    <path d="M0 -40 C 26 -20, 34 12, 0 40 C -34 12, -26 -20, 0 -40 Z"
+          fill="none" stroke="#f4f8fb" stroke-width="2.4" opacity=".85"/>
+    <path d="M0 -34 L0 34" stroke="#f4f8fb" stroke-width="2.4" opacity=".7" stroke-linecap="round"/>
+    <g stroke="#f4f8fb" stroke-width="1.8" opacity=".55" stroke-linecap="round">
+      <path d="M0 -14 L14 -22"/><path d="M0 -14 L-14 -22"/>
+      <path d="M0 4 L17 -3"/><path d="M0 4 L-17 -3"/>
+      <path d="M0 20 L13 15"/><path d="M0 20 L-13 15"/>
+    </g>
+    <path d="M0 40 L0 52" stroke="#5a6673" stroke-width="5" stroke-linecap="round"/>
+    <path d="M0 40 L0 52" stroke="#f4f8fb" stroke-width="1.8" opacity=".6" stroke-linecap="round"/>
+  </g>
 </svg>
