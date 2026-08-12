@@ -1,0 +1,18 @@
+{
+  "slug": "one-piece-quiz",
+  "title": "One Piece Quiz",
+  "kind": "QUIZ",
+  "order": 1,
+  "tilt": "a",
+  "glyph": "&#9760;",
+  "tagline": "Three difficulties, fifteen questions each, a clock that does not wait for you.",
+  "spoiler": "Spoiler warning: Medium covers everything up to Marineford. Hard goes further, into Wano and beyond.",
+  "script": "/static/js/quiz.js",
+  "data": { "bank": "/static/quizzes/one-piece.json" },
+  "controls": [
+    "Tap or click an answer.",
+    "Keys `1`-`4` pick an answer, `Enter` moves on.",
+    "20 seconds per question. Answer fast for more points."
+  ],
+  "about": "Fifteen questions per difficulty, drawn at random from a bigger pile, so two runs are never quite the same.\n\n**Easy** is anything you would pick up in the first hundred episodes. **Medium** assumes you got to Marineford. **Hard** assumes you never stopped.\n\nScoring: 100 points for a correct answer, plus up to 100 more for answering quickly, plus a streak bonus that grows the longer you go without missing. Miss one and the streak resets."
+}

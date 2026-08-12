@@ -1,0 +1,18 @@
+{
+  "slug": "naruto-quiz",
+  "title": "Naruto Quiz",
+  "kind": "QUIZ",
+  "order": 2,
+  "tilt": "b",
+  "glyph": "&#10022;",
+  "tagline": "Same engine, different village. Prove you were paying attention.",
+  "spoiler": "Spoiler warning: Medium covers all of Part 1 and early Shippuden. Hard goes to the end of the series.",
+  "script": "/static/js/quiz.js",
+  "data": { "bank": "/static/quizzes/naruto.json" },
+  "controls": [
+    "Tap or click an answer.",
+    "Keys `1`-`4` pick an answer, `Enter` moves on.",
+    "20 seconds per question. Answer fast for more points."
+  ],
+  "about": "Fifteen questions per difficulty, pulled at random from a larger bank.\n\n**Easy** is the Academy and the Land of Waves. **Medium** runs through Part 1 and into Shippuden. **Hard** is for people who can name Akatsuki members without looking.\n\nScoring works the same as the One Piece quiz: speed and streaks are where the points actually come from."
+}

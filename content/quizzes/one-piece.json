@@ -1,0 +1,80 @@
+{
+  "title": "One Piece",
+  "difficulties": {
+    "easy": {
+      "label": "Easy",
+      "blurb": "The first hundred episodes. Nothing spoiled past Alabasta.",
+      "spoiler": "Safe up to Alabasta.",
+      "questions": [
+        { "q": "What is Luffy's dream?", "a": ["To become King of the Pirates", "To find the strongest swordsman", "To draw a map of the world", "To reach the Grand Line"], "correct": 0, "note": "He says it out loud to anyone who will listen." },
+        { "q": "Which Devil Fruit did Luffy eat?", "a": ["The Gum-Gum Fruit", "The Flame-Flame Fruit", "The Chop-Chop Fruit", "The Rumble-Rumble Fruit"], "correct": 0, "note": "Gomu Gomu no Mi. It made him rubber." },
+        { "q": "What can Devil Fruit users never do again?", "a": ["Swim", "Sleep", "Lie", "Eat meat"], "correct": 0, "note": "The sea takes their strength away." },
+        { "q": "Who gave Luffy his straw hat?", "a": ["Shanks", "Garp", "Ace", "Gol D. Roger"], "correct": 0, "note": "Shanks got it from Roger, and Luffy has to give it back one day." },
+        { "q": "What is Zoro's fighting style?", "a": ["Three swords at once", "Two daggers", "A staff", "Bare hands"], "correct": 0, "note": "Santoryu. The third sword goes in his mouth." },
+        { "q": "What job does Nami do on the crew?", "a": ["Navigator", "Cook", "Sniper", "Doctor"], "correct": 0, "note": "She wants to map the entire world." },
+        { "q": "What job does Sanji do on the crew?", "a": ["Cook", "Shipwright", "Musician", "Navigator"], "correct": 0, "note": "And he only fights with his legs, to protect his hands." },
+        { "q": "What kind of animal is Chopper?", "a": ["A reindeer", "A raccoon", "A tanuki", "A bear"], "correct": 0, "note": "Everyone calls him a tanuki. He hates it." },
+        { "q": "Which sea does the crew come from?", "a": ["East Blue", "West Blue", "North Blue", "South Blue"], "correct": 0, "note": "The weakest of the four seas, supposedly." },
+        { "q": "What is Usopp's role on the ship?", "a": ["Sniper", "Doctor", "Helmsman", "Archaeologist"], "correct": 0, "note": "A liar with perfect aim." },
+        { "q": "What is Buggy's Devil Fruit power?", "a": ["He can split his body apart", "He can turn into sand", "He can stretch", "He can become invisible"], "correct": 0, "note": "Chop-Chop Fruit. Slashing attacks do nothing to him." },
+        { "q": "What species is Arlong?", "a": ["A fish-man", "A giant", "A merman", "A sky islander"], "correct": 0, "note": "A sawshark fish-man, and the reason Nami joined the crew." },
+        { "q": "What is the crew's first proper ship called?", "a": ["Going Merry", "Thousand Sunny", "Oro Jackson", "Moby Dick"], "correct": 0, "note": "A gift from Kaya." },
+        { "q": "Who is the strongest swordsman in the world, and Zoro's goal?", "a": ["Dracule Mihawk", "Shanks", "Zephyr", "Rayleigh"], "correct": 0, "note": "Zoro loses to him early and asks him to teach him later." },
+        { "q": "What is Luffy's grandfather Garp's job?", "a": ["Marine vice admiral", "Pirate captain", "Village mayor", "Revolutionary"], "correct": 0, "note": "Which makes family dinners complicated." },
+        { "q": "What is Sanji's restaurant home called?", "a": ["Baratie", "Partys Bar", "Kamabakka", "Sabaody"], "correct": 0, "note": "A floating restaurant that fights back." },
+        { "q": "What is the treasure everyone is looking for?", "a": ["One Piece", "The Rio Poneglyph", "The Pirate King's crown", "The Grand Log"], "correct": 0, "note": "Left at Laugh Tale by Gol D. Roger." },
+        { "q": "What did Nami spend years doing for Arlong?", "a": ["Drawing sea charts", "Cooking", "Fighting marines", "Sailing his ship"], "correct": 0, "note": "While secretly stealing to buy her village back." }
+      ]
+    },
+    "medium": {
+      "label": "Medium",
+      "blurb": "Everything through Water 7, Sabaody and Marineford.",
+      "spoiler": "Spoilers up to and including Marineford.",
+      "questions": [
+        { "q": "Which Warlord secretly ran the country of Alabasta?", "a": ["Crocodile", "Doflamingo", "Moria", "Kuma"], "correct": 0, "note": "Under the name Mr. 0, boss of Baroque Works." },
+        { "q": "What is Enel's Devil Fruit power on Skypiea?", "a": ["Lightning", "Sound", "Air", "Gravity"], "correct": 0, "note": "Goro Goro no Mi. It also lets him hear everything on the island." },
+        { "q": "What is Franky's real name?", "a": ["Cutty Flam", "Iceburg", "Tom", "Paulie"], "correct": 0, "note": "Tom gave it to him. He buried the name to stay hidden." },
+        { "q": "Which organisation does Rob Lucci belong to?", "a": ["CP9", "Baroque Works", "The Revolutionary Army", "Germa 66"], "correct": 0, "note": "Government assassins with the licence to kill." },
+        { "q": "How did the crew say goodbye to the Going Merry?", "a": ["A viking funeral at sea", "They sold it", "They left it in Water 7", "They gave it to Kaya"], "correct": 0, "note": "And the ship apologised to them first." },
+        { "q": "What is the great underwater prison called?", "a": ["Impel Down", "Enies Lobby", "Marineford", "Sabaody"], "correct": 0, "note": "Six levels down, and Level 6 is not on any official record." },
+        { "q": "What was Whitebeard's real name?", "a": ["Edward Newgate", "Marshall D. Teach", "Silvers Rayleigh", "Gol D. Roger"], "correct": 0, "note": "The man closest to One Piece, who never wanted it." },
+        { "q": "Which Devil Fruit did Ace have?", "a": ["The Flame-Flame Fruit", "The Magma-Magma Fruit", "The Smoke-Smoke Fruit", "The Glint-Glint Fruit"], "correct": 0, "note": "Mera Mera no Mi. Losing to magma is exactly as bad as it sounds." },
+        { "q": "Who was Fleet Admiral of the Marines during the Marineford war?", "a": ["Sengoku", "Akainu", "Kizaru", "Garp"], "correct": 0, "note": "He resigned after it." },
+        { "q": "Where did Luffy's crew get separated for two years?", "a": ["Sabaody Archipelago", "Water 7", "Thriller Bark", "Fish-Man Island"], "correct": 0, "note": "Kuma sent every one of them flying to a different place." },
+        { "q": "What is Nico Robin's profession?", "a": ["Archaeologist", "Doctor", "Shipwright", "Cartographer"], "correct": 0, "note": "The only person alive who can read Poneglyphs." },
+        { "q": "What does a Poneglyph record?", "a": ["History erased by the World Government", "Devil Fruit recipes", "Sea charts", "Marine ranks"], "correct": 0, "note": "The Void Century, written in a language nearly nobody can read." },
+        { "q": "What is Bartholomew Kuma's Devil Fruit power?", "a": ["Repelling anything with his palms", "Turning into a bear", "Reading minds", "Creating shadows"], "correct": 0, "note": "Nikyu Nikyu no Mi. He can repel pain and air itself." },
+        { "q": "Which admiral has magma powers?", "a": ["Akainu", "Aokiji", "Kizaru", "Fujitora"], "correct": 0, "note": "Sakazuki, later Fleet Admiral." },
+        { "q": "Who was Gol D. Roger's first mate?", "a": ["Silvers Rayleigh", "Shanks", "Buggy", "Crocus"], "correct": 0, "note": "The Dark King, working as a coating craftsman when Luffy meets him." },
+        { "q": "What is Gecko Moria's power on Thriller Bark?", "a": ["Stealing shadows", "Controlling the weather", "Turning people to stone", "Copying faces"], "correct": 0, "note": "Kage Kage no Mi. It is how Brook lost his." },
+        { "q": "Which island is ruled by fish-men and mermaids?", "a": ["Fish-Man Island", "Skypiea", "Water 7", "Jaya"], "correct": 0, "note": "Ten thousand metres under the sea." },
+        { "q": "Who ate the Ope Ope no Mi?", "a": ["Trafalgar Law", "Bepo", "Doflamingo", "Kid"], "correct": 0, "note": "The fruit that can grant immortality — to someone else." }
+      ]
+    },
+    "hard": {
+      "label": "Hard",
+      "blurb": "Wano, Egghead, and things the anime took twenty years to say out loud.",
+      "spoiler": "Heavy spoilers, right up to the current arc.",
+      "questions": [
+        { "q": "What is the true name of Luffy's Devil Fruit?", "a": ["The Human-Human Fruit, Model: Nika", "The Gum-Gum Fruit", "The Rubber-Rubber Fruit", "The Sun-Sun Fruit"], "correct": 0, "note": "Hito Hito no Mi, Model: Nika. The World Government hid it for eight hundred years." },
+        { "q": "What is Kaido's Devil Fruit?", "a": ["Fish-Fish Fruit, Model: Azure Dragon", "Dragon-Dragon Fruit, Model: Western", "Beast-Beast Fruit, Model: Ox", "Snake-Snake Fruit, Model: Yamata"], "correct": 0, "note": "Uo Uo no Mi, Model: Seiryu. A fish fruit, of all things." },
+        { "q": "How many Road Poneglyphs point to Laugh Tale?", "a": ["Four", "Three", "Five", "Seven"], "correct": 0, "note": "You need all four to triangulate the island." },
+        { "q": "Who was the captain of the Rocks Pirates?", "a": ["Rocks D. Xebec", "Edward Newgate", "Kaido", "Big Mom"], "correct": 0, "note": "Beaten by Roger and Garp together at God Valley." },
+        { "q": "What name did Law know Doflamingo's younger brother by?", "a": ["Corazon", "Vergo", "Trebol", "Diamante"], "correct": 0, "note": "Donquixote Rosinante, who died so Law could live." },
+        { "q": "What is the elephant carrying the country of Zou called?", "a": ["Zunesha", "Jaya", "Laugh Tale", "Sunacchi"], "correct": 0, "note": "Punished a thousand years ago and still walking." },
+        { "q": "What is Sanji's family name?", "a": ["Vinsmoke", "Charlotte", "Kozuki", "Nefertari"], "correct": 0, "note": "Germa 66, the killer army he ran away from." },
+        { "q": "Which ancient weapon is hidden in Wano?", "a": ["Pluton", "Poseidon", "Uranus", "None of them"], "correct": 0, "note": "The blueprints were what got Water 7 into so much trouble." },
+        { "q": "Who executed Kozuki Oden?", "a": ["Kaido", "Orochi", "Akainu", "Big Mom"], "correct": 0, "note": "After Oden boiled for an hour holding his retainers above the oil." },
+        { "q": "What is Zoro's cursed sword called?", "a": ["Sandai Kitetsu", "Wado Ichimonji", "Shusui", "Enma"], "correct": 0, "note": "He picked it by throwing it in the air and holding out his arm." },
+        { "q": "Which Straw Hat carries the sword Wado Ichimonji?", "a": ["Zoro", "Brook", "Luffy", "Franky"], "correct": 0, "note": "It was Kuina's. He promised he would carry it to the top." },
+        { "q": "What is Sabo's rank in the Revolutionary Army?", "a": ["Chief of Staff", "Commander", "Captain", "Emperor"], "correct": 0, "note": "Second only to Dragon." },
+        { "q": "How many satellites of Vegapunk are there?", "a": ["Six", "Four", "Three", "Eight"], "correct": 0, "note": "Shaka, Lilith, Edison, Pythagoras, Atlas and York." },
+        { "q": "What does Big Mom's Soul-Soul Fruit take?", "a": ["Lifespan", "Memories", "Shadows", "Voices"], "correct": 0, "note": "Soru Soru no Mi. She takes years off people and gives them to objects." },
+        { "q": "Who is the current Fleet Admiral of the Marines?", "a": ["Sakazuki", "Borsalino", "Kuzan", "Sengoku"], "correct": 0, "note": "Akainu, after beating Aokiji on Punk Hazard." },
+        { "q": "What is Kaido's crew called?", "a": ["The Beasts Pirates", "The Big Mom Pirates", "The Blackbeard Pirates", "The Kid Pirates"], "correct": 0, "note": "Organised by Devil Fruit rank: Gifters, Pleasures, Waiters." },
+        { "q": "Which Straw Hat's shadow was stolen and put in a zombie?", "a": ["Brook", "Zoro", "Robin", "Chopper"], "correct": 0, "note": "Which is why he is a walking skeleton with a shadow to reclaim." },
+        { "q": "What is the name of the world's oldest and largest tree, holding centuries of books?", "a": ["The Tree of Knowledge at Ohara", "Giant Jack", "Zunesha", "The Sunny Tree"], "correct": 0, "note": "Burned down with the island by a Buster Call." }
+      ]
+    }
+  }
+}

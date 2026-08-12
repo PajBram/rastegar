@@ -1,0 +1,80 @@
+{
+  "title": "Naruto",
+  "difficulties": {
+    "easy": {
+      "label": "Easy",
+      "blurb": "The Academy, Team 7, and the Land of Waves.",
+      "spoiler": "Safe through the first arcs of Part 1.",
+      "questions": [
+        { "q": "What is Naruto's goal from episode one?", "a": ["To become Hokage", "To kill Sasuke", "To leave the village", "To find his parents"], "correct": 0, "note": "So that everyone has to acknowledge him." },
+        { "q": "What is sealed inside Naruto?", "a": ["The Nine-Tailed Fox", "The Eight-Tailed Ox", "A cursed mark", "The Sharingan"], "correct": 0, "note": "Kurama, sealed by the Fourth Hokage on the day Naruto was born." },
+        { "q": "Which village is Naruto from?", "a": ["The Hidden Leaf", "The Hidden Sand", "The Hidden Mist", "The Hidden Cloud"], "correct": 0, "note": "Konohagakure." },
+        { "q": "Who are the three members of Team 7 under Kakashi?", "a": ["Naruto, Sasuke and Sakura", "Naruto, Shikamaru and Ino", "Sasuke, Sakura and Sai", "Naruto, Kiba and Hinata"], "correct": 0, "note": "A dead-last, a genius, and the one who has to hold them together." },
+        { "q": "What is Kakashi's nickname?", "a": ["The Copy Ninja", "The White Fang", "The Toad Sage", "The Yellow Flash"], "correct": 0, "note": "For copying over a thousand jutsu with his Sharingan." },
+        { "q": "Which clan does Sasuke belong to?", "a": ["Uchiha", "Hyuga", "Nara", "Senju"], "correct": 0, "note": "And he is nearly the last of them." },
+        { "q": "What is Naruto's signature clone technique?", "a": ["Shadow Clone Jutsu", "Transformation Jutsu", "Substitution Jutsu", "Summoning Jutsu"], "correct": 0, "note": "The forbidden technique he learned in one night." },
+        { "q": "What food is Naruto obsessed with?", "a": ["Ramen", "Dango", "Rice balls", "Curry"], "correct": 0, "note": "Ichiraku Ramen, specifically." },
+        { "q": "Which eyes does the Hyuga clan have?", "a": ["Byakugan", "Sharingan", "Rinnegan", "Tenseigan"], "correct": 0, "note": "Near-360 degree vision and the ability to see chakra." },
+        { "q": "What is Rock Lee's specialty?", "a": ["Taijutsu — pure hand-to-hand", "Genjutsu", "Medical ninjutsu", "Summoning"], "correct": 0, "note": "He cannot use ninjutsu at all, so he became the best without it." },
+        { "q": "Who is Naruto's teacher at the Academy?", "a": ["Iruka", "Asuma", "Guy", "Ebisu"], "correct": 0, "note": "The first adult who treats him like a person." },
+        { "q": "Which village is Gaara from?", "a": ["The Hidden Sand", "The Hidden Leaf", "The Hidden Stone", "The Hidden Mist"], "correct": 0, "note": "Sunagakure, and he later leads it." },
+        { "q": "What animal follows Kiba everywhere?", "a": ["A dog called Akamaru", "A cat called Tora", "A fox", "A hawk"], "correct": 0, "note": "The Inuzuka clan fights alongside their partners." },
+        { "q": "Who was the Fourth Hokage?", "a": ["Minato Namikaze", "Hiruzen Sarutobi", "Tobirama Senju", "Jiraiya"], "correct": 0, "note": "The Yellow Flash. Also Naruto's father, though nobody tells Naruto for years." },
+        { "q": "Which of the Legendary Sannin trains Naruto?", "a": ["Jiraiya", "Tsunade", "Orochimaru", "Kakashi"], "correct": 0, "note": "The self-declared super-pervert." },
+        { "q": "What is Sakura trained to become in Part 2?", "a": ["A medical ninja", "A summoner", "A sensor", "A weapons master"], "correct": 0, "note": "Under Tsunade, with monstrous strength as a bonus." },
+        { "q": "What technique is Naruto's spinning ball of chakra?", "a": ["Rasengan", "Chidori", "Shadow Clone", "Kamui"], "correct": 0, "note": "Invented by the Fourth Hokage. It took three years to finish." },
+        { "q": "Which clan technique lets Shikamaru control an enemy's movement?", "a": ["Shadow Possession", "Mind Transfer", "Expansion", "Insect Swarm"], "correct": 0, "note": "The Nara clan, and Shikamaru is the smartest person in the show." }
+      ]
+    },
+    "medium": {
+      "label": "Medium",
+      "blurb": "All of Part 1 and the first half of Shippuden.",
+      "spoiler": "Spoilers through Pain's assault on the Leaf." ,
+      "questions": [
+        { "q": "Who are the three Legendary Sannin?", "a": ["Jiraiya, Tsunade and Orochimaru", "Kakashi, Guy and Asuma", "Hiruzen, Danzo and Homura", "Minato, Kushina and Jiraiya"], "correct": 0, "note": "Named by Hanzo of the Salamander after they survived him." },
+        { "q": "What is Zabuza's enormous sword called?", "a": ["The Executioner's Blade", "Samehada", "Kusanagi", "The White Fang's blade"], "correct": 0, "note": "Kubikiribocho, which repairs itself with iron from the blood it spills." },
+        { "q": "What was Haku's bloodline ability?", "a": ["Ice Release", "Lava Release", "Wood Release", "Storm Release"], "correct": 0, "note": "Combining water and wind, using only one hand." },
+        { "q": "Who killed the Third Hokage?", "a": ["Orochimaru", "Itachi", "Danzo", "Pain"], "correct": 0, "note": "During the invasion of the Chunin Exams, at the cost of his arms." },
+        { "q": "What is the second stage of the Chunin Exams held in?", "a": ["The Forest of Death", "The Valley of the End", "The Land of Waves", "The Hokage Tower"], "correct": 0, "note": "Where Orochimaru brands Sasuke." },
+        { "q": "Which tailed beast is sealed in Gaara?", "a": ["Shukaku, the One-Tail", "Matatabi, the Two-Tails", "Kurama, the Nine-Tails", "Gyuki, the Eight-Tails"], "correct": 0, "note": "Which is why he never sleeps." },
+        { "q": "Who is Itachi's partner in the Akatsuki?", "a": ["Kisame", "Deidara", "Sasori", "Hidan"], "correct": 0, "note": "The Monster of the Hidden Mist, carrying a sword that eats chakra." },
+        { "q": "What is Deidara's art made of?", "a": ["Explosive clay", "Puppets", "Paper", "Sand"], "correct": 0, "note": "Art is an explosion, as he will happily explain at length." },
+        { "q": "Where did Kakashi's Sharingan come from?", "a": ["Obito gave it to him", "He was born with it", "He stole it", "Danzo implanted it"], "correct": 0, "note": "A gift on the day Kakashi thought Obito died." },
+        { "q": "Who is Naruto's mother?", "a": ["Kushina Uzumaki", "Tsunade", "Mito Uzumaki", "Rin Nohara"], "correct": 0, "note": "The Nine-Tails' previous host, from the Hidden Whirlpool." },
+        { "q": "What is the real name of the man who calls himself Pain?", "a": ["Nagato", "Yahiko", "Obito", "Madara"], "correct": 0, "note": "He uses Yahiko's corpse as the body that does the talking." },
+        { "q": "Which technique does Sasuke learn from Kakashi?", "a": ["Chidori", "Rasengan", "Kamui", "Amaterasu"], "correct": 0, "note": "A thousand birds. It only works with the Sharingan to see with." },
+        { "q": "Who was the Third Hokage?", "a": ["Hiruzen Sarutobi", "Tobirama Senju", "Danzo Shimura", "Hashirama Senju"], "correct": 0, "note": "The God of Shinobi, and Konohamaru's grandfather." },
+        { "q": "What clan was Kimimaro the last survivor of?", "a": ["The Kaguya clan", "The Uzumaki clan", "The Yuki clan", "The Kurama clan"], "correct": 0, "note": "Bone manipulation, and a body already dying of illness." },
+        { "q": "Where do Naruto and Sasuke fight at the end of Part 1?", "a": ["The Valley of the End", "The Forest of Death", "The Hidden Sand", "Mount Myoboku"], "correct": 0, "note": "Under the statues of Hashirama and Madara. It happens twice." },
+        { "q": "What splits the Hyuga clan in two?", "a": ["A main house and a branch house", "Two rival villages", "A curse on the eyes", "A ban on marriage"], "correct": 0, "note": "The branch house wears a seal that can kill them at a thought." },
+        { "q": "What does Tsunade's necklace originally belong to?", "a": ["The First Hokage", "The Second Hokage", "Her brother Nawaki", "Jiraiya"], "correct": 0, "note": "She has given it away twice, both times to someone who died." },
+        { "q": "Which summoning animals does Jiraiya contract with?", "a": ["Toads", "Snakes", "Slugs", "Dogs"], "correct": 0, "note": "Mount Myoboku, where Naruto later learns Sage Mode." }
+      ]
+    },
+    "hard": {
+      "label": "Hard",
+      "blurb": "The Fourth Great Ninja War and everything behind it.",
+      "spoiler": "Spoilers for the entire series, ending included.",
+      "questions": [
+        { "q": "Who ordered Itachi to destroy the Uchiha clan?", "a": ["The Leaf's leadership, with Danzo pushing hardest", "Orochimaru", "Madara", "The Fourth Hokage"], "correct": 0, "note": "Itachi took the mission to prevent a civil war, and let Sasuke hate him for it." },
+        { "q": "What is Shisui Uchiha's legendary genjutsu?", "a": ["Kotoamatsukami", "Tsukuyomi", "Izanami", "Infinite Tsukuyomi"], "correct": 0, "note": "It changes a person's will without them ever knowing." },
+        { "q": "Whose cells did Danzo graft into his arm?", "a": ["Hashirama Senju's", "Madara Uchiha's", "Orochimaru's", "Kabuto's"], "correct": 0, "note": "Along with ten Sharingan, which is exactly as grim as it sounds." },
+        { "q": "What is Obito's space-time technique called?", "a": ["Kamui", "Hiraishin", "Izanagi", "Rinne Rebirth"], "correct": 0, "note": "The reason attacks pass straight through him." },
+        { "q": "Who gave Nagato his Rinnegan?", "a": ["Madara Uchiha", "Hagoromo Otsutsuki", "Obito", "His parents"], "correct": 0, "note": "Planted in him as a child, for Madara's own plan long after his death." },
+        { "q": "What is the name of the Sage of Six Paths?", "a": ["Hagoromo Otsutsuki", "Hamura Otsutsuki", "Kaguya Otsutsuki", "Ashura Otsutsuki"], "correct": 0, "note": "Who split the Ten-Tails into the nine tailed beasts." },
+        { "q": "Who is the final enemy of the series?", "a": ["Kaguya Otsutsuki", "Madara Uchiha", "Obito Uchiha", "Sasuke"], "correct": 0, "note": "The mother of chakra, who takes over the moment Madara thinks he has won." },
+        { "q": "What is Might Guy's eighth and final gate technique?", "a": ["Night Guy", "Morning Peacock", "Daytime Tiger", "Front Lotus"], "correct": 0, "note": "The Gate of Death. It should have killed him." },
+        { "q": "Which technique brings the dead back to fight?", "a": ["Edo Tensei", "Rinne Rebirth", "Izanagi", "Chakra Transfer"], "correct": 0, "note": "Invented by the Second Hokage, abused by everyone after him." },
+        { "q": "What is Sasuke's black, unquenchable flame called?", "a": ["Amaterasu", "Susanoo", "Kagutsuchi", "Kirin"], "correct": 0, "note": "It burns for seven days and nights unless the caster stops it." },
+        { "q": "Who was Kakashi's father?", "a": ["Sakumo Hatake, the White Fang", "Dan Kato", "Sakumo Senju", "Kosuke Maruboshi"], "correct": 0, "note": "Who chose his comrades over the mission, and was destroyed for it." },
+        { "q": "Which tailed beast does Killer B carry?", "a": ["Gyuki, the Eight-Tails", "Kurama, the Nine-Tails", "Son Goku, the Four-Tails", "Shukaku, the One-Tail"], "correct": 0, "note": "The only jinchuriki on genuinely good terms with his beast." },
+        { "q": "What was the Hidden Mist Village nicknamed?", "a": ["The Bloody Mist", "The Silent Village", "The Iron Village", "The Broken Isle"], "correct": 0, "note": "For graduation exams where students had to kill each other." },
+        { "q": "Who becomes the Sixth Hokage?", "a": ["Kakashi", "Naruto", "Tsunade", "Danzo"], "correct": 0, "note": "Danzo held the title briefly, and unofficially." },
+        { "q": "What is the name of Naruto's and Sasuke's final battlefield?", "a": ["The Valley of the End", "The Land of Iron", "Mount Myoboku", "The Ten-Tails' crater"], "correct": 0, "note": "Same place as Part 1. They each lose an arm there." },
+        { "q": "Who was Hashirama Senju's wife?", "a": ["Mito Uzumaki", "Kushina Uzumaki", "Tsunade's mother", "Kaguya"], "correct": 0, "note": "The first host of the Nine-Tails." },
+        { "q": "What does Izanami do, unlike Izanagi?", "a": ["It traps the caster's target in a loop until they accept reality", "It rewrites reality", "It restores lost eyes", "It seals a tailed beast"], "correct": 0, "note": "Itachi uses it on Kabuto. It costs the caster an eye either way." },
+        { "q": "Which two brothers do Naruto and Sasuke reincarnate the wills of?", "a": ["Ashura and Indra", "Hagoromo and Hamura", "Hashirama and Tobirama", "Madara and Izuna"], "correct": 0, "note": "The Sage's sons, still arguing thousands of years later." }
+      ]
+    }
+  }
+}
