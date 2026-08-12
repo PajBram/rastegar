@@ -100,6 +100,9 @@
 
     function pointFromEvent(event) {
       var rect = canvas.getBoundingClientRect();
+      // A canvas that has not been laid out yet has no size, and dividing by
+      // it would hand the game NaN coordinates.
+      if (!rect.width || !rect.height) return null;
       return {
         x: (event.clientX - rect.left) / rect.width * W,
         y: (event.clientY - rect.top) / rect.height * H
@@ -109,6 +112,7 @@
     canvas.addEventListener('pointerdown', function (event) {
       event.preventDefault();
       var point = pointFromEvent(event);
+      if (!point) return;
       game.pointer.x = point.x;
       game.pointer.y = point.y;
       game.pointer.down = true;
@@ -120,6 +124,7 @@
     canvas.addEventListener('pointermove', function (event) {
       if (!game.pointer.down) return;
       var point = pointFromEvent(event);
+      if (!point) return;
       game.pointer.x = point.x;
       game.pointer.y = point.y;
     });
@@ -212,6 +217,8 @@
     window.__arcade = {
       game: game,
       start: startRun,
+      tap: function (x, y) { if (spec.tap) spec.tap({ x: x, y: y }, game); },
+      key: function (k) { if (spec.keyPress) spec.keyPress(k, game); },
       step: function (dt, times) {
         for (var i = 0; i < (times || 1); i++) {
           if (game.state === 'playing') { game.time += dt; spec.update(dt, game); }

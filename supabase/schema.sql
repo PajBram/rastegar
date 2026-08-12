@@ -11,6 +11,8 @@
 create extension if not exists pgcrypto;
 
 -- ---------------------------------------------------------------- catalogue
+-- One row per game. Retiring a game from the site does not remove its row
+-- here: old scores point at it. Delete the scores first if you want it gone.
 -- One row per game. max_score and max_rate are the plausibility limits used
 -- when a score is submitted: nothing above max_score is ever accepted, and a
 -- run cannot earn faster than max_rate points per second.
@@ -23,11 +25,15 @@ create table if not exists public.games (
 );
 
 insert into public.games (slug, title, max_score, max_rate, min_seconds) values
-  ('one-piece-quiz', 'One Piece Quiz', 6000,   40, 20),
-  ('naruto-quiz',    'Naruto Quiz',    6000,   40, 20),
-  ('slash',          'Slash',          200000, 900, 5),
-  ('panel-dash',     'Panel Dash',     200000, 900, 5),
-  ('paj-says-survive', 'Paj Says Survive', 250000, 500, 10)
+  ('one-piece-quiz',    'One Piece Quiz',     6000,    40, 20),
+  ('naruto-quiz',       'Naruto Quiz',        6000,    40, 20),
+  ('bleach-quiz',       'Bleach Quiz',        6000,    40, 20),
+  ('dragon-ball-quiz',  'Dragon Ball Quiz',   6000,    40, 20),
+  ('duel',              'Duel',             150000,   600, 10),
+  ('ink-bomb',          'Ink Bomb',         250000,   900,  8),
+  ('shuriken',          'Shuriken',         200000,   800,  8),
+  ('panel-dash',        'Panel Dash',       200000,   900,  5),
+  ('paj-says-survive',  'Paj Says Survive', 250000,   500, 10)
 on conflict (slug) do update
   set title = excluded.title,
       max_score = excluded.max_score,

@@ -1,0 +1,17 @@
+{
+  "slug": "shuriken",
+  "title": "Shuriken",
+  "kind": "ARCADE",
+  "order": 7,
+  "tilt": "b",
+  "glyph": "&#10022;",
+  "tagline": "The aim swings by itself. All you say is when, twice.",
+  "scripts": ["/static/js/arcade.js", "/static/games/shuriken.js"],
+  "controls": [
+    "`Space` — or a tap anywhere — locks the angle. The second one locks the power and throws.",
+    "Same two presses on a phone, same two on a keyboard. There is no aiming with a cursor.",
+    "Lanterns drift toward the right edge. Let one escape and it costs a life.",
+    "The small red ones are worth double."
+  ],
+  "about": "You never point at anything. A line sweeps up and down on its own, a power bar fills and empties on its own, and your entire contribution is two taps at two moments.\n\nWhat makes it hard is that both dials keep speeding up, and the lanterns keep drifting toward the edge while you wait for the sweep to come back around. Waiting for the perfect angle is how you lose a life at the other end of the screen.\n\nConsecutive hits build a streak that is worth more than the shots themselves. One miss and the streak is gone."
+}

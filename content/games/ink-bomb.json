@@ -1,0 +1,16 @@
+{
+  "slug": "ink-bomb",
+  "title": "Ink Bomb",
+  "kind": "ARCADE",
+  "order": 6,
+  "tilt": "a",
+  "glyph": "&#9679;",
+  "tagline": "One drop per round. Everything it touches goes off too.",
+  "scripts": ["/static/js/arcade.js", "/static/games/ink-bomb.js"],
+  "controls": [
+    "Tap where you want the drop to land. That is the whole game.",
+    "On a keyboard: arrow keys move the crosshair, `Space` drops it.",
+    "Each round names a number you have to catch. Miss it and it costs a life."
+  ],
+  "about": "Ink dots drift across the page. You get exactly one detonation, and whatever it swallows detonates in turn.\n\nSo the round is decided before you commit: not where the dots are, but where they are going to be four seconds from now, and which of them will take the others with it. A drop into the thickest crowd is usually the wrong drop.\n\nEach round adds dots and raises the quota. Nothing here is quick reflexes — it is one patient decision, over and over, with the price going up."
+}
