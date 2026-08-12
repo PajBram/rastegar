@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Two swordsmen facing each other at dawn">
+  <defs>
+    <linearGradient id="duelsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#7b3f5e"/><stop offset="45%" stop-color="#d4693f"/>
+      <stop offset="78%" stop-color="#f2b25c"/><stop offset="100%" stop-color="#f7d79a"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#duelsky)"/>
+  <circle cx="200" cy="196" r="66" fill="#fff0c9" opacity=".85"/>
+
+  <g fill="#7a3550" opacity=".45">
+    <path d="M0 214 l70 -26 60 20 80 -30 90 26 100 -22 v88 H0 Z"/>
+  </g>
+  <rect y="238" width="400" height="62" fill="#2b1b2c"/>
+  <g stroke="#000" stroke-width="0" fill="#2b1b2c">
+    <path d="M0 238 l60 -10 70 10 z" opacity=".9"/>
+  </g>
+
+  <!-- left fighter, blade held low -->
+  <g fill="#241428">
+    <path d="M96 238 l10 -70 16 0 10 70 z"/>
+    <circle cx="114" cy="156" r="13"/>
+    <path d="M120 176 l72 26 -6 10 -70 -24 z"/>
+  </g>
+  <!-- right fighter, blade held high -->
+  <g fill="#241428">
+    <path d="M268 238 l10 -74 16 0 10 74 z"/>
+    <circle cx="286" cy="152" r="13"/>
+    <path d="M280 170 l-74 -34 6 -10 72 32 z"/>
+  </g>
+
+  <!-- the line where the blades will meet -->
+  <path d="M186 186 l30 8" stroke="#fff3d0" stroke-width="5" stroke-linecap="round" opacity=".9"/>
+  <g stroke="#fff3d0" stroke-width="2.5" opacity=".55" stroke-linecap="round">
+    <path d="M200 168 l14 -14"/><path d="M204 200 l16 12"/><path d="M182 200 l-16 12"/>
+  </g>
+</svg>

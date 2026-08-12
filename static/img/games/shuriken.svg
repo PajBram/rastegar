@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A throwing star in flight past a lantern">
+  <defs>
+    <linearGradient id="shsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1d2f4d"/><stop offset="60%" stop-color="#40476f"/>
+      <stop offset="100%" stop-color="#7a4a63"/>
+    </linearGradient>
+    <linearGradient id="blade" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#eef2f7"/><stop offset="55%" stop-color="#b6c0cc"/>
+      <stop offset="100%" stop-color="#79838f"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#shsky)"/>
+  <g fill="#ffffff" opacity=".4">
+    <circle cx="64" cy="44" r="1.8"/><circle cx="128" cy="76" r="1.4"/><circle cx="352" cy="60" r="2"/>
+    <circle cx="300" cy="34" r="1.4"/>
+  </g>
+
+  <!-- a paper lantern, the target -->
+  <line x1="298" y1="0" x2="298" y2="96" stroke="#ffffff" stroke-width="2" opacity=".35"/>
+  <ellipse cx="298" cy="132" rx="34" ry="40" fill="#ffd9a8"/>
+  <ellipse cx="298" cy="132" rx="34" ry="40" fill="none" stroke="#c98a4e" stroke-width="3"/>
+  <rect x="272" y="128" width="52" height="8" fill="#c9532f"/>
+  <ellipse cx="288" cy="116" rx="10" ry="14" fill="#fff2d6" opacity=".6"/>
+
+  <!-- motion arc -->
+  <path d="M28 250 q108 -70 210 -104" fill="none" stroke="#ffffff" stroke-width="3" stroke-dasharray="10 12" opacity=".45"/>
+
+  <!-- the star, mid-spin -->
+  <g transform="translate(150 176) rotate(22)">
+    <path d="M0 -46 L11 -13 L46 0 L11 13 L0 46 L-11 13 L-46 0 L-11 -13 Z" fill="url(#blade)"/>
+    <path d="M0 -46 L11 -13 L46 0 L11 13 L0 46 L-11 13 L-46 0 L-11 -13 Z" fill="none" stroke="#5c6873" stroke-width="2.5"/>
+    <circle cx="0" cy="0" r="8" fill="#1d2f4d"/>
+  </g>
+  <g stroke="#ffffff" stroke-width="2.5" opacity=".5" stroke-linecap="round">
+    <path d="M96 208 l-40 22"/><path d="M112 226 l-34 18"/><path d="M84 190 l-30 16"/>
+  </g>
+</svg>

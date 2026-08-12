@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Ink blots blooming in a chain">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#fbf6ec"/><stop offset="100%" stop-color="#efe4d2"/>
+    </linearGradient>
+    <radialGradient id="wet" cx="42%" cy="36%" r="70%">
+      <stop offset="0%" stop-color="#ff6d86"/><stop offset="70%" stop-color="#ff2d55"/>
+      <stop offset="100%" stop-color="#c40e37"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#paper)"/>
+  <g fill="#16120f" opacity=".08">
+    <circle cx="30" cy="30" r="2.5"/><circle cx="70" cy="30" r="2.5"/><circle cx="110" cy="30" r="2.5"/>
+    <circle cx="30" cy="70" r="2.5"/><circle cx="70" cy="70" r="2.5"/><circle cx="110" cy="70" r="2.5"/>
+    <circle cx="330" cy="240" r="2.5"/><circle cx="370" cy="240" r="2.5"/><circle cx="330" cy="270" r="2.5"/>
+  </g>
+
+  <!-- small dots waiting to go off -->
+  <g fill="#16120f">
+    <circle cx="72" cy="196" r="11"/>
+    <circle cx="112" cy="86" r="9"/>
+    <circle cx="330" cy="96" r="10"/>
+    <circle cx="356" cy="188" r="8"/>
+    <circle cx="148" cy="252" r="9"/>
+  </g>
+
+  <!-- the chain: three blots, each a circle that refuses to be one -->
+  <path d="M200 88 c30 -4 58 16 60 46 c2 30 -18 56 -48 60 c-32 4 -60 -18 -62 -50 c-2 -30 20 -52 50 -56 z"
+        fill="url(#wet)"/>
+  <path d="M118 150 c18 -3 34 10 35 27 c1 18 -11 33 -29 35 c-19 2 -35 -11 -36 -29 c-1 -18 12 -31 30 -33 z"
+        fill="#ff2d55" opacity=".82"/>
+  <path d="M282 168 c22 -3 41 13 42 33 c1 21 -14 39 -35 41 c-22 2 -41 -13 -42 -34 c-1 -21 14 -37 35 -40 z"
+        fill="#ff2d55" opacity=".7"/>
+
+  <!-- splashes -->
+  <g fill="#c40e37">
+    <circle cx="246" cy="72" r="7"/><circle cx="264" cy="58" r="4"/>
+    <circle cx="150" cy="118" r="5"/><circle cx="238" cy="216" r="6"/>
+  </g>
+  <g fill="#16120f" opacity=".9">
+    <circle cx="200" cy="134" r="6"/>
+  </g>
+</svg>

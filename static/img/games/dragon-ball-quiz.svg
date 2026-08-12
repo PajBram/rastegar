@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A glowing orange orb with four stars">
+  <defs>
+    <radialGradient id="orb" cx="38%" cy="32%" r="72%">
+      <stop offset="0%" stop-color="#ffe9a8"/><stop offset="42%" stop-color="#f7b23e"/>
+      <stop offset="100%" stop-color="#d3711a"/>
+    </radialGradient>
+    <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#ffd27a" stop-opacity=".8"/>
+      <stop offset="100%" stop-color="#ffd27a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="dbsky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2a3f6b"/><stop offset="70%" stop-color="#5d4a7e"/>
+      <stop offset="100%" stop-color="#8a5a72"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#dbsky)"/>
+  <g fill="#ffffff" opacity=".45">
+    <circle cx="52" cy="48" r="1.8"/><circle cx="104" cy="88" r="1.4"/><circle cx="330" cy="52" r="2"/>
+    <circle cx="360" cy="128" r="1.4"/><circle cx="150" cy="40" r="1.6"/>
+  </g>
+
+  <circle cx="200" cy="150" r="128" fill="url(#glow)"/>
+  <circle cx="200" cy="150" r="86" fill="url(#orb)"/>
+  <ellipse cx="170" cy="118" rx="26" ry="18" fill="#fff6d8" opacity=".55" transform="rotate(-24 170 118)"/>
+  <circle cx="200" cy="150" r="86" fill="none" stroke="#a8530f" stroke-width="3" opacity=".45"/>
+
+  <!-- four stars, arranged as a diamond -->
+  <g fill="#d8322f">
+    <path d="M200 104 l7.6 15.4 17 2.5 -12.3 12 2.9 16.9 -15.2 -8 -15.2 8 2.9 -16.9 -12.3 -12 17 -2.5 z"/>
+    <path d="M158 152 l6 12.2 13.4 2 -9.7 9.5 2.3 13.4 -12 -6.3 -12 6.3 2.3 -13.4 -9.7 -9.5 13.4 -2 z"/>
+    <path d="M242 152 l6 12.2 13.4 2 -9.7 9.5 2.3 13.4 -12 -6.3 -12 6.3 2.3 -13.4 -9.7 -9.5 13.4 -2 z"/>
+    <path d="M200 190 l6 12.2 13.4 2 -9.7 9.5 2.3 13.4 -12 -6.3 -12 6.3 2.3 -13.4 -9.7 -9.5 13.4 -2 z"/>
+  </g>
+</svg>

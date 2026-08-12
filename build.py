@@ -217,6 +217,11 @@ def load_games() -> list[dict]:
         game = load_json(path)
         game["url"] = f"/games/{game['slug']}/"
         game["about_html"] = markdown(game.get("about", ""))
+        # A cover is picked up by name: static/img/games/<slug>.svg. Drop a file
+        # in and the card uses it; leave it out and the card falls back to the
+        # glyph on a colour field.
+        cover = STATIC / "img" / "games" / f"{game['slug']}.svg"
+        game["cover"] = f"/static/img/games/{game['slug']}.svg" if cover.exists() else ""
         games.append(game)
     games.sort(key=lambda g: g.get("order", 99))
     return games
@@ -257,8 +262,10 @@ def devlog_card(post: dict) -> str:
 
 
 def game_card(game: dict) -> str:
+    art = (f'<img src="{game["cover"]}" alt="" loading="lazy" decoding="async">'
+           if game.get("cover") else game.get("glyph", "&#9733;"))
     return f"""<a class="panel panel--game tilt-{game.get('tilt', 'a')}" href="{game['url']}">
-  <span class="game-card__art" aria-hidden="true">{game.get('glyph', '&#9733;')}</span>
+  <span class="game-card__art" aria-hidden="true">{art}</span>
   <span class="game-card__text">
     <span class="kicker">{html.escape(game.get('kind', 'GAME'))}</span>
     <span class="game-card__title">{html.escape(game['title'])}</span>

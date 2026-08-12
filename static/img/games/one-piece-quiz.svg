@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A straw hat with a red band">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3d90c9"/><stop offset="62%" stop-color="#8fcbe8"/>
+      <stop offset="63%" stop-color="#2f7fa8"/><stop offset="100%" stop-color="#1d5e80"/>
+    </linearGradient>
+    <linearGradient id="straw" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f6dc9d"/><stop offset="100%" stop-color="#dfae5c"/>
+    </linearGradient>
+    <linearGradient id="brim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#eec97e"/><stop offset="100%" stop-color="#c99444"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#sky)"/>
+  <g fill="#ffffff" opacity=".5">
+    <ellipse cx="86" cy="58" rx="60" ry="14"/>
+    <ellipse cx="112" cy="46" rx="36" ry="10"/>
+    <ellipse cx="322" cy="86" rx="52" ry="12"/>
+  </g>
+  <g fill="#ffffff" opacity=".25">
+    <rect x="40" y="212" width="90" height="4" rx="2"/>
+    <rect x="250" y="232" width="110" height="4" rx="2"/>
+    <rect x="120" y="256" width="70" height="3" rx="1.5"/>
+  </g>
+
+  <!-- brim, then crown, then the band -->
+  <ellipse cx="200" cy="178" rx="132" ry="46" fill="url(#brim)"/>
+  <ellipse cx="200" cy="178" rx="132" ry="46" fill="none" stroke="#8d5f24" stroke-width="3"/>
+  <path d="M124 172 a76 60 0 0 1 152 0 z" fill="url(#straw)"/>
+  <path d="M124 172 a76 60 0 0 1 152 0" fill="none" stroke="#8d5f24" stroke-width="3"/>
+
+  <!-- straw grain -->
+  <g stroke="#c8933f" stroke-width="2" opacity=".55">
+    <path d="M140 168 a62 52 0 0 1 14 -46"/>
+    <path d="M168 172 a58 52 0 0 1 8 -54"/>
+    <path d="M200 173 v-56"/>
+    <path d="M232 172 a58 52 0 0 0 -8 -54"/>
+    <path d="M260 168 a62 52 0 0 0 -14 -46"/>
+  </g>
+  <g stroke="#b9812f" stroke-width="1.6" opacity=".4">
+    <path d="M92 182 a112 40 0 0 0 216 0"/>
+    <path d="M78 172 a124 42 0 0 0 244 0"/>
+  </g>
+
+  <!-- the red band and its tail -->
+  <path d="M124 158 a76 60 0 0 0 152 0 l0 18 a76 60 0 0 1 -152 0 z" fill="#e03149"/>
+  <path d="M124 158 a76 60 0 0 0 152 0" fill="none" stroke="#a81f33" stroke-width="2.5" opacity=".7"/>
+  <path d="M272 168 l30 16 -8 8 -22 -12 z" fill="#e03149"/>
+  <path d="M272 168 l30 16 -8 8 -22 -12 z" fill="none" stroke="#a81f33" stroke-width="2"/>
+</svg>

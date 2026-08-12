@@ -1,0 +1,45 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A blade crossing a full moon">
+  <defs>
+    <linearGradient id="night" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#111a2e"/><stop offset="60%" stop-color="#24304f"/>
+      <stop offset="100%" stop-color="#3b3355"/>
+    </linearGradient>
+    <linearGradient id="steel" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f4f7fb"/><stop offset="50%" stop-color="#c3ccd8"/>
+      <stop offset="100%" stop-color="#8b96a5"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fdf6e3" stop-opacity=".9"/>
+      <stop offset="65%" stop-color="#fdf6e3" stop-opacity=".14"/>
+      <stop offset="100%" stop-color="#fdf6e3" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#night)"/>
+  <g fill="#ffffff" opacity=".5">
+    <circle cx="58" cy="52" r="2"/><circle cx="112" cy="96" r="1.6"/><circle cx="336" cy="44" r="2.2"/>
+    <circle cx="286" cy="112" r="1.4"/><circle cx="152" cy="36" r="1.8"/><circle cx="374" cy="146" r="1.6"/>
+  </g>
+
+  <circle cx="212" cy="132" r="118" fill="url(#halo)"/>
+  <circle cx="212" cy="132" r="72" fill="#fdf6e3"/>
+  <g fill="#e8dfc4" opacity=".55">
+    <circle cx="188" cy="112" r="13"/><circle cx="236" cy="148" r="9"/><circle cx="222" cy="98" r="6"/>
+  </g>
+
+  <!-- a long blade cutting across, hilt low left -->
+  <g transform="rotate(-34 200 150)">
+    <rect x="42" y="144" width="250" height="13" rx="6" fill="url(#steel)"/>
+    <path d="M292 144 l34 6.5 -34 6.5 z" fill="url(#steel)"/>
+    <rect x="42" y="144" width="250" height="4" fill="#ffffff" opacity=".65"/>
+    <rect x="16" y="138" width="30" height="25" rx="4" fill="#1b2233"/>
+    <rect x="-38" y="145" width="56" height="11" rx="5" fill="#2b3446"/>
+    <g stroke="#4a5568" stroke-width="2">
+      <path d="M-30 145 l10 11"/><path d="M-16 145 l10 11"/><path d="M-2 145 l10 11"/>
+    </g>
+  </g>
+
+  <g stroke="#ffffff" stroke-width="2" opacity=".35">
+    <path d="M40 236 h96"/><path d="M74 254 h140"/><path d="M232 268 h120"/>
+  </g>
+</svg>

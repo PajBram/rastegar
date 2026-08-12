@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A red orb falling through gaps between black panels">
+  <defs>
+    <linearGradient id="fall" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f2ea"/><stop offset="100%" stop-color="#ddd2c2"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#fall)"/>
+  <g fill="#16120f" opacity=".07">
+    <circle cx="24" cy="24" r="2"/><circle cx="60" cy="24" r="2"/><circle cx="96" cy="24" r="2"/>
+    <circle cx="24" cy="60" r="2"/><circle cx="60" cy="60" r="2"/><circle cx="96" cy="60" r="2"/>
+    <circle cx="304" cy="240" r="2"/><circle cx="340" cy="240" r="2"/><circle cx="376" cy="240" r="2"/>
+  </g>
+
+  <!-- rows of panels with a gap you have to thread -->
+  <g fill="#16120f">
+    <path d="M0 40 h150 l-6 26 H0 z"/>
+    <path d="M244 44 h156 v26 H238 z"/>
+
+    <path d="M0 124 h96 l6 26 H0 z"/>
+    <path d="M186 128 h214 v26 H180 z"/>
+
+    <path d="M0 214 h214 l-8 26 H0 z"/>
+    <path d="M306 216 h94 v26 H300 z"/>
+  </g>
+
+  <!-- the falling orb and its trail -->
+  <g fill="#ff2d55">
+    <circle cx="200" cy="188" r="17"/>
+    <circle cx="196" cy="152" r="11" opacity=".5"/>
+    <circle cx="190" cy="122" r="7" opacity=".3"/>
+    <circle cx="186" cy="98" r="4" opacity=".18"/>
+  </g>
+  <circle cx="200" cy="188" r="17" fill="none" stroke="#16120f" stroke-width="4"/>
+  <rect x="193" y="182" width="14" height="4" fill="#fff" opacity=".8"/>
+
+  <!-- orbs still to collect -->
+  <g fill="#ff2d55" opacity=".85">
+    <circle cx="268" cy="96" r="8"/><circle cx="132" cy="264" r="8"/>
+  </g>
+</svg>

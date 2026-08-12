@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A ninja headband with an engraved metal plate">
+  <defs>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f0a35a"/><stop offset="55%" stop-color="#e3763f"/>
+      <stop offset="100%" stop-color="#a8452f"/>
+    </linearGradient>
+    <linearGradient id="cloth" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2c4d80"/><stop offset="100%" stop-color="#182f52"/>
+    </linearGradient>
+    <linearGradient id="plate" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e9edf1"/><stop offset="46%" stop-color="#b8c2cc"/>
+      <stop offset="54%" stop-color="#9aa6b3"/><stop offset="100%" stop-color="#cdd6de"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#dusk)"/>
+  <circle cx="312" cy="76" r="46" fill="#ffe6b8" opacity=".55"/>
+  <circle cx="312" cy="76" r="30" fill="#fff3d6"/>
+  <g fill="#8c3a2c" opacity=".35">
+    <path d="M0 250 l80 -34 90 26 120 -40 110 30 v68 H0 Z"/>
+  </g>
+
+  <!-- cloth strap, slightly waving -->
+  <path d="M8 150 q60 -22 120 -6 h144 q60 -16 120 6 v52 q-60 -22 -120 -6 H128 q-60 16 -120 -6 z" fill="url(#cloth)"/>
+  <path d="M8 150 q60 -22 120 -6 h144 q60 -16 120 6" fill="none" stroke="#0f1f38" stroke-width="3"/>
+  <path d="M8 202 q60 -22 120 -6 h144 q60 -16 120 6" fill="none" stroke="#0f1f38" stroke-width="3" opacity=".6"/>
+  <g stroke="#3a5f96" stroke-width="2" opacity=".5">
+    <path d="M40 150 v46"/><path d="M74 146 v48"/><path d="M330 148 v48"/><path d="M362 152 v46"/>
+  </g>
+
+  <!-- metal plate -->
+  <rect x="128" y="132" width="144" height="76" rx="8" fill="url(#plate)"/>
+  <rect x="128" y="132" width="144" height="76" rx="8" fill="none" stroke="#6f7c8a" stroke-width="3"/>
+  <g fill="#7d8996">
+    <circle cx="146" cy="150" r="4"/><circle cx="254" cy="150" r="4"/>
+    <circle cx="146" cy="190" r="4"/><circle cx="254" cy="190" r="4"/>
+  </g>
+  <!-- an engraved mark of my own: a spiral cut, not the series' emblem -->
+  <path d="M200 152 a18 18 0 1 1 -17 22 a11 11 0 1 0 11 -13"
+        fill="none" stroke="#5d6874" stroke-width="7" stroke-linecap="round"/>
+  <path d="M200 152 a18 18 0 1 1 -17 22 a11 11 0 1 0 11 -13"
+        fill="none" stroke="#eef2f6" stroke-width="2.5" stroke-linecap="round" opacity=".8"/>
+  <path d="M136 140 l40 0 -40 26 z" fill="#ffffff" opacity=".35"/>
+</svg>

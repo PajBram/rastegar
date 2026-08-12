@@ -242,6 +242,7 @@ main { display: block; }
 .panel--game:nth-child(4n+3) .game-card__art { background: linear-gradient(165deg, #7fb99a, #24564f); }
 .panel--game:nth-child(4n+4) .game-card__art { background: linear-gradient(165deg, #b8617a, #3a2a52); }
 .panel--game:hover .game-card__art { transform: scale(1.035); }
+.game-card__art img { width: 100%; height: 100%; object-fit: cover; }
 .game-card__text { display: block; padding: 1rem .1rem 0; }
 .game-card__text .kicker { margin-bottom: .45rem; }
 .game-card__title { display: block; font-family: var(--serif); font-weight: 700; font-size: 1.32rem; line-height: 1.25; }
