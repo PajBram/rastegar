@@ -6,22 +6,182 @@
       "blurb": "East Blue and the first stretch of the Grand Line. Not free points.",
       "spoiler": "Safe up to Alabasta.",
       "questions": [
-        { "q": "Which island did Chopper join the crew on?", "a": ["Drum Island", "Little Garden", "Whisky Peak", "Jaya"], "correct": 0, "note": "A winter island with no doctors left but one very old woman." },
-        { "q": "Who was Nami working for before she joined the crew?", "a": ["Arlong", "Buggy", "Crocodile", "Don Krieg"], "correct": 0, "note": "For eight years, stealing to buy her own village back." },
-        { "q": "What is the mountain you must climb to enter the Grand Line?", "a": ["Reverse Mountain", "Red Line", "Marineford Ridge", "Cape Kraken"], "correct": 0, "note": "The currents run up it. Get the entry wrong and the ship is kindling." },
-        { "q": "What device tells you the way to the next island on the Grand Line?", "a": ["A Log Pose", "A compass", "An Eternal Chart", "A Vivre Card"], "correct": 0, "note": "It records an island's magnetism. An ordinary compass is useless out there." },
-        { "q": "Who taught Sanji to cook?", "a": ["Zeff", "Carne", "Patty", "Judge"], "correct": 0, "note": "Red-Leg Zeff, who gave up his leg and never mentioned it." },
-        { "q": "What promise did Zoro make to Kuina?", "a": ["That one of them would become the world's greatest swordsman", "That he would protect her village", "That he would never lose again", "That he would find the One Piece"], "correct": 0, "note": "She died the next day. He carries her sword." },
-        { "q": "Who is Vivi?", "a": ["The princess of Alabasta", "A Marine captain", "Crocodile's agent", "A Sky Islander"], "correct": 0, "note": "Undercover in Baroque Works as Miss Wednesday." },
-        { "q": "What is the whale waiting at Reverse Mountain called?", "a": ["Laboon", "Zunesha", "Momoo", "Bananawani"], "correct": 0, "note": "Fifty years of waiting for a crew that never came back." },
-        { "q": "Who is Usopp's father?", "a": ["Yasopp, a sniper in Shanks' crew", "A Marine admiral", "The mayor of Syrup Village", "Nobody knows"], "correct": 0, "note": "Which is why Shanks recognises the name instantly." },
-        { "q": "What does Robin's Devil Fruit let her do?", "a": ["Sprout copies of her limbs on any surface", "Read minds", "Turn into flowers", "Become invisible"], "correct": 0, "note": "Hana Hana no Mi. Terrifying once she stops holding back." },
-        { "q": "What is Brook?", "a": ["A skeleton brought back by the Revive-Revive Fruit", "A ghost", "A zombie made by Moria", "A cyborg"], "correct": 0, "note": "His soul took a year to find the body again, by which point it was bones." },
-        { "q": "Who was Buggy's crewmate before he was a clown captain?", "a": ["Shanks — they both served on Roger's ship", "Whitebeard", "Mihawk", "Crocodile"], "correct": 0, "note": "Cabin boys together, which nobody believes when he says it." },
-        { "q": "What happened to Shanks' arm?", "a": ["A Sea King took it saving Luffy", "Whitebeard took it", "He lost it to Mihawk", "It was never explained"], "correct": 0, "note": "He called it a small price and meant it." },
-        { "q": "What is the Straw Hats' second ship called?", "a": ["Thousand Sunny", "Going Merry", "Oro Jackson", "Red Force"], "correct": 0, "note": "Built by Franky from Adam Wood." },
-        { "q": "Who is Dracule Mihawk?", "a": ["The world's greatest swordsman", "A Marine admiral", "A Yonko", "Zoro's old master"], "correct": 0, "note": "And a Warlord, until the system collapsed." },
-        { "q": "What is Luffy's grandfather famous for?", "a": ["Being the Marine hero who cornered Gol D. Roger", "Being a pirate king", "Founding the Revolutionary Army", "Inventing Haki"], "correct": 0, "note": "Garp the Fist, and he wanted Luffy to be a Marine." }
+        {
+          "q": "Which island did Chopper join the crew on?",
+          "a": [
+            "Drum Island",
+            "Little Garden",
+            "Whisky Peak",
+            "Jaya"
+          ],
+          "correct": 0,
+          "note": "A winter island with no doctors left but one very old woman."
+        },
+        {
+          "q": "Who was Nami working for before she joined the crew?",
+          "a": [
+            "Arlong",
+            "Buggy",
+            "Crocodile",
+            "Don Krieg"
+          ],
+          "correct": 0,
+          "note": "For eight years, stealing to buy her own village back."
+        },
+        {
+          "q": "What is the mountain you must climb to enter the Grand Line?",
+          "a": [
+            "Reverse Mountain",
+            "Red Line",
+            "Marineford Ridge",
+            "Cape Kraken"
+          ],
+          "correct": 0,
+          "note": "The currents run up it. Get the entry wrong and the ship is kindling."
+        },
+        {
+          "q": "What device tells you the way to the next island on the Grand Line?",
+          "a": [
+            "A Log Pose",
+            "A compass",
+            "An Eternal Chart",
+            "A Vivre Card"
+          ],
+          "correct": 0,
+          "note": "It records an island's magnetism. An ordinary compass is useless out there."
+        },
+        {
+          "q": "Who taught Sanji to cook?",
+          "a": [
+            "Zeff",
+            "Carne",
+            "Patty",
+            "Judge"
+          ],
+          "correct": 0,
+          "note": "Red-Leg Zeff, who gave up his leg and never mentioned it."
+        },
+        {
+          "q": "What promise did Zoro make to Kuina?",
+          "a": [
+            "That one of them would become the world's greatest swordsman",
+            "That he would protect her village",
+            "That he would never lose again",
+            "That he would find the One Piece"
+          ],
+          "correct": 0,
+          "note": "She died the next day. He carries her sword."
+        },
+        {
+          "q": "Who is Vivi?",
+          "a": [
+            "The princess of Alabasta",
+            "A Marine captain",
+            "Crocodile's agent",
+            "A Sky Islander"
+          ],
+          "correct": 0,
+          "note": "Undercover in Baroque Works as Miss Wednesday."
+        },
+        {
+          "q": "What is the whale waiting at Reverse Mountain called?",
+          "a": [
+            "Laboon",
+            "Zunesha",
+            "Momoo",
+            "Bananawani"
+          ],
+          "correct": 0,
+          "note": "Fifty years of waiting for a crew that never came back."
+        },
+        {
+          "q": "Who is Usopp's father?",
+          "a": [
+            "Yasopp, a sniper in Shanks' crew",
+            "A Marine admiral",
+            "The mayor of Syrup Village",
+            "Nobody knows"
+          ],
+          "correct": 0,
+          "note": "Which is why Shanks recognises the name instantly."
+        },
+        {
+          "q": "What does Robin's Devil Fruit let her do?",
+          "a": [
+            "Sprout copies of her limbs on any surface",
+            "Read minds",
+            "Turn into flowers",
+            "Become invisible"
+          ],
+          "correct": 0,
+          "note": "Hana Hana no Mi. Terrifying once she stops holding back."
+        },
+        {
+          "q": "What is Brook?",
+          "a": [
+            "A skeleton brought back by the Revive-Revive Fruit",
+            "A ghost",
+            "A zombie made by Moria",
+            "A cyborg"
+          ],
+          "correct": 0,
+          "note": "His soul took a year to find the body again, by which point it was bones."
+        },
+        {
+          "q": "Who was Buggy's crewmate before he was a clown captain?",
+          "a": [
+            "Shanks — they both served on Roger's ship",
+            "Whitebeard",
+            "Mihawk",
+            "Crocodile"
+          ],
+          "correct": 0,
+          "note": "Cabin boys together, which nobody believes when he says it."
+        },
+        {
+          "q": "What happened to Shanks' arm?",
+          "a": [
+            "A Sea King took it saving Luffy",
+            "Whitebeard took it",
+            "He lost it to Mihawk",
+            "It was never explained"
+          ],
+          "correct": 0,
+          "note": "He called it a small price and meant it."
+        },
+        {
+          "q": "What is the Straw Hats' second ship called?",
+          "a": [
+            "Thousand Sunny",
+            "Going Merry",
+            "Oro Jackson",
+            "Red Force"
+          ],
+          "correct": 0,
+          "note": "Built by Franky from Adam Wood."
+        },
+        {
+          "q": "Who is Dracule Mihawk?",
+          "a": [
+            "The world's greatest swordsman",
+            "A Marine admiral",
+            "A Yonko",
+            "Zoro's old master"
+          ],
+          "correct": 0,
+          "note": "And a Warlord, until the system collapsed."
+        },
+        {
+          "q": "What is Luffy's grandfather famous for?",
+          "a": [
+            "Being the Marine hero who cornered Gol D. Roger",
+            "Being a pirate king",
+            "Founding the Revolutionary Army",
+            "Inventing Haki"
+          ],
+          "correct": 0,
+          "note": "Garp the Fist, and he wanted Luffy to be a Marine."
+        }
       ]
     },
     "medium": {
@@ -29,22 +189,182 @@
       "blurb": "Skypiea, Water 7, Enies Lobby, Impel Down and Marineford.",
       "spoiler": "Spoilers up to and including the war at Marineford.",
       "questions": [
-        { "q": "What is Ohara?", "a": ["The island of scholars wiped out by a Buster Call", "Robin's home village on Water 7", "The Revolutionary Army's base", "The Marine training island"], "correct": 0, "note": "For reading Poneglyphs. Robin was eight." },
-        { "q": "Which animal is Rob Lucci's Devil Fruit model?", "a": ["A leopard", "An ox", "A wolf", "A giraffe"], "correct": 0, "note": "Kaku got the giraffe, to his own disgust." },
-        { "q": "Which division did Ace command under Whitebeard?", "a": ["The 2nd", "The 1st", "The 3rd", "The 16th"], "correct": 0, "note": "He came to kill Whitebeard and stayed for four years." },
-        { "q": "Who gets Luffy out of Impel Down at the cost of staying behind?", "a": ["Bon Clay", "Ivankov", "Jinbe", "Crocodile"], "correct": 0, "note": "He holds the gate open from the wrong side of it." },
-        { "q": "What does Emporio Ivankov's fruit control?", "a": ["Hormones", "Gravity", "Memory", "Poison"], "correct": 0, "note": "Which is how he keeps Luffy alive after Magellan's poison." },
-        { "q": "What is Aokiji's real name?", "a": ["Kuzan", "Sakazuki", "Borsalino", "Issho"], "correct": 0, "note": "The admirals go by colour names on duty." },
-        { "q": "What caused the drought that started Alabasta's rebellion?", "a": ["Crocodile stealing the rain with Dance Powder", "A curse", "Marine blockades", "A Devil Fruit user in the palace"], "correct": 0, "note": "Blame the king, wait for the country to fall into your hands." },
-        { "q": "What is the Knock-Up Stream?", "a": ["A current that fires ships into the sky", "A storm on the Grand Line", "The entrance to Fish-Man Island", "A Marine weapon"], "correct": 0, "note": "The only way up to Skypiea, and it is roughly as safe as it sounds." },
-        { "q": "What was the city of gold on Skypiea originally called?", "a": ["Shandora", "Upper Yard", "Jaya", "Angel Island"], "correct": 0, "note": "It fell from the sea four hundred years ago, along with half of Jaya." },
-        { "q": "Who sacrifices themselves to bring Gaara— sorry, who died to save Robin's escape at Enies Lobby?", "a": ["Nobody — the whole crew got out", "Franky", "Sogeking", "The Going Merry's crew"], "correct": 0, "note": "The ship did the dying, which was worse." },
-        { "q": "Which Straw Hat declares war on the World Government by burning its flag?", "a": ["Sogeking, on Usopp's orders", "Luffy", "Zoro", "Franky"], "correct": 0, "note": "A sniper on a rooftop, and the shot everyone remembers." },
-        { "q": "What is Bartholomew Kuma's official title at Sabaody?", "a": ["One of the Seven Warlords of the Sea", "A Marine vice admiral", "A Yonko commander", "A CP9 agent"], "correct": 0, "note": "And a weapon the government was already rebuilding." },
-        { "q": "Who kills Ace at Marineford?", "a": ["Akainu", "Kizaru", "Blackbeard", "Sengoku"], "correct": 0, "note": "Through the chest, aimed at Luffy." },
-        { "q": "What did Blackbeard do that broke the rules of Devil Fruits?", "a": ["He took a second one from Whitebeard", "He ate two at once", "He gave his to someone else", "He removed his own"], "correct": 0, "note": "Nobody has explained how his body survives it." },
-        { "q": "Who was the previous holder of the title Fleet Admiral before Akainu?", "a": ["Sengoku", "Garp", "Kong", "Tsuru"], "correct": 0, "note": "He resigned after the war rather than serve the new order." },
-        { "q": "What is Jinbe?", "a": ["A former Warlord and a whale shark fish-man", "A Marine officer", "One of the Four Emperors", "A Revolutionary"], "correct": 0, "note": "He joins the crew far, far later than most people remember." }
+        {
+          "q": "What is Ohara?",
+          "a": [
+            "The island of scholars wiped out by a Buster Call",
+            "Robin's home village on Water 7",
+            "The Revolutionary Army's base",
+            "The Marine training island"
+          ],
+          "correct": 0,
+          "note": "For reading Poneglyphs. Robin was eight."
+        },
+        {
+          "q": "Which animal is Rob Lucci's Devil Fruit model?",
+          "a": [
+            "A leopard",
+            "An ox",
+            "A wolf",
+            "A giraffe"
+          ],
+          "correct": 0,
+          "note": "Kaku got the giraffe, to his own disgust."
+        },
+        {
+          "q": "Which division did Ace command under Whitebeard?",
+          "a": [
+            "The 2nd",
+            "The 1st",
+            "The 3rd",
+            "The 16th"
+          ],
+          "correct": 0,
+          "note": "He came to kill Whitebeard and stayed for four years."
+        },
+        {
+          "q": "Who gets Luffy out of Impel Down at the cost of staying behind?",
+          "a": [
+            "Bon Clay",
+            "Ivankov",
+            "Jinbe",
+            "Crocodile"
+          ],
+          "correct": 0,
+          "note": "He holds the gate open from the wrong side of it."
+        },
+        {
+          "q": "What does Emporio Ivankov's fruit control?",
+          "a": [
+            "Hormones",
+            "Gravity",
+            "Memory",
+            "Poison"
+          ],
+          "correct": 0,
+          "note": "Which is how he keeps Luffy alive after Magellan's poison."
+        },
+        {
+          "q": "What is Aokiji's real name?",
+          "a": [
+            "Kuzan",
+            "Sakazuki",
+            "Borsalino",
+            "Issho"
+          ],
+          "correct": 0,
+          "note": "The admirals go by colour names on duty."
+        },
+        {
+          "q": "What caused the drought that started Alabasta's rebellion?",
+          "a": [
+            "Crocodile stealing the rain with Dance Powder",
+            "A curse",
+            "Marine blockades",
+            "A Devil Fruit user in the palace"
+          ],
+          "correct": 0,
+          "note": "Blame the king, wait for the country to fall into your hands."
+        },
+        {
+          "q": "What is the Knock-Up Stream?",
+          "a": [
+            "A current that fires ships into the sky",
+            "A storm on the Grand Line",
+            "The entrance to Fish-Man Island",
+            "A Marine weapon"
+          ],
+          "correct": 0,
+          "note": "The only way up to Skypiea, and it is roughly as safe as it sounds."
+        },
+        {
+          "q": "What was the city of gold on Skypiea originally called?",
+          "a": [
+            "Shandora",
+            "Upper Yard",
+            "Jaya",
+            "Angel Island"
+          ],
+          "correct": 0,
+          "note": "It fell from the sea four hundred years ago, along with half of Jaya."
+        },
+        {
+          "q": "What did the Straw Hats lose at the end of Enies Lobby?",
+          "a": [
+            "The Going Merry",
+            "Robin",
+            "Franky's workshop",
+            "Their bounties"
+          ],
+          "correct": 0,
+          "note": "The ship sailed itself in to save them, and then said goodbye."
+        },
+        {
+          "q": "Which Straw Hat declares war on the World Government by burning its flag?",
+          "a": [
+            "Sogeking, on Usopp's orders",
+            "Luffy",
+            "Zoro",
+            "Franky"
+          ],
+          "correct": 0,
+          "note": "A sniper on a rooftop, and the shot everyone remembers."
+        },
+        {
+          "q": "What is Bartholomew Kuma's official title at Sabaody?",
+          "a": [
+            "One of the Seven Warlords of the Sea",
+            "A Marine vice admiral",
+            "A Yonko commander",
+            "A CP9 agent"
+          ],
+          "correct": 0,
+          "note": "And a weapon the government was already rebuilding."
+        },
+        {
+          "q": "Who kills Ace at Marineford?",
+          "a": [
+            "Akainu",
+            "Kizaru",
+            "Blackbeard",
+            "Sengoku"
+          ],
+          "correct": 0,
+          "note": "Through the chest, aimed at Luffy."
+        },
+        {
+          "q": "What did Blackbeard do that broke the rules of Devil Fruits?",
+          "a": [
+            "He took a second one from Whitebeard",
+            "He ate two at once",
+            "He gave his to someone else",
+            "He removed his own"
+          ],
+          "correct": 0,
+          "note": "Nobody has explained how his body survives it."
+        },
+        {
+          "q": "Who was the previous holder of the title Fleet Admiral before Akainu?",
+          "a": [
+            "Sengoku",
+            "Garp",
+            "Kong",
+            "Tsuru"
+          ],
+          "correct": 0,
+          "note": "He resigned after the war rather than serve the new order."
+        },
+        {
+          "q": "What is Jinbe?",
+          "a": [
+            "A former Warlord and a whale shark fish-man",
+            "A Marine officer",
+            "One of the Four Emperors",
+            "A Revolutionary"
+          ],
+          "correct": 0,
+          "note": "He joins the crew far, far later than most people remember."
+        }
       ]
     },
     "hard": {
@@ -52,22 +372,182 @@
       "blurb": "Wano, Egghead, and the parts the story took twenty years to admit.",
       "spoiler": "Heavy spoilers, right up to the current arc.",
       "questions": [
-        { "q": "Which sword did Hiyori give Zoro in Wano?", "a": ["Enma", "Shusui", "Ame no Habakiri", "Sandai Kitetsu"], "correct": 0, "note": "Oden's blade. It drains its wielder's Haki unless they force it not to." },
-        { "q": "What was the name of Gol D. Roger's ship?", "a": ["Oro Jackson", "Moby Dick", "Red Force", "Thousand Sunny"], "correct": 0, "note": "Built by Tom, the fish-man who was executed for it." },
-        { "q": "Who sits on the Empty Throne in Mariejois?", "a": ["Im", "The Five Elders", "Nobody, by law", "The Gorosei's founder"], "correct": 0, "note": "Above the Five Elders, and unknown to the world." },
-        { "q": "What does Jewelry Bonney's Devil Fruit do?", "a": ["Changes ages, including her own", "Copies faces", "Creates food", "Reads futures"], "correct": 0, "note": "Toshi Toshi no Mi, and the reason for everything she does." },
-        { "q": "What is Luffy's Gear 5 an example of?", "a": ["An awakened Devil Fruit", "A new Haki type", "A Vegapunk drug", "A Zoan hybrid form"], "correct": 0, "note": "Rubber applied to the world rather than the body." },
-        { "q": "What is Trafalgar Law's full name?", "a": ["Trafalgar D. Water Law", "Trafalgar Law D.", "Trafalgar Water Law", "Trafalgar D. Law"], "correct": 0, "note": "He hid the D. for most of his life." },
-        { "q": "Who leads the Revolutionary Army?", "a": ["Monkey D. Dragon", "Sabo", "Emporio Ivankov", "Kuma"], "correct": 0, "note": "Luffy's father, which Luffy learns from Garp shouting it in public." },
-        { "q": "Where was Gol D. Roger executed?", "a": ["Loguetown", "Marineford", "Mariejois", "Impel Down"], "correct": 0, "note": "The town where Luffy is born as a story and Roger ends as one." },
-        { "q": "What kind of Devil Fruit is Katakuri's mochi?", "a": ["A Special Paramecia", "A Logia", "An Ancient Zoan", "A Mythical Zoan"], "correct": 0, "note": "It behaves like a Logia, which is exactly why the distinction matters." },
-        { "q": "What is Benn Beckman's role?", "a": ["First mate of the Red-Haired Pirates", "Roger's navigator", "A Marine spy", "Shanks' brother"], "correct": 0, "note": "The man Kizaru backed away from without a fight." },
-        { "q": "What is kept in the treasure room of Mariejois?", "a": ["A giant straw hat", "The One Piece", "An ancient weapon", "The last Poneglyph"], "correct": 0, "note": "Seen for one panel, and the fandom has not recovered." },
-        { "q": "What happened to Kuma before Sabaody?", "a": ["He was converted step by step into a Pacifista", "He retired", "He was imprisoned", "He joined the Marines"], "correct": 0, "note": "He volunteered, and asked for one thing in return." },
-        { "q": "Which Straw Hat was raised by mountain bandits alongside Luffy?", "a": ["None — that was Ace and Sabo", "Zoro", "Usopp", "Sabo, who is not a Straw Hat"], "correct": 0, "note": "Dadan's hut, three brothers, one sake cup." },
-        { "q": "What is the name of Kaido's daughter?", "a": ["Yamato", "Hiyori", "Ulti", "Black Maria"], "correct": 0, "note": "Who has called himself Oden since childhood." },
-        { "q": "What did Vegapunk broadcast to the world?", "a": ["The truth about the Void Century and the sinking of the world", "The location of the One Piece", "The Marines' crimes", "His own death"], "correct": 0, "note": "Recorded to play only after he died." },
-        { "q": "How many Yonko were there when Luffy entered Wano?", "a": ["Four: Kaido, Big Mom, Blackbeard and Shanks", "Three", "Five", "Two"], "correct": 0, "note": "Two of them were on the same island, which had never happened before." }
+        {
+          "q": "Which sword did Hiyori give Zoro in Wano?",
+          "a": [
+            "Enma",
+            "Shusui",
+            "Ame no Habakiri",
+            "Sandai Kitetsu"
+          ],
+          "correct": 0,
+          "note": "Oden's blade. It drains its wielder's Haki unless they force it not to."
+        },
+        {
+          "q": "What was the name of Gol D. Roger's ship?",
+          "a": [
+            "Oro Jackson",
+            "Moby Dick",
+            "Red Force",
+            "Thousand Sunny"
+          ],
+          "correct": 0,
+          "note": "Built by Tom, the fish-man who was executed for it."
+        },
+        {
+          "q": "Who sits on the Empty Throne in Mariejois?",
+          "a": [
+            "Im",
+            "The Five Elders",
+            "Nobody, by law",
+            "The Gorosei's founder"
+          ],
+          "correct": 0,
+          "note": "Above the Five Elders, and unknown to the world."
+        },
+        {
+          "q": "What does Jewelry Bonney's Devil Fruit do?",
+          "a": [
+            "Changes ages, including her own",
+            "Copies faces",
+            "Creates food",
+            "Reads futures"
+          ],
+          "correct": 0,
+          "note": "Toshi Toshi no Mi, and the reason for everything she does."
+        },
+        {
+          "q": "What is Luffy's Gear 5 an example of?",
+          "a": [
+            "An awakened Devil Fruit",
+            "A new Haki type",
+            "A Vegapunk drug",
+            "A Zoan hybrid form"
+          ],
+          "correct": 0,
+          "note": "Rubber applied to the world rather than the body."
+        },
+        {
+          "q": "What is Trafalgar Law's full name?",
+          "a": [
+            "Trafalgar D. Water Law",
+            "Trafalgar Law D.",
+            "Trafalgar Water Law",
+            "Trafalgar D. Law"
+          ],
+          "correct": 0,
+          "note": "He hid the D. for most of his life."
+        },
+        {
+          "q": "Who leads the Revolutionary Army?",
+          "a": [
+            "Monkey D. Dragon",
+            "Sabo",
+            "Emporio Ivankov",
+            "Kuma"
+          ],
+          "correct": 0,
+          "note": "Luffy's father, which Luffy learns from Garp shouting it in public."
+        },
+        {
+          "q": "Where was Gol D. Roger executed?",
+          "a": [
+            "Loguetown",
+            "Marineford",
+            "Mariejois",
+            "Impel Down"
+          ],
+          "correct": 0,
+          "note": "The town where Luffy is born as a story and Roger ends as one."
+        },
+        {
+          "q": "What kind of Devil Fruit is Katakuri's mochi?",
+          "a": [
+            "A Special Paramecia",
+            "A Logia",
+            "An Ancient Zoan",
+            "A Mythical Zoan"
+          ],
+          "correct": 0,
+          "note": "It behaves like a Logia, which is exactly why the distinction matters."
+        },
+        {
+          "q": "What is Benn Beckman's role?",
+          "a": [
+            "First mate of the Red-Haired Pirates",
+            "Roger's navigator",
+            "A Marine spy",
+            "Shanks' brother"
+          ],
+          "correct": 0,
+          "note": "The man Kizaru backed away from without a fight."
+        },
+        {
+          "q": "What is kept in the treasure room of Mariejois?",
+          "a": [
+            "A giant straw hat",
+            "The One Piece",
+            "An ancient weapon",
+            "The last Poneglyph"
+          ],
+          "correct": 0,
+          "note": "Seen for one panel, and the fandom has not recovered."
+        },
+        {
+          "q": "What happened to Kuma before Sabaody?",
+          "a": [
+            "He was converted step by step into a Pacifista",
+            "He retired",
+            "He was imprisoned",
+            "He joined the Marines"
+          ],
+          "correct": 0,
+          "note": "He volunteered, and asked for one thing in return."
+        },
+        {
+          "q": "Which Straw Hat was raised by mountain bandits alongside Luffy?",
+          "a": [
+            "None — that was Ace and Sabo",
+            "Zoro",
+            "Usopp",
+            "Sabo, who is not a Straw Hat"
+          ],
+          "correct": 0,
+          "note": "Dadan's hut, three brothers, one sake cup."
+        },
+        {
+          "q": "What is the name of Kaido's daughter?",
+          "a": [
+            "Yamato",
+            "Hiyori",
+            "Ulti",
+            "Black Maria"
+          ],
+          "correct": 0,
+          "note": "Who has called himself Oden since childhood."
+        },
+        {
+          "q": "What did Vegapunk broadcast to the world?",
+          "a": [
+            "The truth about the Void Century and the sinking of the world",
+            "The location of the One Piece",
+            "The Marines' crimes",
+            "His own death"
+          ],
+          "correct": 0,
+          "note": "Recorded to play only after he died."
+        },
+        {
+          "q": "How many Yonko were there when Luffy entered Wano?",
+          "a": [
+            "Four: Kaido, Big Mom, Blackbeard and Shanks",
+            "Three",
+            "Five",
+            "Two"
+          ],
+          "correct": 0,
+          "note": "Two of them were on the same island, which had never happened before."
+        }
       ]
     }
   }

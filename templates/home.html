@@ -1,33 +1,44 @@
 <section class="hero">
-  <div class="hero__panel">
-    <span class="kicker">CHAPTER 001</span>
-    <h1 class="hero__title">RASTEGAR</h1>
+  <div class="hero__inner">
+    <span class="kicker">Rastegar &middot; a playground on the internet</span>
+    <h1 class="hero__title">Built by hand,<br>one project at a time</h1>
     <p class="hero__tagline">{{tagline}}</p>
     <div class="hero__cta">
       <a class="btn" href="/games/">Play something</a>
       <a class="btn btn--ghost" href="/devlog/">Read the devlog</a>
     </div>
   </div>
-  <div class="hero__art" aria-hidden="true">
-    <span class="speedlines speedlines--hero"></span>
-    <span class="hero__burst"><span>PLAY</span></span>
+</section>
+
+<section class="section wrap">
+  <div class="prose measure">{{intro}}</div>
+</section>
+
+<section class="section wrap">
+  <div class="section-head">
+    <span class="kicker">The shelf</span>
+    <h2>Everything here runs in this browser</h2>
+    <hr class="rule">
+    <p>No installs, no accounts, no ads. Pick one and go.</p>
+  </div>
+  <div class="grid grid--games">{{game_cards}}</div>
+  <a class="more more--block" href="/games/">All games</a>
+</section>
+
+<section class="band full">
+  <div class="band__inner">
+    <span class="kicker">The devlog</span>
+    <h2>I am building an app so my friends can play tag for a month</h2>
+    <p>It is called TAG. GPS decides who caught whom, the rules live in the database, and whoever is <em>it</em> when August ends carries it for a year.</p>
+    <a class="btn btn--ghost" href="/devlog/">Read the log</a>
   </div>
 </section>
 
-<section class="section">
-  <h2 class="section__title"><span>WHO</span></h2>
-  <div class="panel panel--intro prose">{{intro}}</div>
-</section>
-
-<section class="section">
-  <h2 class="section__title"><span>THE SHELF</span></h2>
-  <div class="grid grid--games">{{game_cards}}</div>
-  <a class="more more--block" href="/games/">All games <span aria-hidden="true">&rarr;</span></a>
-</section>
-
-<section class="section">
-  <h2 class="section__title"><span>LATEST DEVLOG</span></h2>
+<section class="section wrap">
+  <div class="section-head">
+    <span class="kicker">Latest entry</span>
+  </div>
   {{latest_post}}
-  <div class="panel panel--status prose">{{status}}</div>
-  <a class="more more--block" href="/devlog/">Every entry <span aria-hidden="true">&rarr;</span></a>
+  <div class="panel panel--status prose measure">{{status}}</div>
+  <a class="more more--block" href="/devlog/">Every entry</a>
 </section>

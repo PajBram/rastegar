@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrated dawn over water">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#1b4a86"/>
+      <stop offset="34%" stop-color="#4f92c9"/>
+      <stop offset="58%" stop-color="#a8d3e8"/>
+      <stop offset="74%" stop-color="#f4d3ac"/>
+      <stop offset="86%" stop-color="#f0a878"/>
+      <stop offset="100%" stop-color="#e08a6a"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#e79a72"/>
+      <stop offset="18%" stop-color="#a9718c"/>
+      <stop offset="60%" stop-color="#3f4f86"/>
+      <stop offset="100%" stop-color="#222f5c"/>
+    </linearGradient>
+    <radialGradient id="sunglow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff6d8" stop-opacity="1"/>
+      <stop offset="45%" stop-color="#ffd9a0" stop-opacity=".55"/>
+      <stop offset="100%" stop-color="#ffc98c" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="hillFar" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#6f86b8"/>
+      <stop offset="100%" stop-color="#54689a"/>
+    </linearGradient>
+    <linearGradient id="hillNear" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#2f3a68"/>
+      <stop offset="100%" stop-color="#1d2547"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#sky)"/>
+
+  <!-- clouds: soft bands with flat undersides -->
+  <g opacity=".85" fill="#ffffff">
+    <ellipse cx="300" cy="210" rx="210" ry="46" opacity=".55"/>
+    <ellipse cx="380" cy="188" rx="140" ry="38" opacity=".5"/>
+    <ellipse cx="1180" cy="150" rx="240" ry="44" opacity=".45"/>
+    <ellipse cx="1080" cy="132" rx="150" ry="34" opacity=".4"/>
+    <ellipse cx="760" cy="286" rx="300" ry="34" opacity=".3"/>
+  </g>
+  <g fill="#ffd9b0" opacity=".5">
+    <ellipse cx="620" cy="392" rx="360" ry="26"/>
+    <ellipse cx="1240" cy="368" rx="260" ry="22"/>
+  </g>
+
+  <!-- sun low over the horizon -->
+  <circle cx="1010" cy="520" r="300" fill="url(#sunglow)"/>
+  <circle cx="1010" cy="520" r="74" fill="#fff3d0"/>
+
+  <!-- distant hills -->
+  <path d="M0 520 L190 452 L330 512 L470 438 L610 516 L760 470 L900 522 L1040 462 L1200 520 L1360 476 L1600 528 L1600 560 L0 560 Z" fill="url(#hillFar)" opacity=".85"/>
+  <!-- near headland -->
+  <path d="M0 574 L150 528 L300 566 L430 520 L560 570 L700 546 L860 578 L1010 540 L1180 580 L1330 548 L1600 586 L1600 620 L0 620 Z" fill="url(#hillNear)"/>
+
+  <!-- water -->
+  <rect y="620" width="1600" height="280" fill="url(#water)"/>
+  <!-- reflection of the sun, broken into ripples -->
+  <g fill="#ffe6bd" opacity=".7">
+    <rect x="960" y="640" width="100" height="6" rx="3"/>
+    <rect x="940" y="662" width="140" height="5" rx="2.5"/>
+    <rect x="975" y="684" width="70" height="5" rx="2.5"/>
+    <rect x="930" y="708" width="160" height="4" rx="2"/>
+    <rect x="985" y="732" width="50" height="4" rx="2"/>
+    <rect x="915" y="760" width="190" height="4" rx="2"/>
+  </g>
+  <g fill="#ffffff" opacity=".18">
+    <rect x="120" y="668" width="220" height="4" rx="2"/>
+    <rect x="380" y="700" width="300" height="3" rx="1.5"/>
+    <rect x="1180" y="682" width="260" height="4" rx="2"/>
+    <rect x="240" y="742" width="420" height="3" rx="1.5"/>
+    <rect x="1080" y="758" width="320" height="3" rx="1.5"/>
+  </g>
+
+  <!-- birds -->
+  <g stroke="#20305c" stroke-width="4" fill="none" stroke-linecap="round" opacity=".8">
+    <path d="M300 262 q14 -12 28 0 q14 -12 28 0"/>
+    <path d="M372 300 q10 -9 20 0 q10 -9 20 0"/>
+    <path d="M248 322 q8 -7 16 0 q8 -7 16 0"/>
+  </g>
+</svg>

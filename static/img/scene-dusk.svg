@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 700" preserveAspectRatio="xMidYMid slice" role="img" aria-label="Illustrated rooftops at dusk">
+  <defs>
+    <linearGradient id="dusk" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#221a44"/>
+      <stop offset="30%" stop-color="#5b3a72"/>
+      <stop offset="58%" stop-color="#b8617a"/>
+      <stop offset="78%" stop-color="#eb9a72"/>
+      <stop offset="100%" stop-color="#f6c98d"/>
+    </linearGradient>
+    <radialGradient id="moonglow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fffbe9" stop-opacity=".9"/>
+      <stop offset="60%" stop-color="#ffe9c0" stop-opacity=".25"/>
+      <stop offset="100%" stop-color="#ffe9c0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="700" fill="url(#dusk)"/>
+
+  <circle cx="330" cy="200" r="190" fill="url(#moonglow)"/>
+  <circle cx="330" cy="200" r="58" fill="#fff6dd"/>
+
+  <g fill="#ffffff" opacity=".08">
+    <circle cx="900" cy="90" r="3"/><circle cx="1180" cy="150" r="2.5"/><circle cx="1420" cy="80" r="3"/>
+    <circle cx="640" cy="120" r="2.5"/><circle cx="1050" cy="52" r="2"/><circle cx="1320" cy="210" r="2.5"/>
+  </g>
+
+  <g fill="#ffd7ad" opacity=".35">
+    <ellipse cx="1150" cy="330" rx="330" ry="26"/>
+    <ellipse cx="520" cy="366" rx="280" ry="20"/>
+  </g>
+
+  <!-- power lines and rooftops, the shot every anime opens on -->
+  <g fill="#2a1f3d">
+    <path d="M0 520 h180 v-60 h120 v60 h90 v-104 h74 v104 h150 v-46 h108 v46 h130 v-88 h96 v88 h180 v-58 h128 v58 h344 v180 H0 Z"/>
+  </g>
+  <g stroke="#2a1f3d" stroke-width="5" fill="none" opacity=".9">
+    <path d="M180 470 C 500 530, 900 430, 1600 500"/>
+    <path d="M180 494 C 520 556, 940 456, 1600 526"/>
+  </g>
+  <g fill="#2a1f3d">
+    <rect x="168" y="404" width="12" height="180"/>
+    <rect x="140" y="428" width="68" height="9"/>
+    <rect x="1128" y="392" width="12" height="190"/>
+    <rect x="1100" y="418" width="68" height="9"/>
+  </g>
+  <g stroke="#2a1f3d" stroke-width="4" fill="none" stroke-linecap="round" opacity=".85">
+    <path d="M760 250 q13 -11 26 0 q13 -11 26 0"/>
+    <path d="M840 286 q10 -8 20 0 q10 -8 20 0"/>
+  </g>
+</svg>

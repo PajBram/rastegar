@@ -1,10 +1,13 @@
-<section class="pagehead">
-  <h1 class="pagehead__title">DEVLOG</h1>
+<header class="pagehead">
+  <span class="kicker">Progress reports</span>
+  <h1 class="pagehead__title">Devlog</h1>
   <p class="pagehead__sub">I am building an iOS app called TAG. This is the log: what got built, what broke, what I decided and why.</p>
+</header>
+
+<section class="section section--tight wrap">
+  <div class="panel panel--status prose measure">{{status}}</div>
 </section>
 
-<section class="section">
-  <div class="panel panel--status prose">{{status}}</div>
+<section class="section wrap">
+  <div class="feed">{{posts}}</div>
 </section>
-
-<section class="section feed">{{posts}}</section>

@@ -1,27 +1,30 @@
-<section class="pagehead">
-  <h1 class="pagehead__title">GUESTBOOK</h1>
+<header class="pagehead">
+  <span class="kicker">Leave a mark</span>
+  <h1 class="pagehead__title">Guestbook</h1>
   <p class="pagehead__sub">Say hi. Suggest a game. Argue about Bleach.</p>
-</section>
+</header>
 
-<section class="section grid grid--split">
-  <div class="panel panel--form">
-    <form id="guestbook-form" autocomplete="off" novalidate>
-      <label for="gb-name">Name</label>
-      <input id="gb-name" name="name" type="text" minlength="2" maxlength="24" required placeholder="Who goes there">
-      <label for="gb-message">Message</label>
-      <textarea id="gb-message" name="message" minlength="2" maxlength="500" rows="5" required placeholder="Max 500 characters"></textarea>
-      <p class="counter"><span id="gb-count">0</span>/500</p>
-      <div class="hp" aria-hidden="true">
-        <label for="gb-website">Website</label>
-        <input id="gb-website" name="website" type="text" tabindex="-1" autocomplete="off">
-      </div>
-      <button class="btn" type="submit">Sign the wall</button>
-      <p class="form-status" id="gb-status" role="status"></p>
-    </form>
-  </div>
-  <div class="panel panel--entries">
-    <h3>On the wall</h3>
-    <div id="guestbook-entries"><p class="scoreboard__empty">Loading&hellip;</p></div>
+<section class="section section--tight wrap">
+  <div class="grid grid--split">
+    <div class="panel panel--form">
+      <form id="guestbook-form" autocomplete="off" novalidate>
+        <label for="gb-name">Name</label>
+        <input id="gb-name" name="name" type="text" minlength="2" maxlength="24" required placeholder="Who goes there">
+        <label for="gb-message">Message</label>
+        <textarea id="gb-message" name="message" minlength="2" maxlength="500" rows="5" required placeholder="Max 500 characters"></textarea>
+        <p class="counter"><span id="gb-count">0</span>/500</p>
+        <div class="hp" aria-hidden="true">
+          <label for="gb-website">Website</label>
+          <input id="gb-website" name="website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+        <button class="btn" type="submit">Sign the wall</button>
+        <p class="form-status" id="gb-status" role="status"></p>
+      </form>
+    </div>
+    <div class="panel panel--entries">
+      <span class="kicker">On the wall</span>
+      <div id="guestbook-entries"><p class="scoreboard__empty">Loading&hellip;</p></div>
+    </div>
   </div>
 </section>
 
