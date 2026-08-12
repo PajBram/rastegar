@@ -1,0 +1,16 @@
+{
+  "slug": "panel-dash",
+  "title": "Panel Dash",
+  "kind": "ARCADE",
+  "order": 4,
+  "tilt": "a",
+  "glyph": "&#9646;",
+  "tagline": "Fall through the page. Miss the panels, catch the red.",
+  "scripts": ["/static/js/arcade.js", "/static/games/panel-dash.js"],
+  "controls": [
+    "`Left` and `Right` arrow keys steer. Hold for a bigger lean.",
+    "On a phone: drag your thumb anywhere on the panel.",
+    "Black panels hurt. Red orbs are points. Speed climbs the longer you last."
+  ],
+  "about": "An endless fall down the gutter between manga panels. Steer around the black, sweep up the red.\n\nOrbs are worth more the faster you are going, and distance pays out on its own, so there is a real choice between playing it safe and diving for one more orb.\n\nOne run lasts as long as you do, which for most people is somewhere between thirty seconds and two minutes."
+}
