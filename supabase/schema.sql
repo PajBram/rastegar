@@ -26,7 +26,8 @@ insert into public.games (slug, title, max_score, max_rate, min_seconds) values
   ('one-piece-quiz', 'One Piece Quiz', 6000,   40, 20),
   ('naruto-quiz',    'Naruto Quiz',    6000,   40, 20),
   ('slash',          'Slash',          200000, 900, 5),
-  ('panel-dash',     'Panel Dash',     200000, 900, 5)
+  ('panel-dash',     'Panel Dash',     200000, 900, 5),
+  ('paj-says-survive', 'Paj Says Survive', 250000, 500, 10)
 on conflict (slug) do update
   set title = excluded.title,
       max_score = excluded.max_score,

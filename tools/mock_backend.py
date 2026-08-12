@@ -25,6 +25,7 @@ GAMES = {
     "naruto-quiz": {"max_score": 6000, "max_rate": 40, "min_seconds": 20},
     "slash": {"max_score": 200000, "max_rate": 900, "min_seconds": 5},
     "panel-dash": {"max_score": 200000, "max_rate": 900, "min_seconds": 5},
+    "paj-says-survive": {"max_score": 250000, "max_rate": 500, "min_seconds": 10},
 }
 
 RUNS = {}
