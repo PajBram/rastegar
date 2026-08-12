@@ -1,0 +1,18 @@
+{
+  "slug": "dragon-ball-quiz",
+  "title": "Dragon Ball Quiz",
+  "kind": "QUIZ",
+  "order": 4,
+  "tilt": "a",
+  "glyph": "&#9733;",
+  "tagline": "From a boy with a tail to gods who erase universes.",
+  "spoiler": "Spoiler warning: Medium covers all of Z. Hard covers Super, the films and the current manga.",
+  "script": "/static/js/quiz.js",
+  "data": { "bank": "/static/quizzes/dragon-ball.json" },
+  "controls": [
+    "Tap or click an answer.",
+    "Keys `1`-`4` pick an answer.",
+    "20 seconds per question. Answer fast for more points."
+  ],
+  "about": "Sixteen questions per difficulty, fifteen drawn at random each run.\n\n**Easy** is the original series and the Saiyans arriving. **Medium** runs Namek, the androids, Cell and Buu. **Hard** is Super and everything after — gods of destruction, Ultra Instinct, and the manga arcs the anime has not reached.\n\nThe original Dragon Ball is not one of the Big 3. It is the reason they exist."
+}

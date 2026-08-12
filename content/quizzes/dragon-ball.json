@@ -1,0 +1,74 @@
+{
+  "title": "Dragon Ball",
+  "difficulties": {
+    "easy": {
+      "label": "Easy",
+      "blurb": "Everything from the original series through the Saiyan arc.",
+      "spoiler": "Safe through early Dragon Ball Z.",
+      "questions": [
+        { "q": "How many Dragon Balls do you need to summon Shenron?", "a": ["Seven", "Five", "Four", "Ten"], "correct": 0, "note": "And then they scatter and turn to stone for a year." },
+        { "q": "What race is Goku?", "a": ["Saiyan", "Namekian", "Human", "Majin"], "correct": 0, "note": "Sent to Earth as an infant, and hit his head hard enough to forget the mission." },
+        { "q": "What is Goku's Saiyan birth name?", "a": ["Kakarot", "Bardock", "Raditz", "Turles"], "correct": 0, "note": "Vegeta refuses to call him anything else for about a decade." },
+        { "q": "Who is Goku's first martial arts master?", "a": ["Master Roshi", "King Kai", "Kami", "Korin"], "correct": 0, "note": "The Turtle Hermit, and the reason the Kamehameha exists." },
+        { "q": "What happens to a Saiyan with a tail who looks at a full moon?", "a": ["They turn into a giant ape", "They lose their power", "They fall asleep", "They can fly"], "correct": 0, "note": "The Oozaru, and they remember none of it afterwards." },
+        { "q": "Who destroyed Planet Vegeta?", "a": ["Frieza", "Cell", "King Cold", "Beerus"], "correct": 0, "note": "Because he was afraid of what the Saiyans might become." },
+        { "q": "Who is Goku's older brother?", "a": ["Raditz", "Nappa", "Turles", "Broly"], "correct": 0, "note": "He arrives to collect a soldier and finds a father." },
+        { "q": "What title does Vegeta insist on?", "a": ["Prince of all Saiyans", "King of the Saiyans", "Lord Vegeta", "Emperor"], "correct": 0, "note": "Of a planet that no longer exists." },
+        { "q": "Who is Goku's first son?", "a": ["Gohan", "Goten", "Trunks", "Krillin"], "correct": 0, "note": "Named after the grandfather who raised Goku." },
+        { "q": "Which technique does Goku learn from King Kai?", "a": ["The Spirit Bomb", "The Kamehameha", "Instant Transmission", "The Destructo Disc"], "correct": 0, "note": "Also the Kaio-ken. Both on a planet the size of a garden." },
+        { "q": "What colour does a Super Saiyan's hair turn?", "a": ["Gold", "Blue", "Silver", "Red"], "correct": 0, "note": "And the eyes go green." },
+        { "q": "Who does Piccolo train after Raditz?", "a": ["Gohan", "Goku", "Krillin", "Yamcha"], "correct": 0, "note": "It starts as kidnapping and ends as the most important relationship in the show." },
+        { "q": "What is Kami's job?", "a": ["Guardian of Earth", "King of the Saiyans", "Leader of the Namekians", "Judge of the dead"], "correct": 0, "note": "And he is the same being as Piccolo, split in two." },
+        { "q": "Who is Bulma looking for when she meets Goku?", "a": ["The Dragon Balls", "Master Roshi", "Her father", "A Saiyan"], "correct": 0, "note": "She built the radar that finds them." },
+        { "q": "What is the Spirit Bomb made from?", "a": ["Energy borrowed from everything alive nearby", "Goku's own energy", "Sunlight", "The Dragon Balls"], "correct": 0, "note": "Which is why it fails whenever nobody is listening." },
+        { "q": "Who is Goku's wife?", "a": ["Chi-Chi", "Bulma", "Videl", "Android 18"], "correct": 0, "note": "He agreed to marry her as a child without knowing what marriage was." }
+      ]
+    },
+    "medium": {
+      "label": "Medium",
+      "blurb": "Namek, the androids, Cell and Buu.",
+      "spoiler": "Spoilers through the end of Dragon Ball Z.",
+      "questions": [
+        { "q": "What finally pushes Goku into Super Saiyan on Namek?", "a": ["Frieza killing Krillin", "Frieza killing Vegeta", "Gohan being hurt", "Piccolo's death"], "correct": 0, "note": "The rage of a gentle heart, as the legend puts it." },
+        { "q": "Who does Future Trunks kill on arrival?", "a": ["Frieza and King Cold", "The androids", "Cell", "Vegeta"], "correct": 0, "note": "In about forty seconds, to establish exactly how bad the future is." },
+        { "q": "Which two androids does Cell need to become perfect?", "a": ["17 and 18", "16 and 17", "18 and 19", "19 and 20"], "correct": 0, "note": "He absorbs them through his tail." },
+        { "q": "Who actually defeats Cell?", "a": ["Gohan", "Goku", "Vegeta", "Mr. Satan"], "correct": 0, "note": "One-armed, and only after losing his temper completely." },
+        { "q": "How much time passes inside the Hyperbolic Time Chamber for one day outside?", "a": ["A year", "A month", "A week", "Ten years"], "correct": 0, "note": "And you can only use it so many times in a lifetime." },
+        { "q": "Who created Majin Buu?", "a": ["The wizard Bibidi", "Babidi", "Dr. Gero", "The Supreme Kai"], "correct": 0, "note": "Babidi is the son, and considerably less impressive." },
+        { "q": "What are the Namekian Dragon Balls' dragon called?", "a": ["Porunga", "Shenron", "Ultimate Shenron", "Dende"], "correct": 0, "note": "And he grants three wishes instead of one." },
+        { "q": "What kills Goku in Future Trunks' timeline?", "a": ["A heart virus", "The androids", "Frieza", "Cell"], "correct": 0, "note": "Which is why Trunks brings medicine as well as a warning." },
+        { "q": "Who does Vegeta let control him in the Buu arc?", "a": ["Babidi", "Buu", "Bibidi", "The Supreme Kai"], "correct": 0, "note": "Majin Vegeta, chasing one honest fight." },
+        { "q": "Which android refuses to fight and loves animals?", "a": ["16", "17", "18", "19"], "correct": 0, "note": "And his death is what finally breaks Gohan." },
+        { "q": "Who does Krillin marry?", "a": ["Android 18", "Bulma", "Chi-Chi", "Marron"], "correct": 0, "note": "After wishing away her self-destruct device." },
+        { "q": "What is the fusion of Goten and Trunks called?", "a": ["Gotenks", "Gogeta", "Vegito", "Trunten"], "correct": 0, "note": "The dance has to be perfect, which it very often is not." },
+        { "q": "Where does Goku learn Instant Transmission?", "a": ["On the planet Yardrat", "From King Kai", "On Namek", "In the Time Chamber"], "correct": 0, "note": "After the Namek explosion, while everyone assumed he was dead." },
+        { "q": "Who does Piccolo fuse with to fight Frieza?", "a": ["Nail", "Kami", "Dende", "Guru"], "correct": 0, "note": "And later with Kami, becoming whole for the first time." },
+        { "q": "Whose life does Mr. Satan genuinely save the world with?", "a": ["He talks the Earth into giving Goku energy", "He knocks out Buu", "He kills Babidi", "He revives Gohan"], "correct": 0, "note": "And befriending Buu was not nothing either." },
+        { "q": "What does the Potara earring fusion produce from Goku and Vegeta?", "a": ["Vegito", "Gogeta", "Gotenks", "Vegerot"], "correct": 0, "note": "The dance gives Gogeta. The earrings give Vegito." }
+      ]
+    },
+    "hard": {
+      "label": "Hard",
+      "blurb": "Gods of destruction, Ultra Instinct and everything after Z.",
+      "spoiler": "Spoilers for Super, the films and the ongoing manga.",
+      "questions": [
+        { "q": "What does the Super Saiyan God ritual require?", "a": ["Six righteous Saiyans lending their power to a seventh", "A wish on the Namekian balls", "Beerus's blessing", "Training on Yardrat"], "correct": 0, "note": "Which only works because Videl is pregnant." },
+        { "q": "Who is Whis?", "a": ["Beerus's attendant and martial arts teacher", "A God of Destruction", "The Omni-King", "A Supreme Kai"], "correct": 0, "note": "An angel, and comfortably stronger than the god he serves." },
+        { "q": "Who is Goku Black?", "a": ["Zamasu wearing Goku's body", "A dark clone of Goku", "Goku from another universe", "Bardock possessed"], "correct": 0, "note": "Swapped bodies using the Super Dragon Balls." },
+        { "q": "Which universe is Jiren from?", "a": ["11", "7", "6", "9"], "correct": 0, "note": "Pride Trooper, and the strongest mortal in the multiverse." },
+        { "q": "What is at stake in the Tournament of Power?", "a": ["The losing universes are erased", "Wishes on the Super Dragon Balls only", "The title of God of Destruction", "Nothing but pride"], "correct": 0, "note": "Zeno decided the rules on a whim, which is the horror of it." },
+        { "q": "What does Vegeta develop as an answer to Ultra Instinct?", "a": ["Ultra Ego", "Super Saiyan 4", "Perfected Blue", "God of Destruction Mode"], "correct": 0, "note": "It grows stronger the more damage he takes. Very him." },
+        { "q": "Who is Goku's father?", "a": ["Bardock", "Turles", "King Vegeta", "Paragus"], "correct": 0, "note": "A low-class soldier who saw one thing coming." },
+        { "q": "Which arc introduced Granolah?", "a": ["The Granolah the Survivor arc in the manga", "The Moro arc", "Super Hero", "The Tournament of Power"], "correct": 0, "note": "The last Cerealian, who wished to become the strongest in the universe." },
+        { "q": "What form does Gohan reach in Super Hero?", "a": ["Beast", "Ultimate", "Super Saiyan 4", "Blue"], "correct": 0, "note": "Triggered by Piccolo being beaten in front of him. It always is." },
+        { "q": "What is Frieza's gold form called?", "a": ["Golden Frieza", "Ultra Frieza", "Frieza Black", "Full Power Frieza"], "correct": 0, "note": "And later Black Frieza, after ten years in a time chamber." },
+        { "q": "Who is Zeno?", "a": ["The Omni-King, who rules all universes", "The head Supreme Kai", "Beerus's brother", "The strongest angel"], "correct": 0, "note": "A childlike being who can erase existence by accident." },
+        { "q": "What does Beerus's Hakai do?", "a": ["Erases the target from existence", "Reverses time", "Steals power", "Seals a soul"], "correct": 0, "note": "Vegeta learns a version of it, which is not supposed to be possible." },
+        { "q": "Who is Universe 6's Saiyan prodigy?", "a": ["Cabba", "Kale", "Caulifla", "Hit"], "correct": 0, "note": "And he is the one who teaches Vegeta something for once." },
+        { "q": "What is Hit's ability?", "a": ["Freezing time briefly", "Reading minds", "Copying techniques", "Absorbing ki"], "correct": 0, "note": "Time-skip, and it gets longer every time he uses it." },
+        { "q": "How is Broly's canon version introduced?", "a": ["In the 2018 film Dragon Ball Super: Broly", "In the Tournament of Power", "In the Moro arc", "In Dragon Ball GT"], "correct": 0, "note": "The earlier films are not part of the same story." },
+        { "q": "What happens to Universe 7 if it loses the Tournament of Power?", "a": ["It is erased, everyone in it included", "Beerus is replaced", "The Dragon Balls stop working", "Goku is exiled"], "correct": 0, "note": "Which is why Frieza is on the team at all." }
+      ]
+    }
+  }
+}

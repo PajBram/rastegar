@@ -1,0 +1,18 @@
+{
+  "slug": "bleach-quiz",
+  "title": "Bleach Quiz",
+  "kind": "QUIZ",
+  "order": 3,
+  "tilt": "c",
+  "glyph": "&#9784;",
+  "tagline": "Three difficulties, from Karakura Town to the Royal Realm.",
+  "spoiler": "Spoiler warning: Medium covers the Arrancar arc. Hard goes all the way through the Thousand-Year Blood War.",
+  "script": "/static/js/quiz.js",
+  "data": { "bank": "/static/quizzes/bleach.json" },
+  "controls": [
+    "Tap or click an answer.",
+    "Keys `1`-`4` pick an answer.",
+    "20 seconds per question. Answer fast for more points."
+  ],
+  "about": "Sixteen questions per difficulty, fifteen drawn at random each run.\n\n**Easy** is Karakura Town and the trip into Soul Society. **Medium** assumes you sat through Hueco Mundo. **Hard** is for people who watched the Thousand-Year Blood War and can still tell their Sternritter apart.\n\nSame engine as the other quizzes: speed and streaks are where the points are."
+}
