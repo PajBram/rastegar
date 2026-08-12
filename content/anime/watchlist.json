@@ -1,0 +1,64 @@
+{
+  "series": [
+    {
+      "title": "One Piece",
+      "kicker": "THE LONG ONE",
+      "quiz": "one-piece-quiz",
+      "tilt": "a",
+      "verdict": "The one I will still be watching when I am old. Nobody builds a world like Oda, and nobody else can make a goodbye to a *boat* land like that.",
+      "entries": [
+        { "title": "East Blue", "rating": 4, "status": "watched", "note": "Slow to start and worth every minute. Introduces the trick the whole series runs on: give a character one impossible dream and never let them drop it." },
+        { "title": "Arlong Park", "rating": 5, "status": "watched", "note": "The first time the show stops being funny for twenty minutes and proves it can hurt. Nami's arc is still the cleanest thing in it." },
+        { "title": "Alabasta", "rating": 4, "status": "watched", "note": "Big, hot, and the first proper war. Crocodile is the template every good One Piece villain has copied since." },
+        { "title": "Water 7 / Enies Lobby", "rating": 5, "status": "watched", "note": "My favourite stretch of anything, ever. It asks whether the crew actually wants each other, and then answers it with a burning flag." },
+        { "title": "Thriller Bark", "rating": 3, "status": "watched", "note": "Filler-shaped but not filler. Pays off enormously later, which is very One Piece of it." },
+        { "title": "Marineford", "rating": 5, "status": "watched", "note": "The one that broke the fandom. Watch it in as few sittings as you can manage." },
+        { "title": "Wano", "rating": 4, "status": "watched", "note": "Too long and I did not care. Some of the best-looking animation in television is in here." },
+        { "title": "Egghead", "rating": 4, "status": "watching", "note": "Keeping up week to week for the first time in my life. Different, tense, and very good." }
+      ]
+    },
+    {
+      "title": "Naruto",
+      "kicker": "THE ONE THAT GOT ME",
+      "quiz": "naruto-quiz",
+      "tilt": "b",
+      "verdict": "The first anime I was properly obsessed with. Uneven, overstuffed, and it still gets me every single time the flute music starts.",
+      "entries": [
+        { "title": "Land of Waves", "rating": 5, "status": "watched", "note": "Zabuza and Haku in twelve episodes. Better written than most of what follows and it is episode 6." },
+        { "title": "Chunin Exams", "rating": 5, "status": "watched", "note": "Peak tournament arc. Rock Lee versus Gaara is the fight I have rewatched most in my life." },
+        { "title": "Sasuke Retrieval", "rating": 5, "status": "watched", "note": "Five fights, five losses, one broken friendship. The end of Part 1 does not pretend anything is fine." },
+        { "title": "Shippuden: Rescue Gaara", "rating": 4, "status": "watched", "note": "Great return. Sets the tone that the Akatsuki are a problem you cannot punch your way out of." },
+        { "title": "Shippuden: Pain's Assault", "rating": 5, "status": "watched", "note": "The high point of Shippuden. Everything the show has been saying about cycles of revenge, said properly." },
+        { "title": "Shippuden: Fourth Great Ninja War", "rating": 2, "status": "watched", "note": "Enormous, exhausting, and full of filler. There is a great forty-episode arc buried in here somewhere." }
+      ]
+    },
+    {
+      "title": "Bleach",
+      "kicker": "THE COOL ONE",
+      "quiz": null,
+      "tilt": "c",
+      "verdict": "The best-looking of the three and the one with the least interest in explaining itself. *Thousand-Year Blood War* turned it from a fond memory into something I actively recommend.",
+      "entries": [
+        { "title": "Soul Society", "rating": 5, "status": "watched", "note": "Rescue arc, tournament structure, and a cast where the side characters are cooler than the hero. Aizen's reveal still works." },
+        { "title": "Arrancar / Hueco Mundo", "rating": 3, "status": "watched", "note": "Some incredible fights spread very thin. The pacing is where a lot of people quit, and I understand why." },
+        { "title": "Fullbring", "rating": 2, "status": "watched", "note": "The one everyone forgets. Interesting idea — a hero with nothing left — undercut by having to reset it." },
+        { "title": "Thousand-Year Blood War", "rating": 5, "status": "watching", "note": "A studio deciding to prove a point. Ruthless, gorgeous, and it finally lets the manga's ending look as good as it read." }
+      ]
+    },
+    {
+      "title": "Dragon Ball",
+      "kicker": "THE ONE THAT STARTED IT",
+      "quiz": null,
+      "tilt": "a",
+      "verdict": "Not one of the Big 3 — it is the reason the Big 3 exist. Half comedy adventure, half the loudest fights ever drawn.",
+      "entries": [
+        { "title": "Dragon Ball (original)", "rating": 4, "status": "watched", "note": "Funnier and weirder than people remember. Kid Goku hunting for magic balls is a completely different show and it rules." },
+        { "title": "Saiyan Saga", "rating": 5, "status": "watched", "note": "The turn. Twenty-something episodes where the good guys lose almost everything, and Piccolo gets the best moment in the franchise." },
+        { "title": "Frieza Saga", "rating": 5, "status": "watched", "note": "Yes, it takes forever. It is also the single most famous transformation in anime, and it earns it." },
+        { "title": "Cell Saga", "rating": 4, "status": "watched", "note": "Gohan's arc is the emotional peak of Z, and the ending genuinely commits to something." },
+        { "title": "Buu Saga", "rating": 3, "status": "watched", "note": "Silly in a way I did not appreciate as a kid and love now. Fusion dance included." },
+        { "title": "Dragon Ball Super", "rating": 3, "status": "watched", "note": "Wildly inconsistent. The Tournament of Power is worth the ticket on its own." }
+      ]
+    }
+  ]
+}

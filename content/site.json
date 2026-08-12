@@ -1,0 +1,23 @@
+{
+  "name": "rastegar.se",
+  "url": "https://rastegar.se",
+  "tagline": "Games, quizzes and one stubborn iOS app. Built by hand, one project at a time.",
+  "description": "Paj's playground: browser games, anime quizzes, and a devlog about building TAG, an iOS app for a month-long game of real-life tag.",
+  "nav": [
+    { "id": "home", "label": "Home", "url": "/" },
+    { "id": "games", "label": "Games", "url": "/games/" },
+    { "id": "devlog", "label": "Devlog", "url": "/devlog/" },
+    { "id": "anime", "label": "Anime", "url": "/anime/" },
+    { "id": "about", "label": "About", "url": "/about/" },
+    { "id": "guestbook", "label": "Guestbook", "url": "/guestbook/" }
+  ],
+  "links": [
+    { "label": "GitHub", "url": "https://github.com/PajBram" },
+    { "label": "Guestbook", "url": "/guestbook/" }
+  ],
+  "status": "### TAG — where the app is right now\n\n**Stage 1, shift A is done.** The app builds, launches, and counts down. It runs on local test data, has 15 tests covering season timing, and knows nothing about the network yet.\n\n**Next up:** shift B — wiring the app to Supabase so the countdown reads a real season instead of a hardcoded one, and putting the rule functions into Postgres.\n\n**Blocking:** Xcode is not installed on my machine yet. Everything else is written and waiting.",
+  "backend": {
+    "url": "",
+    "anonKey": ""
+  }
+}
