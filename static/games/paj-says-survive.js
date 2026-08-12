@@ -58,6 +58,9 @@
 
   function len(x, y) { return Math.sqrt(x * x + y * y); }
 
+  /** sound.js is optional: the game plays fine without it. */
+  function sfx(name) { if (window.Sound) window.Sound.play(name); }
+
   /** Shortest way round from a to b, so the figure never spins the long way. */
   function turn(a, b, amount) {
     var d = (b - a + Math.PI * 3) % TAU - Math.PI;
@@ -699,6 +702,7 @@
       });
     }
     game.recoil = 1;
+    sfx('shot');
   }
 
   function dash(game) {
@@ -721,7 +725,13 @@
     game.vy += Math.sin(a) * (260 + weight * 180);
     particles(game, game.px, game.py, 14, '#ff2d55', 210);
 
-    if (game.lives <= 0) game.over();
+    if (game.lives > 0) {
+      sfx('hurt');
+      return;
+    }
+    sfx('over');
+    if (window.Sound) window.Sound.music(0);
+    game.over();
   }
 
   function dropGems(game, e) {
@@ -744,6 +754,7 @@
 
     if (e.name === 'boss') {
       game.bosses += 1;
+      sfx('bossdown');
       game.shake = 0.9;
       game.flash = { color: '#fffdf8', life: 0.5 };
       game.banner = { text: 'DOWN', under: BOSS_NAME, life: 1.8, max: 1.8 };
@@ -752,6 +763,7 @@
       return;
     }
 
+    sfx('kill');
     game.shake = Math.max(game.shake, e.r > 20 ? 0.3 : 0.12);
     particles(game, e.x, e.y, e.r > 20 ? 22 : 10, '#111114', 150 + e.r * 4);
   }
