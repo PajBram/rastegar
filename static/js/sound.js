@@ -19,7 +19,7 @@
   'use strict';
 
   var KEY = 'rastegar.sound';
-  var MASTER = 0.3;
+  var MASTER = 0.55;
 
   var ctx = null;
   var master = null;
@@ -88,7 +88,9 @@
     osc.stop(t + dur + 0.02);
   }
 
-  /** A burst of noise through a band-pass, which is every impact ever. */
+  /** A burst of noise through a band-pass, which is every impact ever.
+   *  The filter throws away most of the energy before the gain stage, so these
+   *  numbers run roughly three times higher than the ones handed to tone(). */
   function crack(freq, q, dur, gain, at) {
     var t = ctx.currentTime + (at || 0);
     var src = noise();
@@ -106,44 +108,47 @@
     src.stop(t + dur + 0.02);
   }
 
+  /* Levels are deliberately uneven. The shot plays five times a second for a
+   * whole run, so it sits under everything; the King arriving is allowed to be
+   * the loudest thing that happens. */
   var EFFECTS = {
-    shot: function () { tone('square', 720, 260, 0.06, 0.05); },
-    hit: function () { crack(1500, 1.2, 0.06, 0.16); },
+    shot: function () { tone('square', 720, 260, 0.06, 0.13); },
+    hit: function () { crack(1500, 1.2, 0.06, 0.6); },
     kill: function () {
-      tone('sawtooth', 320, 70, 0.17, 0.09);
-      crack(800, 0.8, 0.09, 0.1);
+      tone('sawtooth', 320, 70, 0.17, 0.2);
+      crack(800, 0.8, 0.09, 0.42);
     },
     hurt: function () {
-      tone('square', 190, 70, 0.34, 0.13);
-      tone('square', 178, 66, 0.34, 0.1);
-      crack(400, 0.7, 0.2, 0.14);
+      tone('square', 190, 70, 0.34, 0.3);
+      tone('square', 178, 66, 0.34, 0.22);
+      crack(400, 0.7, 0.2, 0.6);
     },
     levelup: function () {
       [0, 4, 7, 12].forEach(function (semi, i) {
         var f = 330 * Math.pow(2, semi / 12);
-        tone('triangle', f, f, 0.14, 0.1, i * 0.07);
+        tone('triangle', f, f, 0.14, 0.24, i * 0.07);
       });
     },
     wave: function () {
-      tone('square', 440, 440, 0.08, 0.06);
-      tone('square', 660, 660, 0.12, 0.06, 0.09);
+      tone('square', 440, 440, 0.08, 0.18);
+      tone('square', 660, 660, 0.12, 0.18, 0.09);
     },
     boss: function () {
-      tone('sine', 70, 34, 1.3, 0.3);
-      tone('sawtooth', 116, 58, 1.1, 0.09);
-      crack(220, 0.5, 1.2, 0.12);
+      tone('sine', 70, 34, 1.3, 0.5);
+      tone('sawtooth', 116, 58, 1.1, 0.2);
+      crack(220, 0.5, 1.2, 0.6);
     },
     bossdown: function () {
-      tone('sawtooth', 300, 40, 1.1, 0.16);
-      crack(600, 0.4, 0.8, 0.18);
+      tone('sawtooth', 300, 40, 1.1, 0.34);
+      crack(600, 0.4, 0.8, 0.72);
       [12, 7, 4, 0].forEach(function (semi, i) {
         var f = 330 * Math.pow(2, semi / 12);
-        tone('triangle', f, f, 0.16, 0.09, i * 0.08);
+        tone('triangle', f, f, 0.16, 0.22, i * 0.08);
       });
     },
     over: function () {
-      tone('sawtooth', 300, 42, 1.3, 0.14);
-      tone('square', 150, 30, 1.3, 0.07);
+      tone('sawtooth', 300, 42, 1.3, 0.32);
+      tone('square', 150, 30, 1.3, 0.18);
     }
   };
 
@@ -165,12 +170,14 @@
       if (at < 0) at = 0;
       var s = music.step % 8;
       var root = 55 * Math.pow(2, BASS[s] / 12);
-      tone('square', root, root * 0.99, stepDur * 0.85, 0.055, at);
+      // The loop stays under the effects: you should notice it stopping, not
+      // notice it playing.
+      tone('square', root, root * 0.99, stepDur * 0.85, 0.11, at);
 
-      if (music.level >= 2 && s % 2 === 1) crack(7200, 1, 0.03, 0.035, at);
+      if (music.level >= 2 && s % 2 === 1) crack(7200, 1, 0.03, 0.18, at);
       if (music.level >= 3) {
         var lead = 55 * Math.pow(2, LEAD[s] / 12) * 4;
-        tone('triangle', lead, lead, stepDur * 0.5, 0.035, at);
+        tone('triangle', lead, lead, stepDur * 0.5, 0.08, at);
       }
 
       music.next += stepDur;
@@ -226,10 +233,6 @@
       return b;
     },
 
-    /** The visitor said yes on an earlier visit — but a gesture is still
-     *  needed before anything can be built, so this only arms it. */
-    wanted: function () { return remembered(); },
-
     play: function (name) {
       if (!enabled || !ctx) return;
       var fn = EFFECTS[name];
@@ -247,6 +250,23 @@
       musicRunning(level > 0);
     }
   };
+
+  /* Somebody who switched the sound on before should not have to do it again
+   * every visit. A gesture is still required before any audio can exist, so
+   * this arms it: the button reads as on, and the first press of anything —
+   * which is going to be Start — builds the graph. */
+  if (remembered()) {
+    enabled = true;
+    var armed = function () {
+      document.removeEventListener('pointerdown', armed, true);
+      document.removeEventListener('keydown', armed, true);
+      if (!wake()) { enabled = false; }        // no Web Audio here after all
+      else musicRunning(music.level > 0);
+      paint();
+    };
+    document.addEventListener('pointerdown', armed, true);
+    document.addEventListener('keydown', armed, true);
+  }
 
   window.Sound = Sound;
 })();

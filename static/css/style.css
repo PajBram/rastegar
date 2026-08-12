@@ -412,6 +412,21 @@ kbd {
    than the window, and in an arena you must see every edge at once. */
 #game-root[data-game="paj-says-survive"] .arcade { max-width: 700px; margin: 0 auto; }
 
+/* the sound switch, which sits in the HUD strip alongside the game's name */
+/* z-index clears the start and game-over overlay, which covers the whole stage
+   including this strip. Without it the one control you need before a run has
+   started is the one control you cannot reach. */
+.hud__sound {
+  position: relative; z-index: 6;
+  margin-left: .45rem; padding: 0 .3rem; cursor: pointer; line-height: 1.25;
+  background: transparent; color: inherit; border: 2px solid currentColor;
+  font-family: var(--mono); font-size: .78rem;
+}
+/* The strip is too short for a 44px button, so the touch area reaches past it. */
+.hud__sound::after { content: ''; position: absolute; top: -12px; right: -10px; bottom: -12px; left: -10px; }
+.hud__sound[aria-pressed="false"] { opacity: .55; text-decoration: line-through; }
+.hud__sound[aria-pressed="true"] { background: var(--red); border-color: var(--red); color: #fff; }
+
 /* ------------------------------------------------------------ scoreboard */
 .panel--scores { background: var(--ink); color: var(--paper-pure); box-shadow: var(--shadow-red); }
 .panel--scores h3 { color: var(--red); }

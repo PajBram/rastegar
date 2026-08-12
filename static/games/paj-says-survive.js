@@ -213,6 +213,7 @@
     game.modeBefore = game.mode;
     game.mode = 'levelup';
     game.panel = 0;                            // panel slam animation
+    sfx('levelup');
   }
 
   // ------------------------------------------------------------------ enemies
@@ -595,12 +596,14 @@
       game.mode = 'boss';
       game.banner = { text: 'BOSS', under: BOSS_NAME, life: 2.4, max: 2.4 };
       spawn(game, 'boss', { x: W / 2, y: -90 });
+      sfx('boss');
       return;
     }
 
     game.budget = waveBudget(wave);
     game.mode = 'wave';
     game.banner = { text: 'WAVE ' + wave, life: 1.6, max: 1.6 };
+    sfx('wave');
 
     // A kind of enemy that turns up for the first time this wave leads it, so
     // the new thing is the first thing you meet rather than a surprise later.
@@ -772,6 +775,7 @@
   function damage(game, e, index, amount, atX, atY) {
     e.hp -= amount;
     e.hurt = 0.12;
+    sfx('hit');
     particles(game, atX, atY, 3, '#ff2d55', 120);
     if (e.hp > 0) return false;
     killEnemy(game, e, index);
@@ -1088,6 +1092,7 @@
       game.panel = 0;
       game.modeBefore = 'wave';
 
+      game.musicLevel = -1;             // forces the first update to set it
       game.wave = 0;
       game.budget = 0;
       game.headline = null;
@@ -1365,6 +1370,14 @@
         if (p.life <= 0) game.bits.splice(i, 1);
       }
 
+      // The loop thickens as the run gets worse: bass, then a hat, then a lead
+      // over the top while the King is on the page.
+      var wantMusic = game.mode === 'boss' ? 3 : (game.wave >= 3 ? 2 : 1);
+      if (wantMusic !== game.musicLevel) {
+        game.musicLevel = wantMusic;
+        if (window.Sound) window.Sound.music(wantMusic);
+      }
+
       game.score += dt * 10;              // staying up pays a steady wage
     },
 
@@ -1495,4 +1508,20 @@
       ctx.strokeRect(4, 4, W - 8, H - 8);
     }
   });
+
+  // --- the sound switch -----------------------------------------------------
+  // The one piece of this game that lives in the page rather than on the
+  // canvas: a canvas button could only be pressed mid-run, and you want to be
+  // able to turn the sound on from the start screen.
+  if (window.Sound) {
+    var slot = document.querySelector('#game-root .stage__hud > span');
+    if (slot) slot.appendChild(window.Sound.button());
+
+    document.addEventListener('keydown', function (event) {
+      if (event.key !== 'm' && event.key !== 'M') return;
+      var on = event.target && event.target.tagName;
+      if (on === 'INPUT' || on === 'TEXTAREA') return;    // they are typing a name
+      window.Sound.toggle();
+    });
+  }
 })();
