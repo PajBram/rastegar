@@ -3,8 +3,9 @@
  * You fly. The gun fires by itself, straight ahead. Everything else on the
  * map is coming for you, and it keeps coming.
  *
- * The run is cut into waves with a breath between them. Every wave is bigger
- * and faster than the last, and new kinds of enemy keep arriving.
+ * The run is cut into waves with a breath between them. What the dead drop
+ * levels you up, and every level you pick one of three upgrades — that pick
+ * is the game. The waves get worse faster than you get better.
  */
 (function () {
   'use strict';
@@ -20,7 +21,6 @@
   // --- flight ------------------------------------------------------------
   var SPEED = 268;              // px per second, flat out
   var DAMP = 3.2;              // how quickly you coast to a stop
-  var ACCEL = SPEED * DAMP;    // picked so the two above give exactly SPEED
   var PLAYER_R = 13;
   var INVULN = 1.2;
 
@@ -29,10 +29,12 @@
   var BULLET_SPEED = 470;
   var BULLET_LIFE = 1.15;
   var BULLET_R = 4;
+  var FAN = 0.15;              // radians between shots in a spread
 
   // --- thumb -------------------------------------------------------------
   var DEAD_ZONE = 14;          // thumb this close to you: hover in place
   var FULL_THROTTLE = 62;      // and this far away: everything you have
+  var DOUBLE_TAP = 0.32;
 
   // --- waves -------------------------------------------------------------
   var BREATHER = 2.4;          // seconds of quiet between waves
@@ -40,7 +42,13 @@
   var OVERTIME = 7;            // seconds a wave may drag on before reinforcements
   var REINFORCE_EVERY = 2.4;
 
+  // --- levelling ----------------------------------------------------------
+  var ORB_RADIUS = 46;
+  var ORB_SPIN = 2.3;
+  var GEM_GIVE_UP = 4;         // after this long a gem comes to you regardless
+
   var TAU = Math.PI * 2;
+  var nextId = 1;
 
   // ---------------------------------------------------------------- helpers
 
@@ -90,6 +98,116 @@
     ctx.lineWidth = width || 3;
   }
 
+  // ----------------------------------------------------------------- upgrades
+  /* The whole pool, in one list. Adding one is adding an object here: nothing
+   * else in the file knows what any of them are called.
+   *
+   *   max     how many times it can be taken
+   *   offer   optional gate — false means "not worth showing right now"
+   *   apply   mutates the stat block, and the run for the odd one out
+   */
+  var UPGRADES = [
+    { id: 'rapid', tag: 'RAPID', name: 'RAPID FIRE', max: 5,
+      desc: 'The gun cycles 18% faster.',
+      apply: function (st) { st.fireEvery *= 0.82; } },
+
+    { id: 'power', tag: 'HEAVY', name: 'HEAVY ROUNDS', max: 5,
+      desc: 'Every shot hits one point harder.',
+      apply: function (st) { st.damage += 1; } },
+
+    { id: 'spread', tag: 'SPLIT', name: 'SPLIT SHOT', max: 3,
+      desc: 'One more shot, fanned out beside it.',
+      apply: function (st) { st.shots += 1; } },
+
+    { id: 'pierce', tag: 'PUNCH', name: 'PUNCH THROUGH', max: 3,
+      desc: 'Shots carry on through one more body.',
+      apply: function (st) { st.pierce += 1; } },
+
+    { id: 'bounce', tag: 'RICO', name: 'RICOCHET', max: 2,
+      desc: 'Shots bounce off the frame once more.',
+      apply: function (st) { st.bounce += 1; } },
+
+    { id: 'wings', tag: 'WINGS', name: 'STRONGER WINGS', max: 4,
+      desc: 'You fly 12% faster.',
+      apply: function (st) { st.speed *= 1.12; } },
+
+    { id: 'magnet', tag: 'REACH', name: 'LONG REACH', max: 3,
+      desc: 'You pull XP in from much further out.',
+      apply: function (st) { st.magnet *= 1.35; } },
+
+    { id: 'orb', tag: 'BLADE', name: 'FEATHER BLADE', max: 3,
+      desc: 'A blade circles you, cutting what it touches.',
+      apply: function (st) { st.orbs += 1; } },
+
+    { id: 'dash', tag: 'BLINK', name: 'BLINK', max: 3,
+      desc: 'Blink forward, untouchable. Space, or two taps.',
+      apply: function (st) { st.dash += 1; } },
+
+    { id: 'heal', tag: 'MEND', name: 'SECOND WIND', max: 4,
+      desc: 'Take one life back.',
+      offer: function (game) { return game.lives < game.maxLives; },
+      apply: function (st, game) { game.lives = Math.min(game.maxLives, game.lives + 1); } },
+
+    { id: 'vessel', tag: '+LIFE', name: 'ONE MORE LIFE', max: 2,
+      desc: 'One more life to lose, and it starts full.',
+      apply: function (st, game) { game.maxLives += 1; game.lives += 1; } }
+  ];
+
+  function baseStats() {
+    return {
+      fireEvery: FIRE_EVERY,
+      damage: 1,
+      shots: 1,
+      pierce: 0,
+      bounce: 0,
+      speed: SPEED,
+      magnet: 78,
+      orbs: 0,
+      dash: 0
+    };
+  }
+
+  /** Three upgrades worth showing, no repeats, nothing already maxed out. */
+  function drawChoices(game) {
+    var pool = [];
+    for (var i = 0; i < UPGRADES.length; i++) {
+      var up = UPGRADES[i];
+      if ((game.taken[up.id] || 0) >= up.max) continue;
+      if (up.offer && !up.offer(game)) continue;
+      pool.push(up);
+    }
+    var out = [];
+    while (out.length < 3 && pool.length) {
+      out.push(pool.splice(Math.floor(Math.random() * pool.length), 1)[0]);
+    }
+    return out;
+  }
+
+  function takeUpgrade(game, up) {
+    game.taken[up.id] = (game.taken[up.id] || 0) + 1;
+    up.apply(game.st, game);
+    game.choices = null;
+    game.pick = 0;
+    game.mode = game.modeBefore;
+    game.flash = { color: '#fffdf8', life: 0.22 };
+    // A second level may already be waiting behind this one.
+    checkLevel(game);
+  }
+
+  function checkLevel(game) {
+    if (game.mode === 'levelup') return;
+    if (game.xp < game.xpNeed) return;
+    game.xp -= game.xpNeed;
+    game.level += 1;
+    game.xpNeed = 8 + game.level * 6;
+    game.choices = drawChoices(game);
+    if (!game.choices.length) return;          // everything is maxed: carry on
+    game.pick = 0;
+    game.modeBefore = game.mode;
+    game.mode = 'levelup';
+    game.panel = 0;                            // panel slam animation
+  }
+
   // ------------------------------------------------------------------ enemies
   /* One entry per kind of enemy. Behaviour and looks both live here, so adding
    * a fifth kind is adding one object — nothing else in the file knows the
@@ -98,10 +216,11 @@
    *   cost   how much of a wave's budget it eats (a wave is a budget)
    *   from   the first wave it can turn up in
    *   pack   spawns this many at once, as a swarm does
+   *   xp     how many crystals it leaves behind
    */
   var TYPES = {
     rusher: {
-      r: 13, hp: 1, speed: [98, 148], points: 15, cost: 1, from: 1,
+      r: 13, hp: 1, speed: [98, 148], points: 15, cost: 1, from: 1, xp: 1,
 
       move: function (e, game, dt) {
         var dx = game.px - e.x, dy = game.py - e.y;
@@ -132,11 +251,10 @@
     },
 
     swarm: {
-      r: 8, hp: 1, speed: [126, 168], points: 8, cost: 0.5, from: 2, pack: [5, 7],
+      r: 8, hp: 1, speed: [126, 168], points: 8, cost: 0.5, from: 2, xp: 1, pack: [4, 7],
 
       move: function (e, game, dt) {
         var dx = game.px - e.x, dy = game.py - e.y;
-        var d = len(dx, dy) || 1;
         var weave = Math.sin(e.t * 6 + e.bob) * 0.55;    // never flies straight
         var a = Math.atan2(dy, dx) + weave;
         e.vx = Math.cos(a) * e.speed;
@@ -160,7 +278,7 @@
     },
 
     tank: {
-      r: 26, hp: 9, speed: [40, 56], points: 60, cost: 4, from: 3,
+      r: 26, hp: 9, speed: [40, 56], points: 60, cost: 4, from: 3, xp: 4,
 
       move: function (e, game, dt) {
         var dx = game.px - e.x, dy = game.py - e.y;
@@ -170,7 +288,8 @@
       },
 
       draw: function (ctx, game, e) {
-        ctx.rotate(Math.atan2(e.vy, e.vx));
+        var heading = Math.atan2(e.vy, e.vx);
+        ctx.rotate(heading);
         outline(ctx, 4);
         ctx.fillStyle = e.hurt > 0 ? '#ff2d55' : '#111114';
         ctx.beginPath();                       // a slab with shoulders
@@ -185,12 +304,11 @@
         ctx.stroke();
 
         // a damage read-out, because nine hits is a long time to wonder
-        ctx.rotate(-Math.atan2(e.vy, e.vx));
-        var frac = e.hp / e.maxhp;
+        ctx.rotate(-heading);
         ctx.fillStyle = '#fffdf8';
         ctx.fillRect(-18, -34, 36, 6);
         ctx.fillStyle = '#ff2d55';
-        ctx.fillRect(-18, -34, 36 * frac, 6);
+        ctx.fillRect(-18, -34, 36 * (e.hp / e.maxhp), 6);
         ctx.strokeStyle = '#111114';
         ctx.lineWidth = 2;
         ctx.strokeRect(-18, -34, 36, 6);
@@ -198,7 +316,7 @@
     },
 
     shooter: {
-      r: 15, hp: 3, speed: [66, 84], points: 40, cost: 2.5, from: 4,
+      r: 15, hp: 3, speed: [66, 84], points: 40, cost: 2.5, from: 4, xp: 3,
       range: 178, reload: 1.9,
 
       move: function (e, game, dt) {
@@ -228,8 +346,7 @@
       },
 
       draw: function (ctx, game, e) {
-        var a = Math.atan2(game.py - e.y, game.px - e.x);
-        ctx.rotate(a);
+        ctx.rotate(Math.atan2(game.py - e.y, game.px - e.x));
         outline(ctx, 3);
         ctx.fillStyle = e.hurt > 0 ? '#ff2d55' : '#111114';
         ctx.beginPath();                       // a long-barrelled sentry
@@ -270,19 +387,19 @@
 
   function spawn(game, name, at) {
     var type = TYPES[name];
-    var speedUp = 1 + (game.wave - 1) * 0.05;
-    if (speedUp > 1.55) speedUp = 1.55;
+    var speedUp = Math.min(1.55, 1 + (game.wave - 1) * 0.05);
     var tough = 1 + (game.wave - 1) * 0.07;
     var spot = at || edgePoint();
 
-    game.enemies.push({
+    var made = {
+      id: nextId++,
       name: name, type: type,
       x: spot.x + (Math.random() - 0.5) * 34,
       y: spot.y + (Math.random() - 0.5) * 34,
       vx: 0, vy: 0,
       r: type.r,
       hp: Math.max(1, Math.round(type.hp * (type.hp > 2 ? tough : 1))),
-      maxhp: 0,
+      maxhp: 1,
       speed: (type.speed[0] + Math.random() * (type.speed[1] - type.speed[0])) * speedUp,
       range: type.range,
       reload: type.reload,
@@ -290,11 +407,12 @@
       spin: Math.random() < 0.5 ? -1 : 1,
       flare: 0,
       hurt: 0,
+      orbHit: 0,
       t: 0,
       bob: Math.random() * TAU
-    });
-    var made = game.enemies[game.enemies.length - 1];
+    };
     made.maxhp = made.hp;
+    game.enemies.push(made);
   }
 
   /** Budget for one wave, in the cost units on the type table. */
@@ -397,23 +515,38 @@
   }
 
   function fire(game) {
-    var a = aimAngle(game);
-    game.bullets.push({
-      x: game.px + Math.cos(a) * 16,
-      y: game.py + Math.sin(a) * 16,
-      // The trail starts at your own centre, so something sitting right on top
-      // of you is still in the shot's path rather than behind the muzzle.
-      px: game.px, py: game.py, fresh: true,
-      vx: Math.cos(a) * BULLET_SPEED,
-      vy: Math.sin(a) * BULLET_SPEED,
-      life: BULLET_LIFE,
-      damage: 1
-    });
+    var mid = aimAngle(game);
+    var st = game.st;
+    for (var i = 0; i < st.shots; i++) {
+      var a = mid + (i - (st.shots - 1) / 2) * FAN;
+      game.bullets.push({
+        x: game.px + Math.cos(a) * 16,
+        y: game.py + Math.sin(a) * 16,
+        // The trail starts at your own centre, so something sitting right on
+        // top of you is still in the shot's path rather than behind the muzzle.
+        px: game.px, py: game.py, fresh: true,
+        vx: Math.cos(a) * BULLET_SPEED,
+        vy: Math.sin(a) * BULLET_SPEED,
+        life: BULLET_LIFE,
+        damage: st.damage,
+        pierce: st.pierce,
+        bounce: st.bounce,
+        hit: {}
+      });
+    }
     game.recoil = 1;
   }
 
+  function dash(game) {
+    if (!game.st.dash || game.dashIn > 0 || game.dashing > 0) return;
+    game.dashing = 0.17;
+    game.dashIn = Math.max(1.2, 3.2 - (game.st.dash - 1) * 0.6);
+    game.shake = Math.max(game.shake, 0.1);
+    particles(game, game.px, game.py, 10, '#111114', 150);
+  }
+
   function takeHit(game, fromX, fromY, weight) {
-    if (game.invuln > 0) return;
+    if (game.invuln > 0 || game.dashing > 0) return;
     game.lives -= 1;
     game.invuln = INVULN;
     game.shake = 0.4 + weight * 0.25;
@@ -427,12 +560,35 @@
     if (game.lives <= 0) game.over();
   }
 
+  function dropGems(game, e) {
+    var n = e.type.xp;
+    for (var i = 0; i < n; i++) {
+      var a = Math.random() * TAU;
+      game.gems.push({
+        x: e.x, y: e.y,
+        vx: Math.cos(a) * 60, vy: Math.sin(a) * 60,
+        age: 0, bob: Math.random() * TAU
+      });
+    }
+  }
+
   function killEnemy(game, e, index) {
     game.enemies.splice(index, 1);
     game.kills += 1;
     game.score += e.type.points;
     game.shake = Math.max(game.shake, e.r > 20 ? 0.3 : 0.12);
     particles(game, e.x, e.y, e.r > 20 ? 22 : 10, '#111114', 150 + e.r * 4);
+    dropGems(game, e);
+  }
+
+  /** One point of damage landing on one enemy. True when it died. */
+  function damage(game, e, index, amount, atX, atY) {
+    e.hp -= amount;
+    e.hurt = 0.12;
+    particles(game, atX, atY, 3, '#ff2d55', 120);
+    if (e.hp > 0) return false;
+    killEnemy(game, e, index);
+    return true;
   }
 
   // ---------------------------------------------------------------- painting
@@ -454,9 +610,18 @@
     return tonePattern;
   }
 
+  function orbPositions(game) {
+    var out = [];
+    for (var i = 0; i < game.st.orbs; i++) {
+      var a = game.orbAngle + i * TAU / game.st.orbs;
+      out.push({ x: game.px + Math.cos(a) * ORB_RADIUS, y: game.py + Math.sin(a) * ORB_RADIUS });
+    }
+    return out;
+  }
+
   function drawPlayer(ctx, game) {
     // Blink through the invulnerable window rather than vanish.
-    if (game.invuln > 0 && Math.floor(game.invuln * 18) % 2) return;
+    if (game.invuln > 0 && game.dashing <= 0 && Math.floor(game.invuln * 18) % 2) return;
 
     var flap = Math.sin(game.time * 17) * 0.5 + 0.5;      // 0..1
     ctx.save();
@@ -478,7 +643,7 @@
     }
 
     // body, pointing the way the gun points
-    ctx.fillStyle = '#111114';
+    ctx.fillStyle = game.dashing > 0 ? '#ff2d55' : '#111114';
     ctx.beginPath();
     ctx.moveTo(17, 0);
     ctx.lineTo(-2, -9);
@@ -488,7 +653,7 @@
     ctx.fill();
     ctx.stroke();
 
-    ctx.fillStyle = '#ff2d55';
+    ctx.fillStyle = game.dashing > 0 ? '#fffdf8' : '#ff2d55';
     ctx.beginPath();
     ctx.moveTo(11, 0);
     ctx.lineTo(2, -4);
@@ -555,6 +720,113 @@
     ctx.restore();
   }
 
+  // --- the level-up panel ---------------------------------------------------
+  // Drawn on the canvas rather than in the page, so it can look like a manga
+  // panel and so the same rectangles serve keyboard and thumb alike.
+  var CARD_X = 44, CARD_W = W - 88, CARD_H = 88, CARD_GAP = 14, CARD_TOP = 168;
+
+  function cardRect(i) {
+    return { x: CARD_X, y: CARD_TOP + i * (CARD_H + CARD_GAP), w: CARD_W, h: CARD_H };
+  }
+
+  function cardAt(point) {
+    for (var i = 0; i < 3; i++) {
+      var r = cardRect(i);
+      if (point.x >= r.x && point.x <= r.x + r.w && point.y >= r.y && point.y <= r.y + r.h) return i;
+    }
+    return -1;
+  }
+
+  function drawLevelUp(ctx, game) {
+    var slam = Math.min(1, game.panel / 0.16);
+    ctx.fillStyle = 'rgba(17,17,20,' + (0.9 * slam).toFixed(3) + ')';
+    ctx.fillRect(0, 0, W, H);
+    if (slam < 1) return;                       // the panel lands, then fills in
+
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    ctx.save();
+    ctx.translate(W / 2, 104);
+    ctx.rotate(-0.03);
+    ctx.font = '400 54px Anton, Impact, sans-serif';
+    ctx.fillStyle = '#ff2d55';
+    ctx.fillText('LEVEL ' + game.level, 4, 4);
+    ctx.fillStyle = '#fffdf8';
+    ctx.fillText('LEVEL ' + game.level, 0, 0);
+    ctx.restore();
+
+    for (var i = 0; i < game.choices.length; i++) {
+      var up = game.choices[i];
+      var r = cardRect(i);
+      var on = i === game.pick;
+      var have = game.taken[up.id] || 0;
+
+      ctx.fillStyle = '#111114';
+      ctx.fillRect(r.x + 6, r.y + 6, r.w, r.h);
+      ctx.fillStyle = on ? '#ff2d55' : '#fffdf8';
+      ctx.fillRect(r.x, r.y, r.w, r.h);
+      ctx.strokeStyle = '#111114';
+      ctx.lineWidth = 4;
+      ctx.strokeRect(r.x, r.y, r.w, r.h);
+
+      ctx.textAlign = 'left';
+      ctx.fillStyle = on ? '#fffdf8' : '#ff2d55';
+      ctx.font = '400 40px Anton, Impact, sans-serif';
+      ctx.fillText(String(i + 1), r.x + 18, r.y + r.h / 2);
+
+      ctx.fillStyle = on ? '#fffdf8' : '#111114';
+      ctx.font = '400 27px Anton, Impact, sans-serif';
+      ctx.fillText(up.name, r.x + 56, r.y + 30);
+
+      ctx.font = '13px ui-monospace, SFMono-Regular, Menlo, monospace';
+      ctx.fillText(up.desc, r.x + 56, r.y + 58);
+
+      if (have) {
+        ctx.textAlign = 'right';
+        ctx.font = '400 22px Anton, Impact, sans-serif';
+        ctx.fillText('x' + have, r.x + r.w - 16, r.y + 30);
+      }
+    }
+
+    ctx.textAlign = 'center';
+    ctx.fillStyle = 'rgba(255,253,248,.6)';
+    ctx.font = '13px ui-monospace, SFMono-Regular, Menlo, monospace';
+    ctx.fillText('1 2 3, or arrows and Enter, or just tap one', W / 2, H - 38);
+  }
+
+  /** The XP strip and the list of what you have taken, along the bottom edge. */
+  function drawBuild(ctx, game) {
+    var frac = Math.max(0, Math.min(1, game.xp / game.xpNeed));
+    ctx.fillStyle = 'rgba(17,17,20,.16)';
+    ctx.fillRect(10, H - 17, W - 20, 7);
+    ctx.fillStyle = '#ff2d55';
+    ctx.fillRect(10, H - 17, (W - 20) * frac, 7);
+
+    ctx.globalAlpha = 0.55;
+    ctx.font = '400 15px Anton, Impact, sans-serif';
+    ctx.textAlign = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillStyle = '#111114';
+    var x = 12;
+    for (var i = 0; i < UPGRADES.length; i++) {
+      var up = UPGRADES[i];
+      var have = game.taken[up.id] || 0;
+      if (!have) continue;
+      var label = up.tag + (have > 1 ? ' x' + have : '');
+      var width = ctx.measureText(label).width;
+      if (x + width > W - 62) { ctx.fillText('...', x, H - 24); break; }
+      ctx.fillText(label, x, H - 24);
+      x += width + 12;
+    }
+    ctx.globalAlpha = 1;
+
+    ctx.textAlign = 'right';
+    ctx.font = '400 15px Anton, Impact, sans-serif';
+    ctx.fillStyle = 'rgba(17,17,20,.5)';
+    ctx.fillText('LV ' + game.level, W - 12, H - 24);
+  }
+
   // ------------------------------------------------------------------- mount
 
   window.Arcade.mount({
@@ -563,7 +835,7 @@
     width: W,
     height: H,
     lives: 3,
-    intro: 'They come from every edge and they do not stop. The gun fires by itself — all you do is fly, and point.',
+    intro: 'They come from every edge and they do not stop. The gun fires by itself — all you do is fly, and point. Every level, you pick what gets stronger.',
     hint: 'Arrow keys or WASD to fly. On a phone, hold your thumb on the panel and you fly to it.',
     overTitle: 'Wings down',
 
@@ -576,15 +848,32 @@
       game.fireIn = 0;
       game.recoil = 0;
       game.invuln = 0;
+      game.dashing = 0;
+      game.dashIn = 0;
+      game.lastTap = -9;
       game.shake = 0;
       game.flash = null;
       game.banner = null;
       game.kills = 0;
       game.survived = 0;
+      game.maxLives = 3;
       game.bullets = [];
       game.foeShots = [];
       game.enemies = [];
+      game.gems = [];
       game.bits = [];
+      game.orbAngle = 0;
+
+      game.st = baseStats();
+      game.taken = {};
+      game.level = 0;
+      game.xp = 0;
+      game.xpNeed = 8;
+      game.choices = null;
+      game.pick = 0;
+      game.panel = 0;
+      game.modeBefore = 'wave';
+
       game.wave = 0;
       game.budget = 0;
       game.headline = null;
@@ -604,24 +893,67 @@
     summary: function (game) {
       return 'Survived ' + clockFace(game.survived)
         + '  •  wave ' + game.wave
-        + '  •  ' + game.kills + ' down';
+        + '  •  ' + game.kills + ' down'
+        + '  •  level ' + game.level;
+    },
+
+    keyPress: function (key, game) {
+      if (game.mode === 'levelup') {
+        if (key === '1' || key === '2' || key === '3') {
+          var want = parseInt(key, 10) - 1;
+          if (want < game.choices.length) { game.pick = want; takeUpgrade(game, game.choices[want]); }
+          return;
+        }
+        if (key === 'ArrowDown' || key === 'ArrowRight' || key === 's' || key === 'd') {
+          game.pick = (game.pick + 1) % game.choices.length;
+        }
+        if (key === 'ArrowUp' || key === 'ArrowLeft' || key === 'w' || key === 'a') {
+          game.pick = (game.pick + game.choices.length - 1) % game.choices.length;
+        }
+        if (key === 'Enter' || key === ' ') takeUpgrade(game, game.choices[game.pick]);
+        return;
+      }
+      if (key === ' ') dash(game);
+    },
+
+    tap: function (point, game) {
+      if (game.mode === 'levelup') {
+        var i = cardAt(point);
+        if (i >= 0 && i < game.choices.length) { game.pick = i; takeUpgrade(game, game.choices[i]); }
+        return;
+      }
+      // Two quick taps blink, which is the thumb's version of the space bar.
+      if (game.time - game.lastTap < DOUBLE_TAP) dash(game);
+      game.lastTap = game.time;
     },
 
     update: function (dt, game) {
-      var i, j, e, b;
+      var i, j, e, b, st = game.st;
+
+      // Everything stops for the pick. The shell keeps its own clock running,
+      // which is why the run is timed on game.survived and not on game.time.
+      if (game.mode === 'levelup') {
+        game.panel = Math.min(0.4, game.panel + dt);
+        return;
+      }
+
       game.survived += dt;
 
       // --- fly -----------------------------------------------------------
       var input = steering(game);
-      var damp = Math.exp(-DAMP * dt);
-      game.vx = game.vx * damp + input.x * ACCEL * dt;
-      game.vy = game.vy * damp + input.y * ACCEL * dt;
+      if (game.dashing > 0) {
+        game.vx = Math.cos(game.facing) * st.speed * 2.7;
+        game.vy = Math.sin(game.facing) * st.speed * 2.7;
+      } else {
+        var damp = Math.exp(-DAMP * dt);
+        game.vx = game.vx * damp + input.x * st.speed * DAMP * dt;
+        game.vy = game.vy * damp + input.y * st.speed * DAMP * dt;
+      }
       game.px += game.vx * dt;
       game.py += game.vy * dt;
 
-      if (input.aimed) {
-        var want = Math.atan2(input.y, input.x);
-        game.facing = turn(game.facing, want, Math.min(1, dt * 18));
+      if (input.aimed && game.dashing <= 0) {
+        game.facing = turn(game.facing, Math.atan2(input.y, input.x), Math.min(1, dt * 18));
       }
 
       // walls push back rather than stop you dead
@@ -634,8 +966,8 @@
       game.fireIn -= dt;
       if (game.fireIn <= 0) {
         fire(game);
-        game.fireIn += FIRE_EVERY;
-        if (game.fireIn < 0) game.fireIn = FIRE_EVERY;
+        game.fireIn += st.fireEvery;
+        if (game.fireIn < 0) game.fireIn = st.fireEvery;
       }
 
       for (i = game.bullets.length - 1; i >= 0; i--) {
@@ -645,6 +977,14 @@
         b.x += b.vx * dt;
         b.y += b.vy * dt;
         b.life -= dt;
+
+        if (b.bounce > 0) {
+          if (b.x < BULLET_R) { b.x = BULLET_R; b.vx = -b.vx; b.bounce -= 1; b.hit = {}; }
+          else if (b.x > W - BULLET_R) { b.x = W - BULLET_R; b.vx = -b.vx; b.bounce -= 1; b.hit = {}; }
+          if (b.y < BULLET_R) { b.y = BULLET_R; b.vy = -b.vy; b.bounce -= 1; b.hit = {}; }
+          else if (b.y > H - BULLET_R) { b.y = H - BULLET_R; b.vy = -b.vy; b.bounce -= 1; b.hit = {}; }
+        }
+
         if (b.life <= 0 || b.x < -20 || b.x > W + 20 || b.y < -20 || b.y > H + 20) {
           game.bullets.splice(i, 1);
         }
@@ -686,11 +1026,15 @@
       }
 
       // --- enemies -----------------------------------------------------------
+      game.orbAngle += dt * ORB_SPIN;
+      var orbs = orbPositions(game);
+
       for (i = game.enemies.length - 1; i >= 0; i--) {
         e = game.enemies[i];
         e.t += dt;
         e.hurt = Math.max(0, e.hurt - dt);
         e.flare = Math.max(0, e.flare - dt);
+        e.orbHit = Math.max(0, e.orbHit - dt);
 
         var carried = e.speed;
         e.speed = carried * (1 + game.pressure);
@@ -703,12 +1047,21 @@
         var dead = false;
         for (j = game.bullets.length - 1; j >= 0; j--) {
           b = game.bullets[j];
+          if (b.hit[e.id]) continue;
           if (segDist(e.x, e.y, b.px, b.py, b.x, b.y) > e.r + BULLET_R) continue;
-          game.bullets.splice(j, 1);
-          e.hp -= b.damage;
-          e.hurt = 0.12;
-          particles(game, b.x, b.y, 3, '#ff2d55', 120);
-          if (e.hp <= 0) { killEnemy(game, e, i); dead = true; break; }
+          b.hit[e.id] = 1;
+          if (b.pierce > 0) b.pierce -= 1;
+          else game.bullets.splice(j, 1);
+          if (damage(game, e, i, b.damage, b.x, b.y)) { dead = true; break; }
+        }
+        if (dead) continue;
+
+        for (j = 0; j < orbs.length; j++) {
+          if (e.orbHit > 0) break;
+          if (len(orbs[j].x - e.x, orbs[j].y - e.y) > e.r + 10) continue;
+          e.orbHit = 0.4;
+          if (damage(game, e, i, st.damage, e.x, e.y)) { dead = true; }
+          break;
         }
         if (dead) continue;
 
@@ -733,8 +1086,36 @@
         }
       }
 
+      // --- what the dead leave behind -------------------------------------------
+      for (i = game.gems.length - 1; i >= 0; i--) {
+        var gem = game.gems[i];
+        gem.age += dt;
+        var gdx = game.px - gem.x, gdy = game.py - gem.y;
+        var gd = len(gdx, gdy) || 1;
+
+        // Inside the magnet they come to you fast; after a while they come
+        // anyway, so a crystal can never be stranded in a corner.
+        if (gd < st.magnet || gem.age > GEM_GIVE_UP) {
+          var pull = (gd < st.magnet ? 900 : 260) * dt;
+          gem.vx += gdx / gd * pull;
+          gem.vy += gdy / gd * pull;
+        }
+        gem.vx *= 0.9;
+        gem.vy *= 0.9;
+        gem.x += gem.vx * dt;
+        gem.y += gem.vy * dt;
+
+        if (gd < 17) {
+          game.gems.splice(i, 1);
+          game.xp += 1;
+          checkLevel(game);
+        }
+      }
+
       // --- dressing ------------------------------------------------------------
       game.invuln = Math.max(0, game.invuln - dt);
+      game.dashing = Math.max(0, game.dashing - dt);
+      game.dashIn = Math.max(0, game.dashIn - dt);
       game.shake = Math.max(0, game.shake - dt);
       game.recoil = Math.max(0, game.recoil - dt * 9);
       if (game.flash) { game.flash.life -= dt; if (game.flash.life <= 0) game.flash = null; }
@@ -754,9 +1135,11 @@
     },
 
     draw: function (ctx, game) {
-      var shake = game.shake > 0 ? game.shake : 0;
+      var shake = game.mode === 'levelup' ? 0 : game.shake;
       ctx.save();
-      if (shake) ctx.translate((Math.random() - 0.5) * 16 * shake, (Math.random() - 0.5) * 16 * shake);
+      if (shake > 0) {
+        ctx.translate((Math.random() - 0.5) * 16 * shake, (Math.random() - 0.5) * 16 * shake);
+      }
 
       ctx.fillStyle = '#fffdf8';
       ctx.fillRect(-24, -24, W + 48, H + 48);
@@ -765,8 +1148,8 @@
 
       // speedlines, only once you are really moving
       var speed = len(game.vx, game.vy);
-      if (speed > SPEED * 0.5) {
-        var strength = Math.min(1, (speed - SPEED * 0.5) / (SPEED * 0.5));
+      if (speed > game.st.speed * 0.5) {
+        var strength = Math.min(1, (speed - game.st.speed * 0.5) / (game.st.speed * 0.5));
         var back = Math.atan2(-game.vy, -game.vx);
         ctx.strokeStyle = 'rgba(17,17,20,' + (0.1 + strength * 0.22).toFixed(3) + ')';
         ctx.lineWidth = 2;
@@ -782,12 +1165,30 @@
         ctx.stroke();
       }
 
+      drawBuild(ctx, game);
+
       game.bits.forEach(function (p) {
         ctx.globalAlpha = Math.max(0, p.life / p.max);
         ctx.fillStyle = p.color;
         ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
       });
       ctx.globalAlpha = 1;
+
+      // xp crystals
+      game.gems.forEach(function (gem) {
+        ctx.save();
+        ctx.translate(gem.x, gem.y + Math.sin(game.time * 6 + gem.bob) * 1.5);
+        ctx.rotate(game.time * 2 + gem.bob);
+        ctx.fillStyle = '#ff2d55';
+        ctx.strokeStyle = '#111114';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, -6); ctx.lineTo(4.5, 0); ctx.lineTo(0, 6); ctx.lineTo(-4.5, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
 
       game.enemies.forEach(function (e) {
         if (e.x < -6 || e.x > W + 6 || e.y < -6 || e.y > H + 6) {
@@ -821,6 +1222,21 @@
         ctx.restore();
       });
 
+      // the blades, drawn under the figure so it stays the readable thing
+      orbPositions(game).forEach(function (o) {
+        ctx.save();
+        ctx.translate(o.x, o.y);
+        ctx.rotate(game.orbAngle * 2.5);
+        outline(ctx, 2.5);
+        ctx.fillStyle = '#fffdf8';
+        ctx.beginPath();
+        ctx.moveTo(0, -11); ctx.lineTo(6, 0); ctx.lineTo(0, 11); ctx.lineTo(-6, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
+
       drawPlayer(ctx, game);
 
       if (game.banner && game.state === 'playing') drawBanner(ctx, game.banner);
@@ -833,6 +1249,8 @@
       }
 
       ctx.restore();
+
+      if (game.mode === 'levelup' && game.state === 'playing') drawLevelUp(ctx, game);
 
       // the panel border sits outside the shake, so the frame never wobbles
       ctx.strokeStyle = '#111114';

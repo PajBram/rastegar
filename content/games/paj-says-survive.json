@@ -10,7 +10,9 @@
   "controls": [
     "`Arrow keys` or `W` `A` `S` `D` fly. There is nothing else to press.",
     "On a phone: hold your thumb anywhere on the panel and you fly to it. Let go and you coast.",
-    "The gun fires by itself, straight ahead — whichever way you are flying is where the shots go."
+    "The gun fires by itself, straight ahead — whichever way you are flying is where the shots go.",
+    "Level up and everything stops: pick one of three upgrades with `1` `2` `3`, or the arrow keys and `Enter`, or by tapping the card.",
+    "Once you have taken Blink: `Space`, or two quick taps, to blink forward untouchable."
   ],
-  "about": "A survival shooter seen from above. You are a winged thing in a paper arena, and everything else in it is coming for you from every edge at once.\n\nYou never aim and you never press fire. The gun does that. The whole game is in where you put yourself: how close you dare drift, when you turn, and how long you can keep the pack behind you instead of around you.\n\nStay up as long as you can. It gets worse. That is the point."
+  "about": "A survival shooter seen from above. You are a winged thing in a paper arena, and everything else in it is coming for you from every edge at once.\n\nYou never aim and you never press fire. The gun does that. The whole game is in where you put yourself: how close you dare drift, when you turn, and how long you can keep the pack behind you instead of around you.\n\nWhat the dead leave behind levels you up, and every level stops the world and hands you a choice of three. Take the faster gun or the heavier one, shots that punch through bodies or ricochet off the frame, blades that circle you, another life. No two runs build the same thing, and none of them build fast enough.\n\nStay up as long as you can. It gets worse. That is the point."
 }
