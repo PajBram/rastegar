@@ -49,6 +49,8 @@
   var ORB_RADIUS = 46;
   var ORB_SPIN = 2.3;
   var GEM_GIVE_UP = 4;         // after this long a gem comes to you regardless
+  var HEART_LIFE = 11;         // seconds a dropped heart waits, blinking at the end
+  var HEART_R = 11;
 
   var TAU = Math.PI * 2;
   var nextId = 1;
@@ -149,12 +151,9 @@
       desc: 'Blink forward, untouchable. Space, or two taps.',
       apply: function (st) { st.dash += 1; } },
 
-    { id: 'heal', tag: 'MEND', name: 'SECOND WIND', max: 4,
-      desc: 'Take one life back.',
-      offer: function (game) { return game.lives < game.maxLives; },
-      apply: function (st, game) { game.lives = Math.min(game.maxLives, game.lives + 1); } },
-
-    { id: 'vessel', tag: '+LIFE', name: 'ONE MORE LIFE', max: 2,
+    /* Healing is what the hearts on the floor are for. A level-up buys you a
+     * bigger cup instead, which is worth having before you need it. */
+    { id: 'vessel', tag: '+LIFE', name: 'ONE MORE LIFE', max: 3,
       desc: 'One more life to lose, and it starts full.',
       apply: function (st, game) { game.maxLives += 1; game.lives += 1; } }
   ];
@@ -227,7 +226,7 @@
    */
   var TYPES = {
     rusher: {
-      r: 13, hp: 1, speed: [98, 148], points: 15, cost: 1, from: 1, xp: 1,
+      r: 13, hp: 1, speed: [82, 122], points: 15, cost: 1, from: 1, xp: 1, heart: 0.03,
 
       move: function (e, game, dt) {
         var dx = game.px - e.x, dy = game.py - e.y;
@@ -258,7 +257,7 @@
     },
 
     swarm: {
-      r: 8, hp: 1, speed: [126, 168], points: 8, cost: 0.9, from: 2, xp: 1, pack: [3, 5],
+      r: 8, hp: 1, speed: [100, 134], points: 8, cost: 0.9, from: 2, xp: 1, heart: 0.012, pack: [3, 5],
 
       move: function (e, game, dt) {
         var dx = game.px - e.x, dy = game.py - e.y;
@@ -285,7 +284,7 @@
     },
 
     tank: {
-      r: 26, hp: 9, speed: [40, 56], points: 60, cost: 4, from: 3, xp: 4,
+      r: 26, hp: 9, speed: [34, 48], points: 60, cost: 4, from: 3, xp: 4, heart: 0.14,
 
       move: function (e, game, dt) {
         var dx = game.px - e.x, dy = game.py - e.y;
@@ -323,7 +322,7 @@
     },
 
     shooter: {
-      r: 15, hp: 3, speed: [66, 84], points: 40, cost: 2.5, from: 4, xp: 3,
+      r: 15, hp: 3, speed: [56, 72], points: 40, cost: 2.5, from: 4, xp: 3, heart: 0.08,
       range: 178, reload: 1.9,
 
       move: function (e, game, dt) {
@@ -383,7 +382,7 @@
      * wind-up before each: nothing it does should ever be a surprise, only a
      * problem. Its arena is penned so it cannot wander off the page. */
     boss: {
-      r: 52, hp: 1, speed: [58, 58], points: 600, cost: 0, from: 999, xp: 12,
+      r: 52, hp: 1, speed: [52, 52], points: 600, cost: 0, from: 999, xp: 12, heart: 1,
       penned: true,
       hpFor: function (wave) { return 55 + wave * 13; },
 
@@ -530,7 +529,10 @@
 
   function spawn(game, name, at) {
     var type = TYPES[name];
-    var speedUp = Math.min(1.55, 1 + (game.wave - 1) * 0.05);
+    // Early waves are slow on purpose. The ramp keeps climbing well past the
+    // point most runs end, because a player who has taken every wing is doing
+    // 422px/s and nothing below that can ever touch them again.
+    var speedUp = Math.min(1.9, 1 + (game.wave - 1) * 0.035);
     var tough = 1 + (game.wave - 1) * 0.07;
     var spot = at || edgePoint();
 
@@ -566,8 +568,10 @@
     game.enemies.push(made);
   }
 
-  /** Budget for one wave, in the cost units on the type table. */
-  function waveBudget(wave) { return 2.5 + wave * 3; }
+  /** Budget for one wave, in the cost units on the type table. The square
+   *  term is what stops a good player settling in: early waves stay gentle,
+   *  but by the tenth the arena is filling faster than anyone empties it. */
+  function waveBudget(wave) { return 2.5 + wave * 3 + wave * wave * 0.14; }
 
   /** Everything unlocked by this wave, that the remaining budget can pay for. */
   function affordable(game) {
@@ -748,11 +752,28 @@
     }
   }
 
+  /* A heart only ever falls when there is a life to give back, so finding one
+   * is never a taunt — and unlike the crystals it will not come to you. You
+   * have to fly over and take it, which is the whole point of it. */
+  function dropHeart(game, e) {
+    if (game.lives >= game.maxLives) return;
+    var many = e.name === 'boss' ? 2 : (Math.random() < e.type.heart ? 1 : 0);
+    for (var i = 0; i < many; i++) {
+      var a = Math.random() * TAU;
+      game.hearts.push({
+        x: e.x, y: e.y,
+        vx: Math.cos(a) * 70, vy: Math.sin(a) * 70,
+        life: HEART_LIFE, bob: Math.random() * TAU
+      });
+    }
+  }
+
   function killEnemy(game, e, index) {
     game.enemies.splice(index, 1);
     game.kills += 1;
     game.score += e.type.points;
     dropGems(game, e);
+    dropHeart(game, e);
 
     if (e.name === 'boss') {
       game.bosses += 1;
@@ -863,6 +884,16 @@
     }
 
     ctx.restore();
+  }
+
+  /** A heart, drawn from two lobes and a point. Used on the floor and, at a
+   *  smaller size, for the row of lives inside the arena. */
+  function heartPath(ctx, s) {
+    ctx.beginPath();
+    ctx.moveTo(0, s * 0.95);
+    ctx.bezierCurveTo(-s * 1.5, -s * 0.15, -s * 0.6, -s * 1.15, 0, -s * 0.4);
+    ctx.bezierCurveTo(s * 0.6, -s * 1.15, s * 1.5, -s * 0.15, 0, s * 0.95);
+    ctx.closePath();
   }
 
   /** A tick on the frame for anything still outside the arena. */
@@ -1045,6 +1076,33 @@
     ctx.fillText('LV ' + game.level, W - 12, H - 24);
   }
 
+  /** Lives, in the corner of the arena itself. The strip above the canvas says
+   *  the same thing, but during a run your eyes are never up there. */
+  function drawLives(ctx, game) {
+    for (var i = 0; i < game.maxLives; i++) {
+      var held = i < game.lives;
+      ctx.save();
+      ctx.translate(24 + i * 21, 28);
+      // the last one left beats, so running on empty is impossible to miss
+      if (held && game.lives === 1) {
+        var panic = 1 + Math.sin(game.time * 9) * 0.16;
+        ctx.scale(panic, panic);
+      }
+      heartPath(ctx, 8);
+      if (held) {
+        ctx.fillStyle = '#ff2d55';
+        ctx.fill();
+        outline(ctx, 2.5);
+        ctx.stroke();
+      } else {
+        ctx.strokeStyle = 'rgba(17,17,20,.3)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+  }
+
   // ------------------------------------------------------------------- mount
 
   window.Arcade.mount({
@@ -1081,6 +1139,7 @@
       game.foeShots = [];
       game.enemies = [];
       game.gems = [];
+      game.hearts = [];
       game.bits = [];
       game.orbAngle = 0;
 
@@ -1105,8 +1164,10 @@
     },
 
     hud: function (game) {
+      // Filled for what you hold, hollow for what you have lost, so the strip
+      // shows the size of the cup as well as what is left in it.
       var hearts = '';
-      for (var i = 0; i < game.lives; i++) hearts += '◆';
+      for (var i = 0; i < game.maxLives; i++) hearts += i < game.lives ? '♥' : '♡';
       return 'WAVE ' + game.wave + '   ' + (hearts || '-');
     },
 
@@ -1236,7 +1297,7 @@
           // running away for ever cost something, and an earlier version that
           // sent free reinforcements instead did the exact opposite, jamming
           // the run in one wave until the pile-up killed you.
-          game.pressure = Math.min(0.7, game.pressure + dt * 0.09);
+          game.pressure = Math.min(0.62, game.pressure + dt * 0.085);
           game.overtime += dt;
         } else {
           game.score += WAVE_CLEAR_POINTS * game.wave;
@@ -1360,6 +1421,27 @@
         }
       }
 
+      for (i = game.hearts.length - 1; i >= 0; i--) {
+        var heart = game.hearts[i];
+        heart.life -= dt;
+        heart.x += heart.vx * dt;               // the toss out settles quickly
+        heart.y += heart.vy * dt;
+        heart.vx *= 0.88;
+        heart.vy *= 0.88;
+        heart.x = Math.min(W - HEART_R, Math.max(HEART_R, heart.x));
+        heart.y = Math.min(H - HEART_R, Math.max(HEART_R, heart.y));
+
+        if (heart.life <= 0) { game.hearts.splice(i, 1); continue; }
+
+        if (len(game.px - heart.x, game.py - heart.y) < PLAYER_R + HEART_R) {
+          game.hearts.splice(i, 1);
+          game.lives = Math.min(game.maxLives, game.lives + 1);
+          game.flash = { color: '#fffdf8', life: 0.18 };
+          particles(game, heart.x, heart.y, 12, '#ff2d55', 170);
+          sfx('heart');
+        }
+      }
+
       // --- dressing ------------------------------------------------------------
       game.invuln = Math.max(0, game.invuln - dt);
       game.dashing = Math.max(0, game.dashing - dt);
@@ -1422,6 +1504,7 @@
       }
 
       drawBuild(ctx, game);
+      drawLives(ctx, game);
 
       game.bits.forEach(function (p) {
         ctx.globalAlpha = Math.max(0, p.life / p.max);
@@ -1441,6 +1524,21 @@
         ctx.beginPath();
         ctx.moveTo(0, -6); ctx.lineTo(4.5, 0); ctx.lineTo(0, 6); ctx.lineTo(-4.5, 0);
         ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // hearts, which beat, and blink out their last two seconds
+      game.hearts.forEach(function (h) {
+        if (h.life < 2 && Math.floor(h.life * 7) % 2) return;
+        var beat = 1 + Math.sin(game.time * 7 + h.bob) * 0.09;
+        ctx.save();
+        ctx.translate(h.x, h.y);
+        ctx.scale(beat, beat);
+        outline(ctx, 3);
+        ctx.fillStyle = '#ff2d55';
+        heartPath(ctx, HEART_R);
         ctx.fill();
         ctx.stroke();
         ctx.restore();

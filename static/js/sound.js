@@ -30,7 +30,7 @@
   // Twenty swarm motes dying in the same frame is twenty of the same sound on
   // top of each other, which is not a sound any more. One of each per gap.
   var GAP = {
-    shot: 0.055, hit: 0.035, kill: 0.05, hurt: 0.2,
+    shot: 0.055, hit: 0.035, kill: 0.05, hurt: 0.2, heart: 0.3,
     levelup: 0.3, wave: 0.25, boss: 0.6, bossdown: 0.6, over: 0.6
   };
   var lastAt = {};
@@ -127,6 +127,12 @@
       [0, 4, 7, 12].forEach(function (semi, i) {
         var f = 330 * Math.pow(2, semi / 12);
         tone('triangle', f, f, 0.14, 0.24, i * 0.07);
+      });
+    },
+    heart: function () {
+      [0, 7, 12].forEach(function (semi, i) {
+        var f = 392 * Math.pow(2, semi / 12);
+        tone('sine', f, f, 0.2, 0.3, i * 0.06);
       });
     },
     wave: function () {
