@@ -79,7 +79,7 @@ p { margin: 0 0 1em; }
 }
 .masthead__inner {
   max-width: var(--wrap); margin: 0 auto;
-  display: flex; align-items: center; justify-content: space-between;
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between;
   gap: .75rem; padding: .55rem 1rem;
 }
 .logo { display: flex; align-items: center; gap: .55rem; text-decoration: none; }
