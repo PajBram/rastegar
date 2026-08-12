@@ -408,6 +408,9 @@ kbd {
 /* arcade — the canvas sets its own height, so the stage must not force one */
 .arcade { position: relative; background: var(--paper-pure); border: 2px solid var(--ink); }
 .arcade canvas { width: 100%; height: auto; display: block; touch-action: none; }
+/* Paj Says Survive is nearly square. Left to fill the panel it ends up taller
+   than the window, and in an arena you must see every edge at once. */
+#game-root[data-game="paj-says-survive"] .arcade { max-width: 700px; margin: 0 auto; }
 
 /* ------------------------------------------------------------ scoreboard */
 .panel--scores { background: var(--ink); color: var(--paper-pure); box-shadow: var(--shadow-red); }

@@ -1,0 +1,16 @@
+{
+  "slug": "paj-says-survive",
+  "title": "Paj Says Survive",
+  "kind": "ARCADE",
+  "order": 0,
+  "tilt": "a",
+  "glyph": "&#9992;",
+  "tagline": "Wings, a gun that never stops, and an arena that keeps filling up.",
+  "scripts": ["/static/js/arcade.js", "/static/games/paj-says-survive.js"],
+  "controls": [
+    "`Arrow keys` or `W` `A` `S` `D` fly. There is nothing else to press.",
+    "On a phone: hold your thumb anywhere on the panel and you fly to it. Let go and you coast.",
+    "The gun fires by itself, straight ahead — whichever way you are flying is where the shots go."
+  ],
+  "about": "A survival shooter seen from above. You are a winged thing in a paper arena, and everything else in it is coming for you from every edge at once.\n\nYou never aim and you never press fire. The gun does that. The whole game is in where you put yourself: how close you dare drift, when you turn, and how long you can keep the pack behind you instead of around you.\n\nStay up as long as you can. It gets worse. That is the point."
+}
