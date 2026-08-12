@@ -24,7 +24,7 @@ Pajs personliga lekstuga på nätet: webbläsarspel, en devlogg om iOS-appen TAG
 |---|---|
 | Generator | `build.py`, Python 3, endast stdlib |
 | Sajt | Handskriven HTML, CSS och JavaScript (ES5-stil, inga byggsteg) |
-| Hosting | GitHub Pages, publikt repo `PajBram/rastegar.se` |
+| Hosting | GitHub Pages, publikt repo `PajBram/rastegar` (mappen på datorn heter `~/rastegar.se`) |
 | Deploy | GitHub Actions kör `python3 build.py` och publicerar `dist/` vid varje push till `main` |
 | Domän | rastegar.se hos Loopia, fyra A-poster mot GitHub Pages |
 | Backend | Supabase (Postgres). Se `supabase/schema.sql` |
