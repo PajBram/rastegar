@@ -1,0 +1,17 @@
+{
+  "slug": "duel",
+  "title": "Duel",
+  "kind": "ARCADE",
+  "order": 5,
+  "tilt": "c",
+  "glyph": "&#9876;",
+  "tagline": "High, middle or low. Read the blade, meet it, answer it.",
+  "scripts": ["/static/js/arcade.js", "/static/games/duel.js"],
+  "controls": [
+    "`1` `2` `3` guard high, middle and low. Arrow keys `Up` `Right` `Down` do the same.",
+    "On a phone: tap the top, middle or bottom third of the panel.",
+    "The same input is your riposte — when they are staggered, commit and you cut.",
+    "Your blade takes a moment to travel. Committing late is the same as committing wrong."
+  ],
+  "about": "A sword fight is a conversation about three heights, and your opponent always speaks first.\n\nThey wind up in one line. Put your blade there before it lands and you parry, which staggers them for about three quarters of a second — long enough to answer, not long enough to think. Miss the line and you take it.\n\nFrom the second opponent onward they start feinting: showing one line and switching late. From the third they sometimes come straight back at you without the usual pause. Three cuts puts one down, and the next one is faster.\n\nYou have three lives for the whole run. The tempo never stops climbing."
+}

@@ -23,7 +23,11 @@ from urllib.parse import urlparse, parse_qs
 GAMES = {
     "one-piece-quiz": {"max_score": 6000, "max_rate": 40, "min_seconds": 20},
     "naruto-quiz": {"max_score": 6000, "max_rate": 40, "min_seconds": 20},
-    "slash": {"max_score": 200000, "max_rate": 900, "min_seconds": 5},
+    "bleach-quiz": {"max_score": 6000, "max_rate": 40, "min_seconds": 20},
+    "dragon-ball-quiz": {"max_score": 6000, "max_rate": 40, "min_seconds": 20},
+    "duel": {"max_score": 150000, "max_rate": 600, "min_seconds": 10},
+    "ink-bomb": {"max_score": 250000, "max_rate": 900, "min_seconds": 8},
+    "shuriken": {"max_score": 200000, "max_rate": 800, "min_seconds": 8},
     "panel-dash": {"max_score": 200000, "max_rate": 900, "min_seconds": 5},
     "paj-says-survive": {"max_score": 250000, "max_rate": 500, "min_seconds": 10},
 }
