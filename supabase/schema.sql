@@ -33,7 +33,10 @@ insert into public.games (slug, title, max_score, max_rate, min_seconds) values
   ('ink-bomb',          'Ink Bomb',         250000,   900,  8),
   ('shuriken',          'Shuriken',         200000,   800,  8),
   ('panel-dash',        'Panel Dash',       200000,   900,  5),
-  ('paj-says-survive',  'Paj Says Survive', 250000,   500, 10)
+  ('paj-says-survive',  'Paj Says Survive', 250000,   500, 10),
+  -- Words per minute, so the ceiling is tiny next to the arcade games: 250 is
+  -- well past the world record, and 12 a second only bites on a short drill.
+  ('keyboard-dojo',     'Keyboard Dojo',       250,    12, 15)
 on conflict (slug) do update
   set title = excluded.title,
       max_score = excluded.max_score,

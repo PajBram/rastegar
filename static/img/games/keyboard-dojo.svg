@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A keyboard drawn from above with one key lit red, and a line of text waiting above it">
+  <defs>
+    <linearGradient id="dojo" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f2ea"/><stop offset="100%" stop-color="#e2d6c6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#dojo)"/>
+
+  <!-- screentone, the same dot grid the other covers use -->
+  <g fill="#16120f" opacity=".07">
+    <circle cx="24" cy="24" r="2"/><circle cx="60" cy="24" r="2"/><circle cx="96" cy="24" r="2"/>
+    <circle cx="24" cy="60" r="2"/><circle cx="60" cy="60" r="2"/>
+    <circle cx="340" cy="264" r="2"/><circle cx="376" cy="264" r="2"/><circle cx="376" cy="228" r="2"/>
+  </g>
+
+  <!-- the line being typed: struck words solid, the rest still waiting -->
+  <g fill="#16120f">
+    <rect x="40" y="44" width="34" height="7" rx="3.5"/>
+    <rect x="82" y="44" width="22" height="7" rx="3.5"/>
+    <rect x="112" y="44" width="46" height="7" rx="3.5"/>
+  </g>
+  <rect x="166" y="42" width="9" height="11" fill="#ff2d55"/>
+  <g fill="#16120f" opacity=".22">
+    <rect x="183" y="44" width="28" height="7" rx="3.5"/>
+    <rect x="219" y="44" width="52" height="7" rx="3.5"/>
+    <rect x="279" y="44" width="30" height="7" rx="3.5"/>
+    <rect x="317" y="44" width="43" height="7" rx="3.5"/>
+  </g>
+
+  <!-- keyboard, four rows stepped the way the real thing is -->
+  <g fill="none" stroke="#16120f" stroke-width="2.5">
+    <g>
+      <rect x="30" y="100" width="22.5" height="28" rx="4"/><rect x="56.5" y="100" width="22.5" height="28" rx="4"/>
+      <rect x="83" y="100" width="22.5" height="28" rx="4"/><rect x="109.5" y="100" width="22.5" height="28" rx="4"/>
+      <rect x="136" y="100" width="22.5" height="28" rx="4"/><rect x="162.5" y="100" width="22.5" height="28" rx="4"/>
+      <rect x="189" y="100" width="22.5" height="28" rx="4"/><rect x="215.5" y="100" width="22.5" height="28" rx="4"/>
+      <rect x="242" y="100" width="22.5" height="28" rx="4"/><rect x="268.5" y="100" width="22.5" height="28" rx="4"/>
+      <rect x="295" y="100" width="22.5" height="28" rx="4"/><rect x="321.5" y="100" width="22.5" height="28" rx="4"/>
+      <rect x="348" y="100" width="22.5" height="28" rx="4"/>
+    </g>
+    <g>
+      <rect x="43" y="134" width="22.5" height="28" rx="4"/><rect x="69.5" y="134" width="22.5" height="28" rx="4"/>
+      <rect x="96" y="134" width="22.5" height="28" rx="4"/><rect x="122.5" y="134" width="22.5" height="28" rx="4"/>
+      <rect x="149" y="134" width="22.5" height="28" rx="4"/><rect x="175.5" y="134" width="22.5" height="28" rx="4"/>
+      <rect x="202" y="134" width="22.5" height="28" rx="4"/><rect x="228.5" y="134" width="22.5" height="28" rx="4"/>
+      <rect x="255" y="134" width="22.5" height="28" rx="4"/><rect x="281.5" y="134" width="22.5" height="28" rx="4"/>
+      <rect x="308" y="134" width="22.5" height="28" rx="4"/><rect x="334.5" y="134" width="22.5" height="28" rx="4"/>
+    </g>
+    <g>
+      <rect x="50" y="168" width="22.5" height="28" rx="4"/><rect x="76.5" y="168" width="22.5" height="28" rx="4"/>
+      <rect x="103" y="168" width="22.5" height="28" rx="4"/>
+      <rect x="156" y="168" width="22.5" height="28" rx="4"/><rect x="182.5" y="168" width="22.5" height="28" rx="4"/>
+      <rect x="209" y="168" width="22.5" height="28" rx="4"/><rect x="235.5" y="168" width="22.5" height="28" rx="4"/>
+      <rect x="262" y="168" width="22.5" height="28" rx="4"/><rect x="288.5" y="168" width="22.5" height="28" rx="4"/>
+      <rect x="315" y="168" width="22.5" height="28" rx="4"/><rect x="341.5" y="168" width="22.5" height="28" rx="4"/>
+    </g>
+    <g>
+      <rect x="57" y="202" width="22.5" height="28" rx="4"/><rect x="83.5" y="202" width="22.5" height="28" rx="4"/>
+      <rect x="110" y="202" width="22.5" height="28" rx="4"/><rect x="136.5" y="202" width="22.5" height="28" rx="4"/>
+      <rect x="163" y="202" width="22.5" height="28" rx="4"/><rect x="189.5" y="202" width="22.5" height="28" rx="4"/>
+      <rect x="216" y="202" width="22.5" height="28" rx="4"/><rect x="242.5" y="202" width="22.5" height="28" rx="4"/>
+      <rect x="269" y="202" width="22.5" height="28" rx="4"/><rect x="295.5" y="202" width="22.5" height="28" rx="4"/>
+    </g>
+    <rect x="120" y="236" width="170" height="28" rx="4"/>
+  </g>
+
+  <!-- the key the drill is asking for, and the home-row bumps either side of it -->
+  <rect x="129.5" y="168" width="22.5" height="28" rx="4" fill="#ff2d55"/>
+  <g stroke="#c9a582" stroke-width="2.5" stroke-linecap="round">
+    <line x1="135" y1="190" x2="146" y2="190"/>
+    <line x1="267" y1="190" x2="278" y2="190"/>
+  </g>
+</svg>
