@@ -22,7 +22,7 @@
   var SPEED = 268;              // px per second, flat out
   var DAMP = 3.2;              // how quickly you coast to a stop
   var PLAYER_R = 13;
-  var INVULN = 1.2;
+  var INVULN = 1.5;
 
   // --- the gun -----------------------------------------------------------
   var FIRE_EVERY = 0.185;
@@ -39,8 +39,7 @@
   // --- waves -------------------------------------------------------------
   var BREATHER = 2.4;          // seconds of quiet between waves
   var WAVE_CLEAR_POINTS = 25;  // times the wave number
-  var OVERTIME = 7;            // seconds a wave may drag on before reinforcements
-  var REINFORCE_EVERY = 2.4;
+  var OVERTIME = 7;            // seconds of stragglers before a wave is called done
 
   // --- the boss -----------------------------------------------------------
   var BOSS_EVERY = 5;          // waves
@@ -206,7 +205,7 @@
     if (game.xp < game.xpNeed) return;
     game.xp -= game.xpNeed;
     game.level += 1;
-    game.xpNeed = 8 + game.level * 6;
+    game.xpNeed = 6 + game.level * 6;
     game.choices = drawChoices(game);
     if (!game.choices.length) return;          // everything is maxed: carry on
     game.pick = 0;
@@ -259,7 +258,7 @@
     },
 
     swarm: {
-      r: 8, hp: 1, speed: [126, 168], points: 8, cost: 0.5, from: 2, xp: 1, pack: [4, 7],
+      r: 8, hp: 1, speed: [126, 168], points: 8, cost: 0.9, from: 2, xp: 1, pack: [3, 5],
 
       move: function (e, game, dt) {
         var dx = game.px - e.x, dy = game.py - e.y;
@@ -386,7 +385,7 @@
     boss: {
       r: 52, hp: 1, speed: [58, 58], points: 600, cost: 0, from: 999, xp: 12,
       penned: true,
-      hpFor: function (wave) { return 84 + wave * 15; },
+      hpFor: function (wave) { return 55 + wave * 13; },
 
       move: function (e, game, dt) {
         var rage = e.hp / e.maxhp < 0.4 ? 1.45 : 1;
@@ -568,7 +567,7 @@
   }
 
   /** Budget for one wave, in the cost units on the type table. */
-  function waveBudget(wave) { return 4 + wave * 3.2; }
+  function waveBudget(wave) { return 2.5 + wave * 3; }
 
   /** Everything unlocked by this wave, that the remaining budget can pay for. */
   function affordable(game) {
@@ -588,7 +587,6 @@
     game.wave = wave;
     game.spawnIn = 0.35;
     game.overtime = 0;
-    game.reinforceIn = REINFORCE_EVERY;
     game.headline = null;
 
     if (wave % BOSS_EVERY === 0) {
@@ -720,6 +718,7 @@
     if (game.invuln > 0 || game.dashing > 0) return;
     game.lives -= 1;
     game.invuln = INVULN;
+    game.impact = 0.07;
     game.shake = 0.4 + weight * 0.25;
     game.flash = { color: '#ff2d55', life: 0.3 };
 
@@ -758,6 +757,7 @@
     if (e.name === 'boss') {
       game.bosses += 1;
       sfx('bossdown');
+      game.impact = 0.15;
       game.shake = 0.9;
       game.flash = { color: '#fffdf8', life: 0.5 };
       game.banner = { text: 'DOWN', under: BOSS_NAME, life: 1.8, max: 1.8 };
@@ -767,6 +767,7 @@
     }
 
     sfx('kill');
+    if (e.r > 20) game.impact = 0.07;              // a tank going down earns one
     game.shake = Math.max(game.shake, e.r > 20 ? 0.3 : 0.12);
     particles(game, e.x, e.y, e.r > 20 ? 22 : 10, '#111114', 150 + e.r * 4);
   }
@@ -1069,6 +1070,7 @@
       game.dashIn = 0;
       game.lastTap = -9;
       game.shake = 0;
+      game.impact = 0;
       game.flash = null;
       game.banner = null;
       game.kills = 0;
@@ -1086,7 +1088,7 @@
       game.taken = {};
       game.level = 0;
       game.xp = 0;
-      game.xpNeed = 8;
+      game.xpNeed = 6;
       game.choices = null;
       game.pick = 0;
       game.panel = 0;
@@ -1099,7 +1101,6 @@
       game.breather = 0;
       game.pressure = 0;              // ramps up once a wave's spawns are done
       game.overtime = 0;
-      game.reinforceIn = 0;
       startWave(game, 1);
     },
 
@@ -1154,6 +1155,14 @@
       // which is why the run is timed on game.survived and not on game.time.
       if (game.mode === 'levelup') {
         game.panel = Math.min(0.4, game.panel + dt);
+        return;
+      }
+
+      // An impact frame: the page stops dead for a few frames on the hits worth
+      // stopping for. Nothing moves, and draw() flips the whole panel to
+      // negative, which is the oldest trick in the manga book.
+      if (game.impact > 0) {
+        game.impact -= dt;
         return;
       }
 
@@ -1219,20 +1228,16 @@
             game.spawnIn = Math.max(0.3, 1 - game.wave * 0.035) * (0.75 + Math.random() * 0.5);
           }
           game.pressure = 0;
-        } else if (game.enemies.length) {
-          // Nothing left to send. Lean on the stragglers so the wave cannot
-          // stall on one enemy in a corner — and if it still drags, start
-          // sending free reinforcements, because outrunning everything for
-          // ever is not meant to be a way to play.
+        } else if (game.enemies.length && game.overtime < OVERTIME) {
+          // Nothing left to send. Lean on the stragglers so a wave does not
+          // hang on one mote weaving about in a corner — and if they still
+          // will not die, the wave ends anyway and they come along into the
+          // next one. Waves must always keep arriving: that is what makes
+          // running away for ever cost something, and an earlier version that
+          // sent free reinforcements instead did the exact opposite, jamming
+          // the run in one wave until the pile-up killed you.
           game.pressure = Math.min(0.7, game.pressure + dt * 0.09);
           game.overtime += dt;
-          if (game.overtime > OVERTIME) {
-            game.reinforceIn -= dt;
-            if (game.reinforceIn <= 0) {
-              spawn(game, 'rusher');
-              game.reinforceIn = REINFORCE_EVERY;
-            }
-          }
         } else {
           game.score += WAVE_CLEAR_POINTS * game.wave;
           game.mode = 'breather';
@@ -1332,15 +1337,19 @@
         var gdx = game.px - gem.x, gdy = game.py - gem.y;
         var gd = len(gdx, gdy) || 1;
 
-        // Inside the magnet they come to you fast; after a while they come
-        // anyway, so a crystal can never be stranded in a corner.
+        // Inside the magnet they home at more than your own top speed, and
+        // after a while they come anyway. Both numbers matter: an earlier
+        // version accelerated them against heavy drag, which settled at about
+        // 42px/s — so a player doing the one thing this game asks of them,
+        // keeping moving, outran their own experience and never levelled.
         if (gd < st.magnet || gem.age > GEM_GIVE_UP) {
-          var pull = (gd < st.magnet ? 900 : 260) * dt;
-          gem.vx += gdx / gd * pull;
-          gem.vy += gdy / gd * pull;
+          var pull = gd < st.magnet ? 430 : 165;
+          gem.vx = gdx / gd * pull;
+          gem.vy = gdy / gd * pull;
+        } else {
+          gem.vx *= 0.9;                        // the scatter on spawn settles
+          gem.vy *= 0.9;
         }
-        gem.vx *= 0.9;
-        gem.vy *= 0.9;
         gem.x += gem.vx * dt;
         gem.y += gem.vy * dt;
 
@@ -1506,6 +1515,20 @@
       ctx.strokeStyle = '#111114';
       ctx.lineWidth = 8;
       ctx.strokeRect(4, 4, W - 8, H - 8);
+
+      // 'difference' against white is exactly an inversion, frame and all —
+      // then the saturation pass drops it to black and white, because inverting
+      // #ff2d55 lands on a teal, and this page only owns the one accent. Real
+      // impact frames are black and white anyway.
+      if (game.impact > 0) {
+        ctx.globalCompositeOperation = 'difference';
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'saturation';
+        ctx.fillStyle = '#808080';
+        ctx.fillRect(0, 0, W, H);
+        ctx.globalCompositeOperation = 'source-over';
+      }
     }
   });
 
