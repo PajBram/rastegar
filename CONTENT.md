@@ -157,6 +157,18 @@ Kom ihåg:
 
 ---
 
+## Testa highscore och gästbok lokalt
+
+Utan att röra den riktiga databasen:
+
+```bash
+python3 tools/mock_backend.py
+```
+
+Den härmar Supabase på `http://localhost:8001` med samma regler som `supabase/schema.sql`. Sätt `backend` i `content/site.json` till `{"url": "http://localhost:8001", "anonKey": "mock"}`, bygg om, testa — och **återställ till tomma värden innan du commit:ar**.
+
+---
+
 ## Vad man **inte** ska göra
 
 - Redigera i `dist/` — den skrivs över vid varje bygge.

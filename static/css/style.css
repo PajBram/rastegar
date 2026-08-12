@@ -381,7 +381,11 @@ kbd {
   font-family: var(--display); font-size: 1.3rem; text-transform: uppercase;
   transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
 }
-.difficulty small { font-family: var(--body); font-size: .8rem; text-transform: none; letter-spacing: 0; color: var(--ink-soft); }
+.difficulty small {
+  display: block; margin-top: .2rem; font-family: var(--body); font-size: .8rem;
+  line-height: 1.35; text-transform: none; letter-spacing: 0; color: var(--ink-soft);
+}
+.difficulty > span:last-child { white-space: nowrap; align-self: flex-start; }
 .difficulty:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0 var(--red); }
 .quiz__question { font-family: var(--display); font-size: clamp(1.3rem, 5.4vw, 1.9rem); line-height: 1.15; margin: 0 0 1rem; }
 .quiz__progress { font-family: var(--mono); font-size: .78rem; letter-spacing: .1em; color: var(--ink-soft); margin-bottom: .3rem; }

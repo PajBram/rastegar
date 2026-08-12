@@ -29,13 +29,17 @@
     };
   }
 
+  /** POST to a database function. Tolerates an empty body, which is what a
+   *  function returning nothing answers with. */
   function rpc(name, body) {
     return fetch(cfg.url.replace(/\/$/, '') + '/rest/v1/rpc/' + name, {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify(body || {})
     }).then(function (res) {
-      return res.json().then(function (data) {
+      return res.text().then(function (text) {
+        var data = null;
+        if (text) { try { data = JSON.parse(text); } catch (e) { data = text; } }
         if (!res.ok) {
           throw new Error((data && (data.message || data.hint)) || 'Request failed');
         }

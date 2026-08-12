@@ -109,7 +109,9 @@
       headers: headers(),
       body: JSON.stringify({ p_name: name, p_message: text, p_website: honeypot })
     }).then(function (res) {
-      return res.json().then(function (data) {
+      return res.text().then(function (body) {
+        var data = null;
+        if (body) { try { data = JSON.parse(body); } catch (e) { data = body; } }
         if (!res.ok) throw new Error((data && (data.message || data.hint)) || 'Rejected');
         return data;
       });

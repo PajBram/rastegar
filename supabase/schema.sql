@@ -147,8 +147,10 @@ end;
 $$;
 
 -- Post a score. Everything that can be checked, is checked here.
+-- Returns the new row's id: a function returning void answers with an empty
+-- body, which is awkward for the caller to tell apart from a failure.
 create or replace function public.submit_score(p_token uuid, p_name text, p_score integer)
-returns void
+returns bigint
 language plpgsql
 security definer
 set search_path = public
@@ -159,10 +161,11 @@ declare
   v_seconds numeric;
   v_client  text := client_key();
   v_recent  integer;
+  v_id      bigint;
 begin
   p_name := btrim(coalesce(p_name, ''));
 
-  if p_name !~ '^[A-Za-z0-9 _.\-]{3,12}$' then
+  if p_name !~ '^[A-Za-z0-9 _.-]{3,12}$' then
     raise exception 'Names are 3 to 12 characters: letters, numbers, space, - _ .';
   end if;
 
@@ -191,23 +194,24 @@ begin
   end if;
 
   select count(*) into v_recent
-    from scores s
-    join runs r on r.game = s.game
-   where r.client = v_client
-     and s.created_at > now() - interval '1 minute';
+    from runs
+   where client = v_client
+     and used_at > now() - interval '1 minute';
 
-  if v_recent > 20 then
+  if v_recent > 10 then
     raise exception 'Too many scores at once.';
   end if;
 
   update runs set used_at = now() where token = p_token;
-  insert into scores (game, name, score) values (v_run.game, p_name, p_score);
+  insert into scores (game, name, score) values (v_run.game, p_name, p_score)
+  returning id into v_id;
+  return v_id;
 end;
 $$;
 
 -- Sign the guestbook. p_website is the honeypot: a real person never fills it.
 create or replace function public.sign_guestbook(p_name text, p_message text, p_website text default '')
-returns void
+returns bigint
 language plpgsql
 security definer
 set search_path = public
@@ -215,9 +219,10 @@ as $$
 declare
   v_client text := client_key();
   v_recent integer;
+  v_id     bigint;
 begin
   if coalesce(btrim(p_website), '') <> '' then
-    return;                       -- a bot filled the hidden field: quietly drop it
+    return 0;                     -- a bot filled the hidden field: quietly drop it
   end if;
 
   p_name := btrim(coalesce(p_name, ''));
@@ -245,7 +250,9 @@ begin
     raise exception 'That message is already on the wall.';
   end if;
 
-  insert into guestbook (name, message, client) values (p_name, p_message, v_client);
+  insert into guestbook (name, message, client) values (p_name, p_message, v_client)
+  returning id into v_id;
+  return v_id;
 end;
 $$;
 

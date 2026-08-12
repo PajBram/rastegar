@@ -420,7 +420,34 @@ def build() -> None:
                                     canonical=site["url"]))
     write(DIST / "sitemap.xml", sitemap(site, posts, games))
 
+    broken = check_links()
     print(f"built {len(posts)} posts, {len(games)} games -> dist/")
+    for page, url in broken:
+        print(f"  WARNING broken link: {page} -> {url}")
+
+
+def check_links() -> list:
+    """Every internal href and src must point at something in dist/.
+
+    Cheap insurance: a renamed slug or a typo in a template shows up here
+    instead of as a 404 for a visitor.
+    """
+    available = set()
+    for path in DIST.rglob("*"):
+        if path.is_file():
+            url = "/" + str(path.relative_to(DIST))
+            available.add(url)
+            if path.name == "index.html":
+                available.add(url[: -len("index.html")])
+
+    broken = []
+    for page in DIST.rglob("*.html"):
+        text = page.read_text(encoding="utf-8")
+        for url in re.findall(r'(?:href|src)="([^"#?]+)"', text):
+            if url.startswith(("http", "mailto:", "data:")) or url in available:
+                continue
+            broken.append((str(page.relative_to(DIST)), url))
+    return broken
 
 
 def sitemap(site: dict, posts: list[dict], games: list[dict]) -> str:
