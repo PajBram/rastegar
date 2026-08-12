@@ -1,0 +1,33 @@
+<section class="hero">
+  <div class="hero__panel">
+    <span class="kicker">CHAPTER 001</span>
+    <h1 class="hero__title">RASTEGAR</h1>
+    <p class="hero__tagline">{{tagline}}</p>
+    <div class="hero__cta">
+      <a class="btn" href="/games/">Play something</a>
+      <a class="btn btn--ghost" href="/devlog/">Read the devlog</a>
+    </div>
+  </div>
+  <div class="hero__art" aria-hidden="true">
+    <span class="speedlines speedlines--hero"></span>
+    <span class="hero__burst"><span>PLAY</span></span>
+  </div>
+</section>
+
+<section class="section">
+  <h2 class="section__title"><span>WHO</span></h2>
+  <div class="panel panel--intro prose">{{intro}}</div>
+</section>
+
+<section class="section">
+  <h2 class="section__title"><span>THE SHELF</span></h2>
+  <div class="grid grid--games">{{game_cards}}</div>
+  <a class="more more--block" href="/games/">All games <span aria-hidden="true">&rarr;</span></a>
+</section>
+
+<section class="section">
+  <h2 class="section__title"><span>LATEST DEVLOG</span></h2>
+  {{latest_post}}
+  <div class="panel panel--status prose">{{status}}</div>
+  <a class="more more--block" href="/devlog/">Every entry <span aria-hidden="true">&rarr;</span></a>
+</section>

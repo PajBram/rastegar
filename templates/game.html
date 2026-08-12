@@ -1,0 +1,30 @@
+<section class="pagehead pagehead--game">
+  <span class="kicker">{{kind}}</span>
+  <h1 class="pagehead__title">{{title}}</h1>
+  <p class="pagehead__sub">{{tagline}}</p>
+</section>
+
+<section class="section section--game">
+  <div class="panel panel--stage">
+    <div id="game-root" data-game="{{slug}}"{{data_attrs}}>{{mount}}</div>
+  </div>
+</section>
+
+<section class="section grid grid--split">
+  <div class="panel prose">
+    <h3>About</h3>
+    {{spoiler}}
+    {{about}}
+    <h4>Controls</h4>
+    <ul class="controls">{{controls}}</ul>
+  </div>
+  <div class="panel panel--scores">
+    <h3>Highscores</h3>
+    <div class="scoreboard" data-game="{{slug}}" data-limit="10">
+      <p class="scoreboard__empty">Loading&hellip;</p>
+    </div>
+  </div>
+</section>
+
+<script src="/static/js/scores.js" defer></script>
+{{scripts}}
