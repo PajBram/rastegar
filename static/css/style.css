@@ -501,6 +501,26 @@ kbd { font-family: var(--mono); font-size: .82em; background: var(--sand); paddi
   display: flex; align-items: center; gap: .45rem; cursor: pointer; color: var(--ink-soft);
   font-size: .66rem; font-weight: 600; letter-spacing: .16em; text-transform: uppercase;
 }
+/* The typist's own board, drawn on the dark overlay rather than on paper. */
+.dojo__board { width: 100%; max-width: 22rem; text-align: left; }
+.dojo__board h4 {
+  margin: 0 0 .5rem; color: rgba(255, 255, 255, .75); font-family: var(--sans);
+  font-size: .66rem; font-weight: 600; letter-spacing: .18em; text-transform: uppercase;
+}
+.dojo__board ol { list-style: none; padding: 0; margin: 0; counter-reset: rank; }
+.dojo__board li {
+  display: flex; align-items: baseline; gap: .8rem; padding: .4rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, .15); font-size: .92rem; color: #fff;
+}
+.dojo__board li::before {
+  counter-increment: rank; content: counter(rank);
+  font-family: var(--serif); font-size: .92rem; color: var(--tan); min-width: 1.4em;
+}
+.dojo__board .who { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.dojo__board .pts { font-family: var(--serif); font-size: 1.05rem; }
+.dojo__board li.mine { color: var(--tan); }
+.dojo__board .scoreboard__empty { color: rgba(255, 255, 255, .7); }
+
 .dojo__worst { display: flex; flex-wrap: wrap; gap: .45rem; align-items: center; justify-content: center; }
 .dojo__worst code { font-family: var(--mono); font-size: .85rem; background: var(--red); color: #fff; padding: .12em .5em; }
 .dojo__note { font-size: .88rem; max-width: 38ch; }

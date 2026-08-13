@@ -163,6 +163,53 @@
 
   function pick(list) { return list[Math.floor(Math.random() * list.length)]; }
 
+  /* ------------------------------------------------------------ own board */
+  /* The shared scoreboard is one list for the whole trainer, which cannot say
+     whether 40 WPM on the bottom row beats 40 on sentences. These are kept per
+     drill, in this browser, and work whether or not the backend answers. */
+  function bests() {
+    return (prefs.best && typeof prefs.best === 'object') ? prefs.best : {};
+  }
+
+  function bestFor(name) {
+    var row = bests()[name];
+    return (row && typeof row.wpm === 'number') ? row : null;
+  }
+
+  /** Store the run if it beats the drill's record. Returns true when it did.
+   *  Sloppy runs are not records: typing 150 WPM while getting a fifth of it
+   *  right is exactly the habit this trainer is arguing against. */
+  function remember(name, s) {
+    if (!s.wpm || s.accuracy < 90) return false;
+    var table = bests();
+    var old = table[name];
+    if (old && old.wpm >= s.wpm) return false;
+    table[name] = { wpm: s.wpm, accuracy: s.accuracy, at: Date.now() };
+    prefs.best = table;
+    savePrefs();
+    return true;
+  }
+
+  function localBoard(highlightName) {
+    var table = bests();
+    var names = Object.keys(table).sort(function (a, b) { return table[b].wpm - table[a].wpm; });
+    var wrap = el('div', 'dojo__board');
+    wrap.appendChild(el('h4', null, 'Your best on this keyboard'));
+    if (!names.length) {
+      wrap.appendChild(el('p', 'scoreboard__empty', 'Finish a drill and it lands here.'));
+      return wrap;
+    }
+    var list = document.createElement('ol');
+    names.slice(0, 6).forEach(function (name) {
+      var li = el('li', name === highlightName ? 'mine' : null);
+      li.appendChild(el('span', 'who', name));
+      li.appendChild(el('span', 'pts', String(table[name].wpm)));
+      list.appendChild(li);
+    });
+    wrap.appendChild(list);
+    return wrap;
+  }
+
   function group(pool, min, max) {
     var n = min + Math.floor(Math.random() * (max - min + 1));
     var out = '';
@@ -567,12 +614,21 @@
     var s = paintStats();
     highlight();
 
+    var record = remember(drill.name, s);
+
     ui.overlay.innerHTML = '';
     ui.overlay.classList.remove('hidden');
     ui.overlay.classList.remove('stage__overlay--list');
-    ui.overlay.appendChild(el('h3', null, 'Run complete'));
+    ui.overlay.appendChild(el('h3', null, record ? 'Personal best' : 'Run complete'));
     ui.overlay.appendChild(el('p', 'big', String(s.wpm)));
     ui.overlay.appendChild(el('p', null, 'words per minute at ' + s.accuracy + '% accuracy'));
+
+    var best = bestFor(drill.name);
+    if (!record && best) {
+      ui.overlay.appendChild(el('p', 'dojo__note',
+        'Your best on this drill is ' + best.wpm + ' WPM.'));
+    }
+    ui.overlay.appendChild(localBoard(drill.name));
 
     var worst = Object.keys(missByChar).sort(function (a, b) {
       return missByChar[b] - missByChar[a];
@@ -589,7 +645,8 @@
     // Accuracy below 90% means the speed was borrowed, not earned.
     if (s.accuracy < 90) {
       ui.overlay.appendChild(el('p', 'dojo__note',
-        'Under 90% accurate. Slow down until the mistakes stop; the speed follows on its own.'));
+        'Under 90% accurate, so this run does not count towards your best. '
+        + 'Slow down until the mistakes stop; the speed follows on its own.'));
     }
 
     if (window.Scores && (token || !window.Scores.configured)) {
@@ -633,7 +690,9 @@
       var left = el('span');
       left.appendChild(document.createTextNode(d.name));
       left.appendChild(document.createElement('br'));
-      left.appendChild(el('small', null, d.blurb));
+      var best = bestFor(d.name);
+      left.appendChild(el('small', null,
+        best ? d.blurb + ' — best ' + best.wpm + ' WPM' : d.blurb));
       button.appendChild(left);
       // The badge is not decoration: the shared .difficulty style dresses the
       // last child as one, and without it the drill's name is what gets dressed.
