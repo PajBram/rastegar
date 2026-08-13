@@ -143,14 +143,39 @@ def markdown(src: str) -> str:
             out.append(f"<blockquote>{inline(' '.join(quote))}</blockquote>")
             continue
 
+        # A table: a header row, a |---|---| rule, then body rows.
+        if stripped.startswith("|") and i + 1 < len(lines) and re.fullmatch(
+                r"\|[\s:|-]+\|", lines[i + 1].strip()):
+            def cells(row):
+                return [c.strip() for c in row.strip().strip("|").split("|")]
+            head = cells(lines[i])
+            i += 2
+            body = []
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                body.append(cells(lines[i]))
+                i += 1
+            thead = "".join(f"<th>{inline(c)}</th>" for c in head)
+            rows = "".join("<tr>" + "".join(f"<td>{inline(c)}</td>" for c in r) + "</tr>"
+                           for r in body)
+            out.append(f"<div class=\"table-wrap\"><table><thead><tr>{thead}</tr></thead>"
+                       f"<tbody>{rows}</tbody></table></div>")
+            continue
+
         if re.match(r"[-*]\s+", stripped) or re.match(r"\d+\.\s+", stripped):
             ordered = bool(re.match(r"\d+\.\s+", stripped))
             tag = "ol" if ordered else "ul"
             pattern = r"\d+\.\s+" if ordered else r"[-*]\s+"
             items = []
             while i < len(lines) and re.match(pattern, lines[i].strip()):
-                items.append(inline(re.sub(pattern, "", lines[i].strip(), count=1)))
+                item = [re.sub(pattern, "", lines[i].strip(), count=1)]
                 i += 1
+                # A wrapped bullet continues on the next line; keep it in the
+                # same item instead of dropping it out of the list.
+                while (i < len(lines) and lines[i].strip()
+                       and not re.match(r"[-*]\s+|\d+\.\s+|#{1,4}\s|>\s|\||```", lines[i].strip())):
+                    item.append(lines[i].strip())
+                    i += 1
+                items.append(inline(" ".join(item)))
             body = "".join(f"<li>{item}</li>" for item in items)
             out.append(f"<{tag}>{body}</{tag}>")
             continue
@@ -429,6 +454,20 @@ def build() -> None:
          body=render(read_template("about.html"), content=markdown(about_body),
                      links="".join(f'<a class="btn btn--small" href="{l["url"]}">{html.escape(l["label"])}</a>'
                                    for l in site.get("links", []))))
+
+    # Standalone documents (privacy policy and anything like it) ------------
+    # Each file in content/docs/ names its own address in the front matter, so
+    # a legal page can live at a stable URL of its own.
+    doc_tpl = read_template("doc.html")
+    for path in sorted((CONTENT / "docs").glob("*.md")) if (CONTENT / "docs").exists() else []:
+        meta, body = parse_front_matter(path.read_text(encoding="utf-8"))
+        url = meta.get("path", "/" + path.stem + "/")
+        page(url, title=f"{meta.get('title', path.stem)} — {site['name']}",
+             description=meta.get("summary", ""), active="",
+             body=render(doc_tpl, title=html.escape(meta.get("title", path.stem)),
+                         standfirst=html.escape(meta.get("standfirst", "")),
+                         updated=html.escape(meta.get("updated", "")),
+                         content=markdown(body)))
 
     # Guestbook -------------------------------------------------------------
     page("/guestbook/", title=f"Guestbook — {site['name']}",

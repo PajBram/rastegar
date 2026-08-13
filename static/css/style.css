@@ -714,3 +714,17 @@ body.fs-locked { overflow: hidden; }
 #game-root:fullscreen .fs-exit,
 #game-root:-webkit-full-screen .fs-exit,
 #game-root.fs-fallback .fs-exit { display: block; }
+
+/* --------------------------------------------------------------- tables */
+.table-wrap { overflow-x: auto; margin: 1.8em 0; }
+.prose table { border-collapse: collapse; width: 100%; font-size: .96rem; }
+.prose th, .prose td {
+  text-align: left; padding: .7rem .9rem; border-bottom: 1px solid var(--hair);
+  vertical-align: top;
+}
+.prose th {
+  font-family: var(--sans); font-size: .68rem; font-weight: 600;
+  letter-spacing: .16em; text-transform: uppercase; color: var(--ink-soft);
+  border-bottom-color: var(--ink);
+}
+.prose tbody tr:last-child td { border-bottom: 0; }
