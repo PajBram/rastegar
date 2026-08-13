@@ -3,7 +3,6 @@
   "title": "Keyboard Dojo",
   "kind": "TRAINER",
   "order": 8,
-  "tilt": "a",
   "glyph": "&#9000;",
   "tagline": "Learn where the keys are and stop looking down at your hands.",
   "scripts": ["/static/games/keyboard-dojo.js"],

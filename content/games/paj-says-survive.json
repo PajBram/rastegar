@@ -3,7 +3,6 @@
   "title": "Paj Says Survive",
   "kind": "ARCADE",
   "order": 0,
-  "tilt": "a",
   "glyph": "&#9992;",
   "tagline": "Wings, a gun that never stops, and an arena that keeps filling up.",
   "scripts": ["/static/js/sound.js", "/static/js/arcade.js", "/static/games/paj-says-survive.js"],

@@ -48,7 +48,6 @@ Brödtext. Rubriker med ## och ###, **fetstil**, *kursiv*, `kod`,
   "title": "Bleach",
   "kicker": "THE COOL ONE",
   "quiz": "bleach-quiz",
-  "tilt": "c",
   "verdict": "En eller två meningar om serien som helhet.",
   "entries": [
     { "title": "Soul Society", "rating": 5, "status": "watched", "note": "Kort omdöme." }
@@ -59,7 +58,6 @@ Brödtext. Rubriker med ## och ###, **fetstil**, *kursiv*, `kod`,
 - `rating` är 1–5 och ritas som stjärnor.
 - `status` är `watched`, `watching` eller `dropped`.
 - `quiz` är sluggen på ett spel i `content/games/`. Finns inget sådant spel visas "Quiz coming soon" i stället. Sätt `null` om serien saknar quiz.
-- `tilt` (`a`, `b`, `c`) lutar panelen olika mycket. Variera mellan serierna.
 
 ---
 
@@ -98,7 +96,6 @@ Varje fråga:
   "title": "Bleach Quiz",
   "kind": "QUIZ",
   "order": 3,
-  "tilt": "c",
   "glyph": "&#9876;",
   "tagline": "En rad som lockar.",
   "spoiler": "Spoilervarning som visas på sidan.",

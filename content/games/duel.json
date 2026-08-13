@@ -3,7 +3,6 @@
   "title": "Duel",
   "kind": "ARCADE",
   "order": 5,
-  "tilt": "c",
   "glyph": "&#9876;",
   "tagline": "High, middle or low. Read the blade, meet it, answer it.",
   "scripts": ["/static/js/arcade.js", "/static/games/duel.js"],

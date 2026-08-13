@@ -3,7 +3,6 @@
   "title": "Shuriken",
   "kind": "ARCADE",
   "order": 7,
-  "tilt": "b",
   "glyph": "&#10022;",
   "tagline": "The aim swings by itself. All you say is when, twice.",
   "scripts": ["/static/js/arcade.js", "/static/games/shuriken.js"],

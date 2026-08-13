@@ -3,7 +3,6 @@
   "title": "Panel Dash",
   "kind": "ARCADE",
   "order": 4,
-  "tilt": "a",
   "glyph": "&#9646;",
   "tagline": "Fall through the page. Miss the panels, catch the red.",
   "scripts": ["/static/js/arcade.js", "/static/games/panel-dash.js"],

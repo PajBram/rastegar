@@ -3,7 +3,6 @@
   "title": "Ink Bomb",
   "kind": "ARCADE",
   "order": 6,
-  "tilt": "a",
   "glyph": "&#9679;",
   "tagline": "One drop per round. Everything it touches goes off too.",
   "scripts": ["/static/js/arcade.js", "/static/games/ink-bomb.js"],

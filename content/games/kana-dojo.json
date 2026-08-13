@@ -3,7 +3,6 @@
   "title": "Kana Dojo",
   "kind": "TRAINER",
   "order": 9,
-  "tilt": "b",
   "glyph": "&#12354;",
   "tagline": "Learn to read Japanese, one character at a time.",
   "scripts": ["/static/games/kana-dojo.js"],

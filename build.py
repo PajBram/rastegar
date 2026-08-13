@@ -307,14 +307,13 @@ def no_scores() -> str:
 def game_card(game: dict) -> str:
     art = (f'<img src="{game["cover"]}" alt="" loading="lazy" decoding="async">'
            if game.get("cover") else game.get("glyph", "&#9733;"))
-    return f"""<a class="panel panel--game tilt-{game.get('tilt', 'a')}" href="{game['url']}">
+    return f"""<a class="panel panel--game" href="{game['url']}">
   <span class="game-card__art" aria-hidden="true">{art}</span>
   <span class="game-card__text">
     <span class="kicker">{html.escape(game.get('kind', 'GAME'))}</span>
     <span class="game-card__title">{html.escape(game['title'])}</span>
     <span class="game-card__tagline">{html.escape(game.get('tagline', ''))}</span>
   </span>
-  <span class="speedlines" aria-hidden="true"></span>
 </a>"""
 
 
@@ -331,7 +330,7 @@ def series_block(s: dict, games: list[dict]) -> str:
       <span class="entry__status status--{html.escape(str(e.get('status', 'watched')).replace(' ', '-'))}">{html.escape(str(e.get('status', 'watched'))).upper()}</span>
       <p>{inline(e['note'])}</p>
     </li>""" for e in s["entries"])
-    return f"""<section class="panel panel--series tilt-{s.get('tilt', 'a')}">
+    return f"""<section class="panel panel--series">
   <header class="series__head">
     <span class="kicker">{html.escape(s.get('kicker', ''))}</span>
     <h3>{html.escape(s['title'])}</h3>
