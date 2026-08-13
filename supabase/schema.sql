@@ -36,7 +36,10 @@ insert into public.games (slug, title, max_score, max_rate, min_seconds) values
   ('paj-says-survive',  'Paj Says Survive', 250000,   500, 10),
   -- Words per minute, so the ceiling is tiny next to the arcade games: 250 is
   -- well past the world record, and 12 a second only bites on a short drill.
-  ('keyboard-dojo',     'Keyboard Dojo',       250,    12, 15)
+  ('keyboard-dojo',     'Keyboard Dojo',       250,    12, 15),
+  -- Twenty questions at 200 points tops each: 4000 is a perfect round, and a
+  -- rate above 220 would mean answering faster than the questions render.
+  ('kana-dojo',         'Kana Dojo',          4000,   220, 15)
 on conflict (slug) do update
   set title = excluded.title,
       max_score = excluded.max_score,

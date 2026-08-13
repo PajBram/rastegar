@@ -1,0 +1,18 @@
+{
+  "slug": "kana-dojo",
+  "title": "Kana Dojo",
+  "kind": "TRAINER",
+  "order": 9,
+  "tilt": "b",
+  "glyph": "&#12354;",
+  "tagline": "Learn to read Japanese, one character at a time.",
+  "scripts": ["/static/games/kana-dojo.js"],
+  "data": { "round": 20 },
+  "controls": [
+    "Tap or click an answer. Keys `1`-`4` work too.",
+    "In **Type romaji** mode, spell the sound and press `Enter`. Both hepburn (shi, chi, fu) and keyboard style (si, ti, hu) count.",
+    "`Esc` drops back to the lesson list.",
+    "**Study** mode lays the lesson out flat — tap a card to hear it spoken."
+  ],
+  "about": "Japanese is written with two phonetic alphabets, and this is where you learn to read them. **Hiragana** is the round one used for native words; **katakana** is the angular one used for loanwords like テレビ (terebi — TV). Same sounds, two costumes. Eight lessons walk you from the first ten characters to whole words with meanings.\n\nEvery character keeps a private tally of how often it fooled you, and the ones that owe you come back more often until they stop missing. Five right in a row and a character counts as solid; the lesson list shows how many you have banked.\n\nA round is twenty questions. Right answers score 100 points, answering fast is worth up to 50 more, and a streak adds a little on top — so the score you post is speed and accuracy in one number.\n\nIf your device has a Japanese voice, every answer is spoken aloud. Hearing the sound while you see the shape is half the trick."
+}
