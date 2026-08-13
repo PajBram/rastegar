@@ -328,19 +328,15 @@ main { display: block; }
    stage rather than in the paper panels the canvas games use. */
 .dashh { position: relative; background: #05060c; border: 1px solid var(--hair); }
 .dashh__frame { display: block; width: 100%; aspect-ratio: 16 / 10; border: 0; }
-.dashh__full {
-  /* top right: the game keeps its own HUD along the bottom and the radar
-     sits in the bottom right corner */
-  position: absolute; right: .7rem; top: .7rem;
-  font-family: var(--sans); font-size: .68rem; font-weight: 600;
-  letter-spacing: .18em; text-transform: uppercase;
-  background: rgba(5,6,12,.75); color: #fff; border: 1px solid rgba(255,255,255,.45);
-  padding: .5rem .9rem; cursor: pointer;
-  transition: background .2s ease, border-color .2s ease;
-}
-.dashh__full:hover, .dashh__full:focus-visible { background: var(--red); border-color: var(--red); }
-.dashh.is-full { display: flex; }
-.dashh.is-full .dashh__frame { aspect-ratio: auto; height: 100%; }
+
+/* Fullscreen: the frame drops its aspect ratio and takes the whole screen,
+   because the game letterboxes itself and reflows its own HUD. */
+#game-root:fullscreen .dashh,
+#game-root:-webkit-full-screen .dashh,
+#game-root.fs-fallback .dashh { width: 100%; height: 100%; border: 0; }
+#game-root:fullscreen .dashh__frame,
+#game-root:-webkit-full-screen .dashh__frame,
+#game-root.fs-fallback .dashh__frame { aspect-ratio: auto; height: 100%; }
 
 /* A phone gets a tap-to-start card rather than a heavy 3D page loading itself
    over mobile data the moment the page opens. */

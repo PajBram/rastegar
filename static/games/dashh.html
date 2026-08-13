@@ -1755,7 +1755,7 @@ class Renderer {
     const aspect = this.width / this.height;
     let fov = cam.fov;
     if (aspect < 1.35) {
-      const widen = Math.min(1.9, 1.35 / Math.max(aspect, 0.4));
+      const widen = Math.min(1.5, 1.35 / Math.max(aspect, 0.4));
       fov = 2 * Math.atan(Math.tan(fov / 2) * widen);
     }
     perspective(this.proj, fov, aspect, 0.1, 620);
@@ -2310,12 +2310,12 @@ class Player {
     this.hp = this.stats.maxHp;
     this.yaw = 0;
     this.camYaw = 0;
-    this.camPitch = -0.18;
-    this.camDist = 8.5;
-    this.camDistNow = 8.5;
+    this.camPitch = -0.24;
+    this.camDist = 9.3;
+    this.camDistNow = 9.3;
     this.camPos = { x: 0, y: 6, z: 10 };
-    this.fov = 1.15;
-    this.fovNow = 1.15;
+    this.fov = 1.22;
+    this.fovNow = 1.22;
     this.grounded = false;
     this.jumpsLeft = 1;
     this.dashCharges = this.stats.dashMax;
@@ -2359,7 +2359,7 @@ class Player {
   }
 
   zoom(delta) {
-    this.camDist = clamp(this.camDist + delta * 0.006, 4.2, 16);
+    this.camDist = clamp(this.camDist + delta * 0.01, 7, 24);
   }
 
   /**
@@ -2368,17 +2368,20 @@ class Player {
    * sig kanterna börjar vyn svepa — mjukt och likadant i båda led.
    */
   steer(input, dt) {
-    const dead = 0.42;
+    // Stor fri zon: vyn står helt stilla över nästan hela skärmen och sveper
+    // först när du medvetet för pekaren ut i kanten. En kamera som kryper av
+    // sig själv är det som känns obehagligt.
+    const dead = 0.82;
     const ramp = (v) => {
       const m = Math.abs(v);
       if (m <= dead) return 0;
       const t = clamp((m - dead) / (1 - dead), 0, 1);
       return (v < 0 ? -1 : 1) * t * t * (3 - 2 * t);
     };
-    this.camYaw -= ramp(input.cursorNX) * 3.1 * dt;
+    this.camYaw -= ramp(input.cursorNX) * 3.4 * dt;
     if (this.camYaw > Math.PI) this.camYaw -= TAU;
     if (this.camYaw < -Math.PI) this.camYaw += TAU;
-    this.camPitch = clamp(this.camPitch - ramp(input.cursorNY) * 1.5 * dt, -1.15, 0.75);
+    this.camPitch = clamp(this.camPitch - ramp(input.cursorNY) * 1.7 * dt, -1.15, 0.75);
   }
 
   /**
@@ -2590,12 +2593,14 @@ class Player {
   }
 
   updateCamera(dt, planar) {
-    // axelkamera: fokus ligger något åt skärm-höger så figuren inte skymmer siktet
+    // Kameran sitter högt och en bit bakom, och blicken riktas en bit ovanför
+    // figuren. Då hamnar gubben liten och lågt i bild och världen framför
+    // syns — det är därför man ser vad man flyger in i.
     const rx = -Math.cos(this.camYaw), rz = Math.sin(this.camYaw);
     const focus = {
-      x: this.pos.x + rx * 0.8,
-      y: this.pos.y + EYE + 0.25,
-      z: this.pos.z + rz * 0.8,
+      x: this.pos.x + rx * 1.65,
+      y: this.pos.y + EYE + 1.65,
+      z: this.pos.z + rz * 1.65,
     };
     const dir = this.camForward;
     const want = this.camDist;
@@ -2612,13 +2617,14 @@ class Player {
     const tx = focus.x - dir.x * this.camDistNow;
     const ty = focus.y - dir.y * this.camDistNow + 0.35;
     const tz = focus.z - dir.z * this.camDistNow;
-    this.camPos.x = damp(this.camPos.x, tx, 0.0008, dt);
-    this.camPos.y = damp(this.camPos.y, ty, 0.0008, dt);
-    this.camPos.z = damp(this.camPos.z, tz, 0.0008, dt);
+    // en aning eftersläp ger fart åt rörelsen utan att kännas gummiaktigt
+    this.camPos.x = damp(this.camPos.x, tx, 0.0035, dt);
+    this.camPos.y = damp(this.camPos.y, ty, 0.0035, dt);
+    this.camPos.z = damp(this.camPos.z, tz, 0.0035, dt);
     const minY = terrainHeight(this.camPos.x, this.camPos.z) + 0.6;
     if (this.camPos.y < minY) this.camPos.y = minY;
 
-    const wantFov = 1.15 + smoothstep(6, 22, planar) * 0.13 + (this.dashTime > 0 ? 0.14 : 0);
+    const wantFov = 1.22 + smoothstep(6, 22, planar) * 0.13 + (this.dashTime > 0 ? 0.14 : 0);
     this.fovNow = damp(this.fovNow, wantFov, 0.002, dt);
     this.camTarget = focus;
   }
