@@ -6,6 +6,8 @@ Pajs personliga lekstuga på nätet: webbläsarspel, en devlogg om iOS-appen TAG
 
 **Språk:** svenska mot Paj och i den här filen. **Engelska** i allt innehåll på sajten, i kod, kommentarer och commit-meddelanden.
 
+> **Undantag: Dashh: Voidfall.** Spelets eget gränssnitt är på svenska och ska förbli det — Paj har valt så. Undantaget gäller bara insidan av `static/games/dashh.html`; spelkortet, sidtexten och all annan sajttext är på engelska som vanligt. Översätt alltså inte spelet, och behandla inte det svenska gränssnittet som en bugg.
+
 ---
 
 ## Bärande principer

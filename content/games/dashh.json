@@ -7,7 +7,7 @@
   "tilt": "b",
   "glyph": "&#9670;",
   "tagline": "Two worlds, waves of monsters, and a dash that phases you through them.",
-  "spoiler": "Early beta. It plays on a phone now, but the menus are still in Swedish.",
+  "spoiler": "Early beta. The game speaks Swedish — the controls below are the translation you need.",
   "scripts": ["/static/games/dashh-frame.js"],
   "mount": "<div class=\"dashh\"><div class=\"dashh__notice\"><p><strong>Heads up:</strong> this is a 3D game and it will work your phone. Fullscreen is the way to play it.</p><button class=\"btn btn--small\" type=\"button\" data-dashh-anyway>Start</button></div><iframe class=\"dashh__frame\" data-src=\"/static/games/dashh.html\" title=\"Dashh: Voidfall\" allow=\"fullscreen; pointer-lock; autoplay\" allowfullscreen></iframe><button class=\"dashh__full\" type=\"button\" data-dashh-fullscreen>Fullscreen</button></div>",
   "controls": [
