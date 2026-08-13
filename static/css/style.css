@@ -146,8 +146,11 @@ h1, h2, h3, h4 {
 main { display: block; }
 .wrap { max-width: var(--wrap); margin: 0 auto; padding: 0 1.25rem; }
 .measure { max-width: var(--measure); margin-left: auto; margin-right: auto; }
-.section { padding: 4rem 0; }
-.section--tight { padding: 2.5rem 0; }
+/* Vertical only. Every .section in the templates also carries .wrap, and a
+   `padding: 4rem 0` shorthand here silently resets .wrap's side padding —
+   which put the body text flush against the screen edge on phones. */
+.section { padding-block: 4rem; }
+.section--tight { padding-block: 2.5rem; }
 .full { width: 100vw; margin-left: calc(50% - 50vw); }
 .center { text-align: center; }
 
@@ -320,7 +323,7 @@ main { display: block; }
 .panel--series .btn { margin: 0 auto; display: table; }
 
 /* ------------------------------------------------------------------ game */
-.section--game { padding: 1rem 0 2rem; }
+.section--game { padding-block: 1rem 2rem; }
 .panel--stage { border: 0; padding: 0; background: none; }
 #game-root { position: relative; }
 
