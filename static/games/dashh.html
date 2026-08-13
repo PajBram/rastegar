@@ -93,10 +93,61 @@
     font-size:12px;letter-spacing:.05em;animation:toastIn .25s ease-out}
   @keyframes toastIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
 
+  /* ---------- Touch ---------- */
+  #touchUI{display:none}
+  body.touch #touchUI{display:block}
+  body.touch #crosshair{opacity:.7}
+
+  #stick{position:absolute;width:132px;height:132px;margin:-66px 0 0 -66px;border-radius:50%;
+    border:2px solid rgba(77,243,255,.35);background:rgba(6,12,22,.32);
+    opacity:0;transition:opacity .12s;pointer-events:none}
+  #stick.on{opacity:1}
+  #knob{position:absolute;left:50%;top:50%;width:56px;height:56px;margin:-28px 0 0 -28px;
+    border-radius:50%;background:rgba(77,243,255,.5);box-shadow:0 0 18px rgba(77,243,255,.5)}
+
+  #tPad{position:absolute;right:14px;bottom:16px;width:210px;height:210px;pointer-events:none}
+  .tBtn{position:absolute;pointer-events:auto;border-radius:50%;border:1px solid var(--line);
+    background:rgba(10,16,28,.62);color:#eaf6ff;font-size:24px;line-height:1;
+    display:flex;align-items:center;justify-content:center;
+    -webkit-tap-highlight-color:transparent;backdrop-filter:blur(3px);
+    transition:transform .08s,background .08s}
+  .tBtn.held{transform:scale(.9);background:rgba(77,243,255,.4)}
+  .tBtn--atk{right:0;bottom:34px;width:92px;height:92px;font-size:19px;font-weight:800;
+    letter-spacing:.08em;border-color:rgba(255,61,127,.5);background:rgba(60,10,26,.6)}
+  .tBtn--dash{right:96px;bottom:6px;width:66px;height:66px;font-size:12px;font-weight:800;
+    letter-spacing:.08em}
+  .tBtn--jump{right:8px;bottom:132px;width:66px;height:66px}
+  .tBtn--fire{right:104px;bottom:82px;width:62px;height:62px;font-size:22px;
+    border-color:rgba(255,150,60,.5)}
+  .tBtn--fire.cool{opacity:.35}
+  .tBtn--fire.hidden{display:none}
+
+  /* HUD:en krymper och flyttar ihop sig på en telefon */
+  @media (max-width:760px){
+    #verTag{display:none}
+    .topbar{top:8px;gap:5px;transform:translateX(-50%) scale(.82);transform-origin:top center}
+    #minimap{width:96px;height:96px;right:10px;top:64px;bottom:auto}
+    #bottom{width:min(300px,68vw);bottom:auto;top:112px;left:14px;transform:none}
+    .bar{height:14px} .bar.xp{height:7px} #hpText{font-size:10px}
+    .pip{width:30px;height:5px}
+    #fireRow{width:120px;height:13px;margin-left:0}
+    #banner{font-size:30px;top:34%}
+    #toasts{bottom:auto;top:210px;left:14px}
+    .cards{gap:10px} .card{width:min(260px,80vw);padding:14px 12px}
+    .card .icon{font-size:30px;margin-bottom:6px}
+    .keys{gap:6px} .key{padding:7px 10px;font-size:11px}
+    .worlds{gap:12px} .world{width:min(300px,86vw);padding:16px 14px}
+    .world .wDesc{min-height:0}
+    .screen{padding:18px 14px}
+    .results{gap:8px} .result{padding:10px 14px;min-width:88px} .result .rv{font-size:20px}
+  }
+
   /* ---------- Overlays ---------- */
   #overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
     background:radial-gradient(ellipse at center,rgba(8,10,22,.78),rgba(2,3,8,.95));
-    backdrop-filter:blur(7px)}
+    backdrop-filter:blur(7px);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* på en låg skärm måste innehållet få växa nedåt i stället för att kapas */
+  @media (max-height:760px){#overlay{align-items:flex-start}}
   .screen{text-align:center;max-width:860px;padding:26px}
   .title{font-size:clamp(56px,11vw,120px);font-weight:900;letter-spacing:.1em;line-height:.95;
     background:linear-gradient(180deg,#fff,var(--neon) 55%,var(--neon2));
@@ -200,6 +251,16 @@
     <div id="dashRow"></div>
     <div id="fireRow" class="hidden"><div id="fireFill"></div><span>C · ELDBOLL</span></div>
     <div id="comboRow" class="hidden"><i></i><i></i><i></i></div>
+  </div>
+
+  <div id="touchUI">
+    <div id="stick"><i id="knob"></i></div>
+    <div id="tPad">
+      <button id="tFire" class="tBtn tBtn--fire" data-key="KeyC" aria-label="Eldboll">🔥</button>
+      <button class="tBtn tBtn--jump" data-key="Space" aria-label="Hoppa">▲</button>
+      <button class="tBtn tBtn--dash" data-key="ShiftLeft" aria-label="Dash">DASH</button>
+      <button class="tBtn tBtn--atk" data-attack aria-label="Attack">ATK</button>
+    </div>
   </div>
 </div>
 
@@ -1689,7 +1750,15 @@ class Renderer {
     this.resize();
     gl.viewport(0, 0, this.width, this.height);
 
-    perspective(this.proj, cam.fov, this.width / this.height, 0.1, 620);
+    // På en hög, smal skärm (telefon på höjden) räcker inte det lodräta
+    // synfältet i sidled — vidga det så vyn inte blir ett titthål.
+    const aspect = this.width / this.height;
+    let fov = cam.fov;
+    if (aspect < 1.35) {
+      const widen = Math.min(1.9, 1.35 / Math.max(aspect, 0.4));
+      fov = 2 * Math.atan(Math.tan(fov / 2) * widen);
+    }
+    perspective(this.proj, fov, aspect, 0.1, 620);
     lookAt(this.view, cam.pos, cam.target, { x: 0, y: 1, z: 0 });
     multiply(this.vp, this.proj, this.view);
     invert(this.invVP, this.vp);
@@ -1964,6 +2033,112 @@ class Input {
       this.locked = document.pointerLockElement === canvas;
       if (this.onLockChange) this.onLockChange(this.locked);
     });
+
+    this.initTouch(canvas);
+  }
+
+  // ------------------------------------------------------------------ touch
+
+  /**
+   * Vänstra halvan av skärmen är en spak som dyker upp där tummen landar,
+   * högra halvan sveper kameran. Knapparna trycker samma virtuella tangenter
+   * som tangentbordet, så resten av spelet behöver inte veta något om touch.
+   */
+  initTouch(canvas) {
+    // Enheter vars primära pekdon är ett finger räknas som touch direkt, så
+    // menyerna hinner visa rätt hjälptext innan någon rört skärmen.
+    this.touch = !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches);
+    if (this.touch) document.body.classList.add('touch');
+    this.stickActive = false;
+    this.stickBase = { x: 0, y: 0 };
+    this.stickVec = { x: 0, y: 0 };
+    this.moveId = null;
+    this.lookId = null;
+    this.lookPrev = { x: 0, y: 0 };
+    this.touchSensitivity = 0.0052;
+    const RADIUS = 62;
+
+    const first = () => {
+      if (this.touch) return;
+      this.touch = true;
+      document.body.classList.add('touch');
+      if (this.onTouchStart) this.onTouchStart();
+    };
+
+    canvas.addEventListener('touchstart', (e) => {
+      first();
+      if (!this.enabled) return;
+      e.preventDefault();
+      for (const t of e.changedTouches) {
+        if (t.clientX < innerWidth * 0.5) {
+          if (this.moveId !== null) continue;
+          this.moveId = t.identifier;
+          this.stickActive = true;
+          this.stickBase.x = t.clientX; this.stickBase.y = t.clientY;
+          this.stickVec.x = 0; this.stickVec.y = 0;
+        } else {
+          if (this.lookId !== null) continue;
+          this.lookId = t.identifier;
+          this.lookPrev.x = t.clientX; this.lookPrev.y = t.clientY;
+        }
+      }
+    }, { passive: false });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!this.enabled) return;
+      e.preventDefault();
+      for (const t of e.changedTouches) {
+        if (t.identifier === this.moveId) {
+          let dx = t.clientX - this.stickBase.x;
+          let dy = t.clientY - this.stickBase.y;
+          const d = Math.hypot(dx, dy);
+          if (d > RADIUS) { dx = (dx / d) * RADIUS; dy = (dy / d) * RADIUS; }
+          this.stickVec.x = dx / RADIUS;
+          this.stickVec.y = dy / RADIUS;
+        } else if (t.identifier === this.lookId) {
+          this.mouseDX += clampDelta(t.clientX - this.lookPrev.x);
+          this.mouseDY += clampDelta(t.clientY - this.lookPrev.y);
+          this.lookPrev.x = t.clientX; this.lookPrev.y = t.clientY;
+        }
+      }
+    }, { passive: false });
+
+    const end = (e) => {
+      for (const t of e.changedTouches) {
+        if (t.identifier === this.moveId) {
+          this.moveId = null; this.stickActive = false;
+          this.stickVec.x = 0; this.stickVec.y = 0;
+        } else if (t.identifier === this.lookId) {
+          this.lookId = null;
+        }
+      }
+    };
+    canvas.addEventListener('touchend', end);
+    canvas.addEventListener('touchcancel', end);
+  }
+
+  /** Kopplar en skärmknapp till en tangent (eller attack via data-attack). */
+  bindButton(el) {
+    const key = el.dataset.key;
+    const attack = el.hasAttribute('data-attack');
+    const press = (e) => {
+      e.preventDefault();
+      el.classList.add('held');
+      if (attack) this.fireDown = true;
+      else if (key) {
+        if (!this.keys.has(key)) this.justPressed.add(key);
+        this.keys.add(key);
+      }
+    };
+    const release = (e) => {
+      if (e) e.preventDefault();
+      el.classList.remove('held');
+      if (attack) this.fireDown = false;
+      else if (key) this.keys.delete(key);
+    };
+    el.addEventListener('touchstart', press, { passive: false });
+    el.addEventListener('touchend', release, { passive: false });
+    el.addEventListener('touchcancel', release, { passive: false });
   }
 
   requestLock() {
@@ -1981,6 +2156,10 @@ class Input {
 
   /** Rörelseriktning i lokala koordinater: x = höger, y = framåt. */
   moveAxis() {
+    if (this.stickActive) {
+      // skärmens y pekar nedåt, spelets framåt är uppåt
+      return { x: this.stickVec.x, y: -this.stickVec.y };
+    }
     let x = 0, y = 0;
     if (this.down('KeyW') || this.down('ArrowUp')) y += 1;
     if (this.down('KeyS') || this.down('ArrowDown')) y -= 1;
@@ -2213,7 +2392,8 @@ class Player {
     let fx = tgt.x - eye.x, fy = tgt.y - eye.y, fz = tgt.z - eye.z;
     const fl = Math.hypot(fx, fy, fz) || 1;
     fx /= fl; fy /= fl; fz /= fl;
-    if (!inp || inp.locked) return { x: fx, y: fy, z: fz };
+    // muslås och touch siktar båda rakt fram genom skärmens mitt
+    if (!inp || inp.locked || inp.touch) return { x: fx, y: fy, z: fz };
 
     // kamerans egna höger- och uppvektor
     let rx = -fz, rz = fx;
@@ -2276,7 +2456,8 @@ class Player {
 
     // ---- kamera-look
     if (input.enabled) {
-      if (input.locked) this.look(input.mouseDX, input.mouseDY, input.sensitivity);
+      if (input.touch) this.look(input.mouseDX, input.mouseDY, input.touchSensitivity);
+      else if (input.locked) this.look(input.mouseDX, input.mouseDY, input.sensitivity);
       else this.steer(input, dt);
     }
     if (input.wheel) this.zoom(input.wheel);
@@ -2463,9 +2644,13 @@ class Player {
     let l = Math.hypot(dx, dy, dz) || 1;
     dx /= l; dy /= l; dz /= l;
 
-    // mild sikthjälp mot närmaste fiende inom en smal kon.
-    // I Neotropolis flyger fienderna — striden är 3D — så konen är bredare där.
-    let best = null, bestDot = this.world.worldId === 'city' ? 0.955 : 0.978;
+    // mild sikthjälp mot närmaste fiende inom en smal kon. I Neotropolis flyger
+    // fienderna — striden är 3D — så konen är bredare där, och med tummen som
+    // sikte behövs mer hjälp än med mus.
+    const inp2 = this.world.input;
+    let bestDot = this.world.worldId === 'city' ? 0.955 : 0.978;
+    if (inp2 && inp2.touch) bestDot -= 0.03;
+    let best = null;
     for (const e of enemies) {
       if (!e.alive) continue;
       let ex = e.pos.x - muzzle.x, ey = e.pos.y + e.height * 0.5 - muzzle.y, ez = e.pos.z - muzzle.z;
@@ -3932,6 +4117,9 @@ class HUD {
     this.comboRow = $('comboRow');
     this.comboPips = [...this.comboRow.children];
     this.cross = $('crosshair');
+    this.stick = $('stick');
+    this.knob = $('knob');
+    this.tFire = $('tFire');
     this.map = $('minimap');
     this.mapCtx = this.map.getContext('2d');
     this.bannerT = 0;
@@ -3988,7 +4176,20 @@ class HUD {
 
     // Korshåret sitter där muspekaren är (utan muslås), annars i mitten.
     const inp = g.input;
-    const free = inp && !inp.locked;
+    const free = inp && !inp.locked && !inp.touch;
+
+    if (inp && inp.touch) {
+      // spaken ritas där tummen landade
+      this.stick.classList.toggle('on', inp.stickActive);
+      if (inp.stickActive) {
+        this.stick.style.left = `${inp.stickBase.x}px`;
+        this.stick.style.top = `${inp.stickBase.y}px`;
+        this.knob.style.transform = `translate(${inp.stickVec.x * 38}px, ${inp.stickVec.y * 38}px)`;
+      }
+      const wild = g.worldId === 'wild';
+      this.tFire.classList.toggle('hidden', !wild);
+      if (wild) this.tFire.classList.toggle('cool', p.fireballCd > 0);
+    }
     const cx = free ? (inp.cursorNX * 0.5 + 0.5) * 100 : 50;
     const cy = free ? (inp.cursorNY * 0.5 + 0.5) * 100 : 50;
     this.cross.style.left = `${cx}%`;
@@ -4121,8 +4322,22 @@ class HUD {
 
   // ------------------------------------------------------------- menyskärmar
 
-  showStart(onPick) {
+  showStart(onPick, touch) {
     this._cursor = null;
+    const keys = touch ? `
+          <div class="key"><b>VÄNSTER HALVA</b> Spak — rör dig</div>
+          <div class="key"><b>HÖGER HALVA</b> Dra — sikta</div>
+          <div class="key"><b>ATK</b> Attack</div>
+          <div class="key"><b>DASH</b> Dash · osårbar</div>
+          <div class="key"><b>▲</b> Hoppa · håll för att flyga</div>
+          <div class="key"><b>🔥</b> Eldboll (Vildheim)</div>` : `
+          <div class="key"><b>WASD</b> Rör dig</div>
+          <div class="key"><b>MUS</b> Sikta · mot kanten = svep vyn</div>
+          <div class="key"><b>VÄNSTERKLICK</b> Attack</div>
+          <div class="key"><b>C</b> Eldboll (Vildheim)</div>
+          <div class="key"><b>SHIFT</b> Dash</div>
+          <div class="key"><b>MELLANSLAG</b> Hoppa / flyg</div>
+          <div class="key"><b>ESC</b> Paus</div>`;
     this.showOverlay(`
       <div class="screen">
         <div class="title">DASHH</div>
@@ -4144,15 +4359,7 @@ class HUD {
             <div class="wTag">HÅLL MELLANSLAG = FLYG</div>
           </div>
         </div>
-        <div class="keys">
-          <div class="key"><b>WASD</b> Rör dig</div>
-          <div class="key"><b>MUS</b> Sikta · mot kanten = svep vyn</div>
-          <div class="key"><b>VÄNSTERKLICK</b> Attack</div>
-          <div class="key"><b>C</b> Eldboll (Vildheim)</div>
-          <div class="key"><b>SHIFT</b> Dash</div>
-          <div class="key"><b>MELLANSLAG</b> Hoppa / flyg</div>
-          <div class="key"><b>ESC</b> Paus</div>
-        </div>
+        <div class="keys">${keys}</div>
         <div class="hint">välj din värld — överlev vågorna</div>
       </div>`);
     this.overlay.querySelectorAll('.world').forEach((el) => {
@@ -4252,8 +4459,9 @@ class Game {
       else if (this.state === 'playing' && this.usedLock) this.pause();
     };
     canvas.addEventListener('mousedown', () => {
-      if (this.state === 'playing' && !this.input.locked) this.input.requestLock();
+      if (this.state === 'playing' && !this.input.locked && !this.input.touch) this.input.requestLock();
     });
+    for (const el of document.querySelectorAll('.tBtn')) this.input.bindButton(el);
   }
 
   // ---------------------------------------------------------------- tillstånd
@@ -4304,7 +4512,7 @@ class Game {
     if (this.worldId === 'city') this.hud.showBanner('NEOTROPOLIS', 'håll mellanslag — flyg', 3);
     else this.hud.showBanner('VILDHEIM', 'vågorna kommer');
     this.input.enabled = true;
-    this.input.requestLock();
+    if (!this.input.touch) this.input.requestLock();
   }
 
   showMenu() {
@@ -4312,7 +4520,7 @@ class Game {
     this.input.enabled = false;
     this.input.releaseLock();
     this.hud.showHUD(false);
-    this.hud.showStart((w) => this.start(w));
+    this.hud.showStart((w) => this.start(w), this.input.touch);
   }
 
   pause() {
@@ -4328,7 +4536,7 @@ class Game {
     this.state = 'playing';
     this.input.enabled = true;
     this.hud.hideOverlay();
-    this.input.requestLock();
+    if (!this.input.touch) this.input.requestLock();
     this.sound.resume();
   }
 
@@ -4421,7 +4629,7 @@ class Game {
     this.state = 'playing';
     this.input.enabled = true;
     this.hud.hideOverlay();
-    this.input.requestLock();
+    if (!this.input.touch) this.input.requestLock();
   }
 
   onWaveStart(wave, isBoss) {

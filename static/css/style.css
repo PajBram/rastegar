@@ -342,8 +342,8 @@ main { display: block; }
 .dashh.is-full { display: flex; }
 .dashh.is-full .dashh__frame { aspect-ratio: auto; height: 100%; }
 
-/* A phone cannot play this yet, so say so instead of serving a game with no
-   controls. The frame is only fetched if the visitor asks for it. */
+/* A phone gets a tap-to-start card rather than a heavy 3D page loading itself
+   over mobile data the moment the page opens. */
 .dashh__notice { display: none; }
 @media (pointer: coarse) {
   .dashh__notice {
