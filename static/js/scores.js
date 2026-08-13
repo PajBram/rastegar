@@ -154,6 +154,14 @@
       var status = document.createElement('p');
       status.className = 'form-status';
 
+      // On a phone the keyboard covers the bottom half of the screen, and the
+      // field sits inside a scrolling overlay. Bring it into view on focus.
+      input.addEventListener('focus', function () {
+        setTimeout(function () {
+          if (input.scrollIntoView) input.scrollIntoView({ block: 'center' });
+        }, 250);
+      });
+
       form.appendChild(label);
       form.appendChild(input);
       form.appendChild(button);

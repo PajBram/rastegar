@@ -83,7 +83,17 @@
     // --- input -----------------------------------------------------------
     var BLOCK = { ArrowLeft: 1, ArrowRight: 1, ArrowUp: 1, ArrowDown: 1, ' ': 1 };
 
+    /** True while the player is typing somewhere — a name field, say. */
+    function typingSomewhere(target) {
+      if (!target) return false;
+      var tag = target.tagName;
+      return tag === 'INPUT' || tag === 'TEXTAREA' || target.isContentEditable;
+    }
+
     function onKeyDown(event) {
+      // Never eat keys aimed at a text field: swallowing space and the arrow
+      // keys made the name box impossible to type into.
+      if (typingSomewhere(event.target)) return;
       if (BLOCK[event.key]) event.preventDefault();
       if (game.keys[event.key]) return;          // ignore auto-repeat
       game.keys[event.key] = true;
@@ -182,6 +192,7 @@
       game.token = null;
       game.state = 'playing';
       spec.init(game);
+      startLoop();
       if (window.Scores) {
         window.Scores.startRun(spec.slug).then(function (token) { game.token = token; });
       }
@@ -194,6 +205,7 @@
 
     // --- loop -------------------------------------------------------------
     var last = 0;
+    var running = false;
     function frame(now) {
       var dt = last ? Math.min((now - last) / 1000, 0.05) : 0;
       last = now;
@@ -203,13 +215,24 @@
       }
       spec.draw(ctx, game);
       updateHud();
+      // Once the run is over the picture stops changing, and a canvas
+      // redrawing sixty times a second behind a form makes typing feel sticky
+      // on a phone. Draw the last frame, then stand still.
+      if (game.state === 'over') { running = false; return; }
+      requestAnimationFrame(frame);
+    }
+
+    function startLoop() {
+      if (running) return;
+      running = true;
+      last = 0;
       requestAnimationFrame(frame);
     }
 
     spec.init(game);
     game.state = 'intro';
     showIntro();
-    requestAnimationFrame(frame);
+    startLoop();
 
     // Debug hook. Lets a test drive the simulation without waiting for real
     // time to pass: __arcade.step(0.016) advances one frame. Harmless in
