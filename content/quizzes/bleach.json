@@ -6,22 +6,182 @@
       "blurb": "Karakura Town and the road into Soul Society.",
       "spoiler": "Safe through the start of the Soul Society arc.",
       "questions": [
-        { "q": "What is a Soul Reaper's sword called?", "a": ["A zanpakuto", "A katana of souls", "A kido blade", "A hollow blade"], "correct": 0, "note": "Every one of them is unique, and every one has a name." },
-        { "q": "What are the monsters that eat souls called?", "a": ["Hollows", "Arrancar", "Wraiths", "Menos"], "correct": 0, "note": "A Hollow is what a soul becomes when it is left behind too long." },
-        { "q": "Which family does Rukia belong to?", "a": ["Kuchiki", "Shiba", "Kurosaki", "Shihoin"], "correct": 0, "note": "One of the four great noble houses. Adopted, as it turns out." },
-        { "q": "What is Ichigo's zanpakuto called?", "a": ["Zangetsu", "Senbonzakura", "Zabimaru", "Sode no Shirayuki"], "correct": 0, "note": "The Slaying Moon." },
-        { "q": "What is Uryu Ishida?", "a": ["A Quincy", "A Soul Reaper", "An Arrancar", "A Fullbringer"], "correct": 0, "note": "The last of a people the Soul Reapers nearly wiped out." },
-        { "q": "What does Yoruichi turn into?", "a": ["A black cat", "A crow", "A fox", "A panther"], "correct": 0, "note": "With a voice that surprises everyone the first time." },
-        { "q": "What kind of shop does Kisuke Urahara run?", "a": ["A sweet shop", "A bookshop", "A dojo", "A pharmacy"], "correct": 0, "note": "The candy is mostly a front." },
-        { "q": "What are the thirteen squads of Soul Reapers called?", "a": ["The Gotei 13", "The Royal Guard", "The Espada", "The Kido Corps"], "correct": 0, "note": "Each with a captain and a lieutenant." },
-        { "q": "How does Ichigo become a Soul Reaper?", "a": ["Rukia gives him her powers", "He is born one", "Urahara trains him", "He steals a zanpakuto"], "correct": 0, "note": "She meant to lend a little. He took nearly all of it." },
-        { "q": "What is Orihime's power used for above all?", "a": ["Rejecting injuries so they never happened", "Firing energy blasts", "Reading minds", "Turning invisible"], "correct": 0, "note": "Not healing, technically — she refuses the event itself." },
-        { "q": "What is Chad's power?", "a": ["His arms armour themselves", "He controls fire", "He runs at superhuman speed", "He can fly"], "correct": 0, "note": "Right arm to attack, left arm to defend." },
-        { "q": "Which captain is Renji's lieutenant to?", "a": ["Byakuya Kuchiki", "Toshiro Hitsugaya", "Kenpachi Zaraki", "Sosuke Aizen"], "correct": 0, "note": "Squad 6, and a relationship built entirely on Rukia." },
-        { "q": "What is Kon?", "a": ["A modified soul in a stuffed lion", "A talking hollow", "Ichigo's zanpakuto spirit", "A Soul Reaper in disguise"], "correct": 0, "note": "Loud, cowardly, and technically contraband." },
-        { "q": "What does Byakuya's zanpakuto turn into?", "a": ["A thousand blades that look like petals", "Ice", "Fire", "Lightning"], "correct": 0, "note": "Senbonzakura. Beautiful right up until it isn't." },
-        { "q": "Who is the Captain-Commander at the start of the series?", "a": ["Genryusai Yamamoto", "Sosuke Aizen", "Jushiro Ukitake", "Shunsui Kyoraku"], "correct": 0, "note": "Over two thousand years in the job." },
-        { "q": "Where do the Soul Reapers live?", "a": ["The Seireitei, in Soul Society", "Hueco Mundo", "Karakura Town", "The Royal Realm"], "correct": 0, "note": "The walled inner city — everyone else lives in the Rukongai outside." }
+        {
+          "q": "What is a Soul Reaper's sword called?",
+          "a": [
+            "A zanpakuto",
+            "A katana of souls",
+            "A kido blade",
+            "A hollow blade"
+          ],
+          "correct": 0,
+          "note": "Every one of them is unique, and every one has a name."
+        },
+        {
+          "q": "What are the monsters that eat souls called?",
+          "a": [
+            "Hollows",
+            "Arrancar",
+            "Wraiths",
+            "Reapers"
+          ],
+          "correct": 0,
+          "note": "A Hollow is what a soul becomes when it is left behind too long."
+        },
+        {
+          "q": "Which family does Rukia belong to?",
+          "a": [
+            "Kuchiki",
+            "Shiba",
+            "Kurosaki",
+            "Shihoin"
+          ],
+          "correct": 0,
+          "note": "One of the four great noble houses. Adopted, as it turns out."
+        },
+        {
+          "q": "What is Ichigo's zanpakuto called?",
+          "a": [
+            "Zangetsu",
+            "Senbonzakura",
+            "Zabimaru",
+            "Sode no Shirayuki"
+          ],
+          "correct": 0,
+          "note": "The Slaying Moon."
+        },
+        {
+          "q": "What is Uryu Ishida?",
+          "a": [
+            "A Quincy",
+            "A Soul Reaper",
+            "An Arrancar",
+            "A Fullbringer"
+          ],
+          "correct": 0,
+          "note": "The last of a people the Soul Reapers nearly wiped out."
+        },
+        {
+          "q": "What does Yoruichi turn into?",
+          "a": [
+            "A black cat",
+            "A crow",
+            "A fox",
+            "A panther"
+          ],
+          "correct": 0,
+          "note": "With a voice that surprises everyone the first time."
+        },
+        {
+          "q": "What kind of shop does Kisuke Urahara run?",
+          "a": [
+            "A sweet shop",
+            "A bookshop",
+            "A dojo",
+            "A pharmacy"
+          ],
+          "correct": 0,
+          "note": "The candy is mostly a front."
+        },
+        {
+          "q": "What are the thirteen squads of Soul Reapers called?",
+          "a": [
+            "The Gotei 13",
+            "The Royal Guard",
+            "The Espada",
+            "The Kido Corps"
+          ],
+          "correct": 0,
+          "note": "Each with a captain and a lieutenant."
+        },
+        {
+          "q": "How does Ichigo become a Soul Reaper?",
+          "a": [
+            "Rukia gives him her powers",
+            "He is born one",
+            "Urahara trains him",
+            "He steals a zanpakuto"
+          ],
+          "correct": 0,
+          "note": "She meant to lend a little. He took nearly all of it."
+        },
+        {
+          "q": "What is Orihime's power used for above all?",
+          "a": [
+            "Rejecting injuries so they never happened",
+            "Firing energy blasts",
+            "Reading minds",
+            "Turning invisible"
+          ],
+          "correct": 0,
+          "note": "Not healing, technically — she refuses the event itself."
+        },
+        {
+          "q": "What does a Soul Reaper do to send a wandering soul on to Soul Society?",
+          "a": [
+            "A soul burial",
+            "An exorcism",
+            "A purification",
+            "A hollowfication"
+          ],
+          "correct": 0,
+          "note": "Konso. It is the first thing Rukia is shown doing, and the job the whole organisation exists for."
+        },
+        {
+          "q": "Which captain is Renji's lieutenant to?",
+          "a": [
+            "Byakuya Kuchiki",
+            "Toshiro Hitsugaya",
+            "Kenpachi Zaraki",
+            "Sosuke Aizen"
+          ],
+          "correct": 0,
+          "note": "Squad 6, and a relationship built entirely on Rukia."
+        },
+        {
+          "q": "What is Kon?",
+          "a": [
+            "A modified soul in a stuffed lion",
+            "A talking hollow",
+            "Ichigo's zanpakuto spirit",
+            "A Soul Reaper in disguise"
+          ],
+          "correct": 0,
+          "note": "Loud, cowardly, and technically contraband."
+        },
+        {
+          "q": "What does Byakuya's zanpakuto turn into?",
+          "a": [
+            "A thousand blades that look like petals",
+            "Ice",
+            "Fire",
+            "Lightning"
+          ],
+          "correct": 0,
+          "note": "Senbonzakura. Beautiful right up until it isn't."
+        },
+        {
+          "q": "Who is the Captain-Commander at the start of the series?",
+          "a": [
+            "Genryusai Yamamoto",
+            "Sosuke Aizen",
+            "Jushiro Ukitake",
+            "Shunsui Kyoraku"
+          ],
+          "correct": 0,
+          "note": "Over two thousand years in the job."
+        },
+        {
+          "q": "Where do the Soul Reapers live?",
+          "a": [
+            "The Seireitei, in Soul Society",
+            "Hueco Mundo",
+            "Karakura Town",
+            "The Royal Realm"
+          ],
+          "correct": 0,
+          "note": "The walled inner city — everyone else lives in the Rukongai outside."
+        }
       ]
     },
     "medium": {
@@ -29,22 +189,182 @@
       "blurb": "Aizen, the Espada and everything in Hueco Mundo.",
       "spoiler": "Spoilers through the whole Arrancar arc and the fake Karakura Town.",
       "questions": [
-        { "q": "What does Aizen's zanpakuto do?", "a": ["Complete hypnosis of anyone who has seen its release", "Controls time", "Steals other zanpakuto", "Turns him invisible"], "correct": 0, "note": "Kyoka Suigetsu. If you saw the release once, you never saw anything true again." },
-        { "q": "Which two captains leave with Aizen?", "a": ["Gin Ichimaru and Kaname Tosen", "Byakuya and Kenpachi", "Hitsugaya and Unohana", "Ukitake and Kyoraku"], "correct": 0, "note": "One of them was never really with him." },
-        { "q": "What is the second release of a zanpakuto called?", "a": ["Bankai", "Shikai", "Resurreccion", "Kido"], "correct": 0, "note": "It usually takes a decade to achieve. Ichigo got three days." },
-        { "q": "Which Espada number is Ulquiorra?", "a": ["4", "1", "6", "10"], "correct": 0, "note": "Tattooed on his chest. The number is a ranking, not a name." },
-        { "q": "What is the orb Aizen spends the series chasing?", "a": ["The Hogyoku", "The Soul Key", "The Oken", "The Hollow Seed"], "correct": 0, "note": "Made by Urahara, hidden inside Rukia." },
-        { "q": "What are the Visored?", "a": ["Soul Reapers with hollow powers", "Hollows with Soul Reaper powers", "Exiled nobles", "Quincy survivors"], "correct": 0, "note": "Aizen's earliest experiment, and the reason he was exiled from nothing." },
-        { "q": "Which squad does Kenpachi Zaraki captain?", "a": ["Squad 11", "Squad 8", "Squad 4", "Squad 12"], "correct": 0, "note": "The squad that does nothing but fight." },
-        { "q": "What is the name of Ichigo's bankai?", "a": ["Tensa Zangetsu", "Zangetsu Kai", "Getsuga Tensho", "Shin Zangetsu"], "correct": 0, "note": "It makes the sword smaller. That is the whole point." },
-        { "q": "What is Rukia's shikai?", "a": ["Sode no Shirayuki", "Hyorinmaru", "Senbonzakura", "Shinso"], "correct": 0, "note": "Reputedly the most beautiful zanpakuto in Soul Society." },
-        { "q": "What was Nel before Ichigo met her as a child?", "a": ["The third Espada", "A Soul Reaper captain", "Aizen's lieutenant", "A Quincy"], "correct": 0, "note": "Tres Espada, before her own side betrayed her." },
-        { "q": "What does Gin's zanpakuto do?", "a": ["Extends enormously at speed", "Freezes anything it cuts", "Splits into a hundred blades", "Poisons the wound"], "correct": 0, "note": "Shinso. And the real trick was never the length." },
-        { "q": "Which squad handles healing?", "a": ["Squad 4", "Squad 12", "Squad 11", "Squad 7"], "correct": 0, "note": "Looked down on by Squad 11, right up until they need it." },
-        { "q": "What is Mayuri Kurotsuchi head of?", "a": ["The Research and Development Institute", "The Kido Corps", "The Onmitsukido", "The Royal Guard"], "correct": 0, "note": "Squad 12, and the less said about his methods the better." },
-        { "q": "How did Aizen open the Soul Society arc?", "a": ["By faking his own death", "By poisoning Yamamoto", "By stealing a bankai", "By opening a gate to Hueco Mundo"], "correct": 0, "note": "Impaled on a wall, in front of witnesses, for maximum effect." },
-        { "q": "What is a released Arrancar form called?", "a": ["Resurreccion", "Bankai", "Segunda", "Hierro"], "correct": 0, "note": "And a very small number of them have a second one." },
-        { "q": "Who trains Ichigo to get his bankai in three days?", "a": ["Yoruichi", "Urahara", "Zangetsu", "Rukia"], "correct": 0, "note": "With a doll called Tenshintai and no sympathy at all." }
+        {
+          "q": "What does Aizen's zanpakuto do?",
+          "a": [
+            "Complete hypnosis of anyone who has seen its release",
+            "Controls time",
+            "Steals other zanpakuto",
+            "Turns him invisible"
+          ],
+          "correct": 0,
+          "note": "Kyoka Suigetsu. If you saw the release once, you never saw anything true again."
+        },
+        {
+          "q": "Which two captains leave with Aizen?",
+          "a": [
+            "Gin Ichimaru and Kaname Tosen",
+            "Byakuya and Kenpachi",
+            "Hitsugaya and Unohana",
+            "Ukitake and Kyoraku"
+          ],
+          "correct": 0,
+          "note": "One of them was never really with him."
+        },
+        {
+          "q": "What is the second release of a zanpakuto called?",
+          "a": [
+            "Bankai",
+            "Shikai",
+            "Resurreccion",
+            "Kido"
+          ],
+          "correct": 0,
+          "note": "It usually takes a decade to achieve. Ichigo got three days."
+        },
+        {
+          "q": "Which Espada number is Ulquiorra?",
+          "a": [
+            "4",
+            "1",
+            "6",
+            "10"
+          ],
+          "correct": 0,
+          "note": "Tattooed on his chest. The number is a ranking, not a name."
+        },
+        {
+          "q": "What is the orb Aizen spends the series chasing?",
+          "a": [
+            "The Hogyoku",
+            "The Soul Key",
+            "The Oken",
+            "The Hollow Seed"
+          ],
+          "correct": 0,
+          "note": "Made by Urahara, hidden inside Rukia."
+        },
+        {
+          "q": "What are the Visored?",
+          "a": [
+            "Soul Reapers with hollow powers",
+            "Hollows with Soul Reaper powers",
+            "Exiled nobles",
+            "Quincy survivors"
+          ],
+          "correct": 0,
+          "note": "Aizen's earliest experiment. Urahara was exiled for it — the crime was his only in the sense that he was blamed."
+        },
+        {
+          "q": "Which squad does Kenpachi Zaraki captain?",
+          "a": [
+            "Squad 11",
+            "Squad 8",
+            "Squad 4",
+            "Squad 12"
+          ],
+          "correct": 0,
+          "note": "The squad that does nothing but fight."
+        },
+        {
+          "q": "What is the name of Ichigo's bankai?",
+          "a": [
+            "Tensa Zangetsu",
+            "Zangetsu Kai",
+            "Getsuga Tensho",
+            "Shin Zangetsu"
+          ],
+          "correct": 0,
+          "note": "It makes the sword smaller. That is the whole point."
+        },
+        {
+          "q": "What is Rukia's shikai?",
+          "a": [
+            "Sode no Shirayuki",
+            "Hyorinmaru",
+            "Senbonzakura",
+            "Shinso"
+          ],
+          "correct": 0,
+          "note": "Reputedly the most beautiful zanpakuto in Soul Society."
+        },
+        {
+          "q": "What was Nel before Ichigo met her as a child?",
+          "a": [
+            "The third Espada",
+            "A Soul Reaper captain",
+            "Aizen's lieutenant",
+            "A Quincy"
+          ],
+          "correct": 0,
+          "note": "Tres Espada, before her own side betrayed her."
+        },
+        {
+          "q": "What does Gin's zanpakuto do?",
+          "a": [
+            "Extends enormously at speed",
+            "Freezes anything it cuts",
+            "Splits into a hundred blades",
+            "Poisons the wound"
+          ],
+          "correct": 0,
+          "note": "Shinso. And the real trick was never the length."
+        },
+        {
+          "q": "Which squad handles healing?",
+          "a": [
+            "Squad 4",
+            "Squad 12",
+            "Squad 11",
+            "Squad 7"
+          ],
+          "correct": 0,
+          "note": "Looked down on by Squad 11, right up until they need it."
+        },
+        {
+          "q": "What is Mayuri Kurotsuchi head of?",
+          "a": [
+            "The Research and Development Institute",
+            "The Kido Corps",
+            "The Onmitsukido",
+            "The Royal Guard"
+          ],
+          "correct": 0,
+          "note": "Squad 12, and the less said about his methods the better."
+        },
+        {
+          "q": "How did Aizen open the Soul Society arc?",
+          "a": [
+            "By faking his own death",
+            "By poisoning Yamamoto",
+            "By stealing a bankai",
+            "By opening a gate to Hueco Mundo"
+          ],
+          "correct": 0,
+          "note": "Impaled on a wall, in front of witnesses, for maximum effect."
+        },
+        {
+          "q": "What is a released Arrancar form called?",
+          "a": [
+            "Resurreccion",
+            "Bankai",
+            "Segunda",
+            "Hierro"
+          ],
+          "correct": 0,
+          "note": "And a very small number of them have a second one."
+        },
+        {
+          "q": "Soul Reapers call their high-speed movement shunpo. What do the Arrancar call theirs?",
+          "a": [
+            "Sonido",
+            "Hirenkyaku",
+            "Bringer Light",
+            "Shunko"
+          ],
+          "correct": 0,
+          "note": "Every species has its own: hirenkyaku is the Quincy version, Bringer Light the Fullbringer one. Shunko is something else entirely."
+        }
       ]
     },
     "hard": {
@@ -52,22 +372,182 @@
       "blurb": "The Thousand-Year Blood War, the Royal Guard, and who Zangetsu really was.",
       "spoiler": "Spoilers for the entire series, ending included.",
       "questions": [
-        { "q": "Who is the emperor of the Quincy?", "a": ["Yhwach", "Jugram Haschwalth", "Uryu's father", "Ichibei"], "correct": 0, "note": "Sealed for a thousand years, and he counted every one of them." },
-        { "q": "What is Yhwach's power called?", "a": ["The Almighty", "The Balance", "The Iron", "The Antithesis"], "correct": 0, "note": "He sees every future and can rewrite the one he dislikes." },
-        { "q": "Who was the old man Ichigo thought was Zangetsu?", "a": ["A fragment of Yhwach's power inside him", "His father's zanpakuto spirit", "The Soul King", "A hollow wearing a disguise"], "correct": 0, "note": "The white hollow was the real Zangetsu the whole time." },
-        { "q": "What was Ichigo's mother, Masaki?", "a": ["A Quincy", "A Soul Reaper", "An Arrancar", "Entirely human"], "correct": 0, "note": "Which makes Ichigo the collision of three species." },
-        { "q": "What was Isshin Kurosaki before he was a doctor?", "a": ["Captain of Squad 10", "Captain of Squad 5", "A member of the Royal Guard", "A Quincy"], "correct": 0, "note": "He gave up his powers to save Masaki." },
-        { "q": "What are the Sternritter branded with?", "a": ["A letter of the alphabet", "A number", "A rank in Latin", "A colour"], "correct": 0, "note": "Their Schrift — the letter is the ability." },
-        { "q": "Which letter does Uryu receive?", "a": ["A, the Antithesis", "B, the Balance", "V, the Visionary", "M, the Miracle"], "correct": 0, "note": "The letter of Yhwach's chosen successor." },
-        { "q": "What is Squad Zero also called?", "a": ["The Royal Guard", "The Kido Corps", "The Onmitsukido", "The Zero Division"], "correct": 0, "note": "Five people who each invented something Soul Society runs on." },
-        { "q": "What is Yamamoto's bankai called?", "a": ["Zanka no Tachi", "Ryujin Jakka", "Kokujo Tengen", "Ichimonji"], "correct": 0, "note": "Ryujin Jakka is the shikai. The bankai burns everything it has ever burned." },
-        { "q": "How do the Quincy steal a captain's bankai?", "a": ["With a medallion", "By killing them", "By copying the release word", "With Yhwach's blood"], "correct": 0, "note": "Which is why the first invasion goes so badly." },
-        { "q": "What is Kenpachi Zaraki's zanpakuto called?", "a": ["Nozarashi", "Kenpachi", "Yachiru", "Shinken Hakkyoken"], "correct": 0, "note": "He did not learn its name until the war. He had never asked." },
-        { "q": "Where does Aizen spend the war?", "a": ["Chained in Muken, the deepest prison", "In Hueco Mundo", "Sealed inside the Hogyoku", "In the Royal Realm"], "correct": 0, "note": "Level eight of Central 46's prison, brought up only when things are truly bad." },
-        { "q": "What holds the Soul King in place?", "a": ["He is dismembered and sealed as the linchpin of the worlds", "A seal made by the Royal Guard", "Nothing — he rules freely", "The Hogyoku"], "correct": 0, "note": "Limbs removed and scattered, precisely so that everything holds together." },
-        { "q": "Who is the head of Squad Zero?", "a": ["Ichibei Hyosube", "Kirio Hikifune", "Oetsu Nimaiya", "Senjumaru Shutara"], "correct": 0, "note": "The monk who names things — and naming is the power." },
-        { "q": "What does Uryu's Antithesis do?", "a": ["Swaps what has happened to two targets", "Reflects attacks", "Cancels other Schrift", "Copies an ability"], "correct": 0, "note": "Your wounds become theirs, and theirs become yours." },
-        { "q": "Which four Sternritter form Yhwach's elite guard?", "a": ["The Schutzstaffel", "The Vandenreich", "The Wandenreich Four", "The Quincy Zero"], "correct": 0, "note": "Pernida, Askin, Gerard and Lille — each one a piece of the Soul King." }
+        {
+          "q": "Who is the emperor of the Quincy?",
+          "a": [
+            "Yhwach",
+            "Jugram Haschwalth",
+            "Uryu's father",
+            "Ichibei"
+          ],
+          "correct": 0,
+          "note": "Sealed for a thousand years, and he counted every one of them."
+        },
+        {
+          "q": "What is Yhwach's power called?",
+          "a": [
+            "The Almighty",
+            "The Balance",
+            "The Iron",
+            "The Antithesis"
+          ],
+          "correct": 0,
+          "note": "He sees every future and can rewrite the one he dislikes."
+        },
+        {
+          "q": "Who was the old man Ichigo thought was Zangetsu?",
+          "a": [
+            "A fragment of Yhwach's power inside him",
+            "His father's zanpakuto spirit",
+            "The Soul King",
+            "A hollow wearing a disguise"
+          ],
+          "correct": 0,
+          "note": "The white hollow was the real Zangetsu the whole time."
+        },
+        {
+          "q": "What was Ichigo's mother, Masaki?",
+          "a": [
+            "A Quincy",
+            "A Soul Reaper",
+            "An Arrancar",
+            "Entirely human"
+          ],
+          "correct": 0,
+          "note": "Which makes Ichigo the collision of three species."
+        },
+        {
+          "q": "What was Isshin Kurosaki before he was a doctor?",
+          "a": [
+            "Captain of Squad 10",
+            "Captain of Squad 5",
+            "A member of the Royal Guard",
+            "A Quincy"
+          ],
+          "correct": 0,
+          "note": "He gave up his powers to save Masaki."
+        },
+        {
+          "q": "What are the Sternritter branded with?",
+          "a": [
+            "A letter of the alphabet",
+            "A number",
+            "A rank in Latin",
+            "A colour"
+          ],
+          "correct": 0,
+          "note": "Their Schrift — the letter is the ability."
+        },
+        {
+          "q": "Which letter does Uryu receive?",
+          "a": [
+            "A, the Antithesis",
+            "B, the Balance",
+            "V, the Visionary",
+            "M, the Miracle"
+          ],
+          "correct": 0,
+          "note": "The letter of Yhwach's chosen successor."
+        },
+        {
+          "q": "What is Squad Zero also called?",
+          "a": [
+            "The Royal Guard",
+            "The Kido Corps",
+            "The Onmitsukido",
+            "The Punishment Force"
+          ],
+          "correct": 0,
+          "note": "Five people who each invented something Soul Society runs on."
+        },
+        {
+          "q": "What is Yamamoto's bankai called?",
+          "a": [
+            "Zanka no Tachi",
+            "Ryujin Jakka",
+            "Kokujo Tengen",
+            "Ichimonji"
+          ],
+          "correct": 0,
+          "note": "Ryujin Jakka is the shikai. The bankai burns everything it has ever burned."
+        },
+        {
+          "q": "How do the Quincy steal a captain's bankai?",
+          "a": [
+            "With a medallion",
+            "By killing them",
+            "By copying the release word",
+            "With Yhwach's blood"
+          ],
+          "correct": 0,
+          "note": "Which is why the first invasion goes so badly."
+        },
+        {
+          "q": "What is Kenpachi Zaraki's zanpakuto called?",
+          "a": [
+            "Nozarashi",
+            "Kenpachi",
+            "Yachiru",
+            "Shinken Hakkyoken"
+          ],
+          "correct": 0,
+          "note": "He did not learn its name until the war. He had never asked."
+        },
+        {
+          "q": "Where does Aizen spend the war?",
+          "a": [
+            "Chained in Muken, the deepest prison",
+            "In Hueco Mundo",
+            "Sealed inside the Hogyoku",
+            "In the Royal Realm"
+          ],
+          "correct": 0,
+          "note": "Level eight of Central 46's prison, brought up only when things are truly bad."
+        },
+        {
+          "q": "What holds the Soul King in place?",
+          "a": [
+            "He is dismembered and sealed as the linchpin of the worlds",
+            "A seal made by the Royal Guard",
+            "Nothing — he rules freely",
+            "The Hogyoku"
+          ],
+          "correct": 0,
+          "note": "Limbs removed and scattered, precisely so that everything holds together."
+        },
+        {
+          "q": "Who is the head of Squad Zero?",
+          "a": [
+            "Ichibei Hyosube",
+            "Kirio Hikifune",
+            "Oetsu Nimaiya",
+            "Senjumaru Shutara"
+          ],
+          "correct": 0,
+          "note": "The monk who names things — and naming is the power."
+        },
+        {
+          "q": "What does Uryu's Antithesis do?",
+          "a": [
+            "Swaps what has happened to two targets",
+            "Reflects attacks",
+            "Cancels other Schrift",
+            "Copies an ability"
+          ],
+          "correct": 0,
+          "note": "Your wounds become theirs, and theirs become yours."
+        },
+        {
+          "q": "Which four Sternritter form Yhwach's elite guard?",
+          "a": [
+            "The Schutzstaffel",
+            "The Vandenreich",
+            "The Wandenreich Four",
+            "The Quincy Zero"
+          ],
+          "correct": 0,
+          "note": "Pernida, Askin, Gerard and Lille — each one a piece of the Soul King."
+        }
       ]
     }
   }
