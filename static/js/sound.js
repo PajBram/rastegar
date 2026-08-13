@@ -171,6 +171,12 @@
     if (!ctx || !enabled || !music.level) return;
     var bpm = 92 + music.level * 14;
     var stepDur = 30 / bpm;                       // eighth notes
+    /* A background tab throttles setInterval to about one tick a second while
+       the audio clock keeps real time. Without this the scheduler wakes up a
+       second in debt, and every note it owes lands on the same instant — the
+       loop turns into a chord. Notes whose moment has passed are gone; start
+       again from now. */
+    if (music.next < ctx.currentTime) music.next = ctx.currentTime;
     while (music.next < ctx.currentTime + 0.2) {
       var at = music.next - ctx.currentTime;
       if (at < 0) at = 0;

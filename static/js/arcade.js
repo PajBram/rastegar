@@ -103,12 +103,18 @@
       // Never eat keys aimed at a text field: swallowing space and the arrow
       // keys made the name box impossible to type into.
       if (typingSomewhere(event.target)) return;
-      if (BLOCK[event.key]) event.preventDefault();
+      // Space and the arrows are the game's while a run is on. Outside one they
+      // belong to the page: the write-up sits below the game, and a visitor
+      // reading it with the keyboard should be able to scroll.
+      if (BLOCK[event.key] && game.state === 'playing') event.preventDefault();
       if (game.keys[event.key]) return;          // ignore auto-repeat
       game.keys[event.key] = true;
-      if (game.state === 'intro' && (event.key === ' ' || event.key === 'Enter')) {
-        startRun();
-        return;
+      if (event.key === ' ' || event.key === 'Enter') {
+        if (game.state === 'intro' || game.state === 'over') {
+          event.preventDefault();
+          startRun();
+          return;
+        }
       }
       if (game.state === 'playing' && spec.keyPress) spec.keyPress(event.key, game);
     }
@@ -181,7 +187,9 @@
       if (spec.summary) overlay.appendChild(el('p', null, spec.summary(game)));
       if (window.Scores) {
         overlay.appendChild(window.Scores.submitForm({
-          game: spec.slug, score: Math.round(game.score), token: game.token
+          game: spec.slug,
+          score: Math.round(game.score),
+          token: function () { return game.token; }
         }));
       }
       var again = el('button', 'btn btn--small');

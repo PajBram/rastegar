@@ -137,6 +137,11 @@
     /**
      * Build the "you scored X, put your name on it" form for a game-over screen.
      * Returns an element the game can drop into its overlay.
+     *
+     * `opts.token` may be a function. The run token arrives over the network,
+     * and a run that ends quickly is over before it lands — read at build time
+     * it would still be null, and the player would be told their round could
+     * not be scored a moment before it could. Read it when Post is pressed.
      */
     submitForm: function (opts) {
       var wrap = document.createElement('div');
@@ -192,7 +197,8 @@
         button.disabled = true;
         status.className = 'form-status';
         status.textContent = 'Sending...';
-        Scores.submit(opts.game, opts.token, name, opts.score).then(function () {
+        var token = typeof opts.token === 'function' ? opts.token() : opts.token;
+        Scores.submit(opts.game, token, name, opts.score).then(function () {
           try { localStorage.setItem(NAME_KEY, name); } catch (e) { /* private mode */ }
           status.className = 'form-status ok';
           status.textContent = 'On the wall.';

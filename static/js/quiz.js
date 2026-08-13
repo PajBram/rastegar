@@ -27,6 +27,16 @@
     return node;
   }
 
+  /* Every screen replaces the whole of #game-root, which drops whatever had
+     focus back onto <body>. Someone playing with the keyboard would have to tab
+     down from the masthead again for each question, and a screen reader would
+     never hear that the question changed. Hand focus to the new heading, and
+     do not scroll the page doing it. */
+  function takeFocus(node) {
+    node.setAttribute('tabindex', '-1');
+    try { node.focus({ preventScroll: true }); } catch (e) { node.focus(); }
+  }
+
   function shuffle(list) {
     var copy = list.slice();
     for (var i = copy.length - 1; i > 0; i--) {
@@ -57,7 +67,8 @@
     var stage = el('div', 'stage');
     var body = el('div', 'stage__body');
 
-    body.appendChild(el('h3', 'quiz__question', 'Pick your level'));
+    var heading = el('h3', 'quiz__question', 'Pick your level');
+    body.appendChild(heading);
     var list = el('div', 'difficulties');
 
     Object.keys(bank.difficulties).forEach(function (key) {
@@ -70,7 +81,10 @@
       left.appendChild(document.createElement('br'));
       left.appendChild(small);
       button.appendChild(left);
-      button.appendChild(el('span', null, String(level.questions.length) + ' Q'));
+      // What you get asked, not what the bank holds. The engine draws 15 of
+      // them at random, so printing the bank size promised a longer round.
+      button.appendChild(el('span', null,
+        String(Math.min(PER_ROUND, level.questions.length)) + ' Q'));
       button.addEventListener('click', function () { start(key); });
       list.appendChild(button);
     });
@@ -83,6 +97,9 @@
 
     stage.appendChild(body);
     root.appendChild(stage);
+    // Only when coming back from a finished round — not on first load, where
+    // stealing focus would yank a reader past the page heading.
+    if (state) takeFocus(heading);
   }
 
   // ------------------------------------------------------------------ play
@@ -133,7 +150,8 @@
     body.appendChild(el('p', 'quiz__progress',
       'Question ' + (state.index + 1) + ' of ' + state.questions.length
       + (state.streak > 1 ? '  •  streak ' + state.streak : '')));
-    body.appendChild(el('h3', 'quiz__question', question.q));
+    var heading = el('h3', 'quiz__question', question.q);
+    body.appendChild(heading);
 
     var options = el('div', 'quiz__options');
     question.options.forEach(function (text, index) {
@@ -152,6 +170,7 @@
     stage.appendChild(body);
     root.appendChild(stage);
 
+    takeFocus(heading);
     startTimer(timer);
   }
 
@@ -225,7 +244,8 @@
     var stage = el('div', 'stage');
     var overlay = el('div', 'stage__overlay');
 
-    overlay.appendChild(el('h3', null, 'Round over'));
+    var heading = el('h3', null, 'Round over');
+    overlay.appendChild(heading);
     overlay.appendChild(el('p', 'big', String(state.score)));
     overlay.appendChild(el('p', null,
       state.correct + ' of ' + state.questions.length + ' correct  •  best streak '
@@ -233,7 +253,9 @@
 
     if (window.Scores) {
       overlay.appendChild(window.Scores.submitForm({
-        game: SLUG, score: state.score, token: state.token
+        game: SLUG,
+        score: state.score,
+        token: function () { return state.token; }
       }));
     }
 
@@ -258,6 +280,7 @@
 
     stage.appendChild(overlay);
     root.appendChild(stage);
+    takeFocus(heading);
   }
 
   // -------------------------------------------------------------- keyboard
