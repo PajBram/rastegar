@@ -106,16 +106,6 @@ Två fällor jag redan gått i, båda i spelens slutruta:
   hoppas över när tangenttrycket är riktat mot ett textfält, annars går namnrutan
   inte att skriva i.
 
----|---|---|
-| `--ink` | `#111114` | Text, ramar, paneler |
-| `--paper` / `--paper-pure` | `#f4f1ea` / `#fffdf8` | Bakgrund, panelytor |
-| `--red` | `#ff2d55` | Accent, fara, det som ska klickas |
-| `--display` | Anton | Rubriker, knappar, HUD |
-
-Manga-paneler är layoutprincipen: tjocka svarta ramar, hård offset-skugga, lätt snedställda rutor (`tilt-a`, `tilt-b`, `tilt-c`), screentones som prickraster, speedlines vid hover. Läsbarheten går alltid före effekten.
-
-Mörkt läge finns och styrs av `prefers-color-scheme`. Tokens byter värde, inget annat — undvik hårdkodade färger utanför tokenblocken. Undantaget är grafik som alltid ligger på svart panel (t.ex. hjältestjärnan) och canvas-spelen, som ritar sin egen värld.
-
 ---
 
 ## Konventioner
