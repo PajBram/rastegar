@@ -30,7 +30,7 @@ Pajs personliga lekstuga på nätet: webbläsarspel, en devlogg om iOS-appen TAG
 | Deploy | GitHub Actions kör `python3 build.py` och publicerar `dist/` vid varje push till `main` |
 | Domän | rastegar.se hos Loopia, fyra A-poster mot GitHub Pages |
 | Backend | Supabase (Postgres). Se `supabase/schema.sql` |
-| Typsnitt | Anton (SIL OFL), självhostad i `static/fonts/` |
+| Typsnitt | Noto Serif Display och Great Vibes (båda SIL OFL), självhostade i `static/fonts/` |
 
 ### Kommandon
 
@@ -60,6 +60,9 @@ static/                Kopieras rakt av till dist/static/
   js/                  main.js (meny), quiz.js (quizmotor), arcade.js (spelskal),
                        scores.js (highscore), guestbook.js
   games/               Ett canvas-spel per fil, byggt ovanpå arcade.js
+  img/                 scene-*.svg (sidscener), games/<slug>.svg (spelomslag)
+  fonts/               Självhostade typsnitt
+tools/mock_backend.py  Härmar Supabase lokalt för test av highscore och gästbok
 public/                Filer som kopieras till roten: CNAME, robots.txt, .nojekyll
 supabase/schema.sql    Tabeller, RLS-policyer och RPC-funktioner
 ```
@@ -68,10 +71,42 @@ supabase/schema.sql    Tabeller, RLS-policyer och RPC-funktioner
 
 ## Design
 
-Svartvitt med **en** röd accent: `#FF2D55`, samma röda som TAG-appen använder.
+Redaktionell och illustrerad, inte manga. Sajten byggdes först i manga-stil med tjocka
+ramar och hårda skuggor — det blev för högljutt och revs 13 aug 2026. Nuvarande
+uttryck: bilder som går ut i kanterna, en serif som bär tonen, och gott om vitt.
 
 | Token | Värde | Användning |
 |---|---|---|
+| `--ink` | `#16120f` | Text, tunna linjer |
+| `--ink-soft` | `#6d635b` | Bitext, etiketter |
+| `--hair` | `rgba(22,18,15,.14)` | Hårfina linjer — sajtens enda "ram" |
+| `--paper` / `--sand` | `#ffffff` / `#f7f2ec` | Bakgrund, lugna block |
+| `--tan` | `#c9a582` | Accent: linjer, stjärnor, understrykningar |
+| `--red` | `#ff2d55` | Endast det som ska klickas, och fel |
+| `--serif` | Noto Serif Display | Alla rubriker och ordbilden |
+| `--sans` | systemets | Brödtext och spärrade versaler |
+
+Principer:
+
+- **Inga ramar och inga skuggor.** En hårfin linje eller ingenting alls.
+- **Överrubriker** är små versaler med `.22em` teckenmellanrum (`.kicker`).
+- **Scener ritas i SVG** och ligger i `static/img/`. `scene-dawn.svg` är heron,
+  `scene-dusk.svg` bandet mitt på startsidan.
+- **Spelomslag** ligger i `static/img/games/<slug>.svg` och plockas upp på filnamn
+  av `build.py`. Saknas filen faller kortet tillbaka på `glyph` mot en färgyta.
+- **Loggan** är skrivstil (`Great Vibes`) över en hårlinje med domänen under i
+  spärrade versaler. Rör den inte utan att fråga.
+- **Inget mörkt läge.** Det togs bort i omgörningen; sajten är ljus, punkt.
+
+Två fällor jag redan gått i, båda i spelens slutruta:
+
+- Fält inuti `.stage__overlay` **måste** sätta sin egen textfärg. Ärver de overlayens
+  vita blir texten osynlig mot ett vitt fält.
+- `arcade.js` blockerar mellanslag och piltangenter under spel. Blockeringen måste
+  hoppas över när tangenttrycket är riktat mot ett textfält, annars går namnrutan
+  inte att skriva i.
+
+---|---|---|
 | `--ink` | `#111114` | Text, ramar, paneler |
 | `--paper` / `--paper-pure` | `#f4f1ea` / `#fffdf8` | Bakgrund, panelytor |
 | `--red` | `#ff2d55` | Accent, fara, det som ska klickas |

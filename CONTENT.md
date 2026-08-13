@@ -109,9 +109,11 @@ Varje fråga:
 }
 ```
 
-**3.** Lägg till spelets `slug` under rätt serie i `watchlist.json` så anime-sidan länkar dit.
+**3.** Rita ett omslag: `static/img/games/<slug>.svg`, format 4:3. Det plockas upp automatiskt på filnamn — inget behöver skrivas i spelkortet. Saknas filen används `glyph` mot en färgyta i stället.
 
-**4.** Lägg in i databasen: kör i Supabase SQL Editor
+**4.** Lägg till spelets `slug` under rätt serie i `watchlist.json` så anime-sidan länkar dit.
+
+**5.** Lägg in i databasen: kör i Supabase SQL Editor
 `insert into games (slug, title, max_score, max_rate, min_seconds) values ('bleach-quiz','Bleach Quiz',6000,40,20);`
 Utan den raden går det inte att spara highscore för spelet.
 
