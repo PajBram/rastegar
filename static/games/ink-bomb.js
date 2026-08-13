@@ -13,8 +13,10 @@
   var MAX_R = 80;
 
   function roundPlan(level) {
+    // The field fills up to 50 dots, and the quota keeps climbing after that:
+    // the last rounds ask for nearly every dot on the page.
     var dots = Math.min(18 + level * 2, 50);
-    var share = Math.min(0.10 + level * 0.028, 0.60);
+    var share = Math.min(0.10 + level * 0.030, 0.98);
     return { dots: dots, target: Math.max(1, Math.round(dots * share)) };
   }
 
@@ -213,7 +215,9 @@
         ctx.fillStyle = 'rgba(17,17,20,.45)';
         ctx.font = '600 13px ui-monospace, Menlo, monospace';
         ctx.textAlign = 'center';
-        ctx.fillText('CATCH ' + game.plan.target + ' OF ' + game.plan.dots, W / 2, H - 18);
+        var quota = 'CATCH ' + game.plan.target + ' OF ' + game.plan.dots;
+        if (game.plan.target >= game.plan.dots) quota = 'CATCH EVERY LAST ONE';
+        ctx.fillText(quota, W / 2, H - 18);
       }
 
       if (game.banner) {

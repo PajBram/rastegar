@@ -13,9 +13,13 @@ create extension if not exists pgcrypto;
 -- ---------------------------------------------------------------- catalogue
 -- One row per game. Retiring a game from the site does not remove its row
 -- here: old scores point at it. Delete the scores first if you want it gone.
--- One row per game. max_score and max_rate are the plausibility limits used
--- when a score is submitted: nothing above max_score is ever accepted, and a
--- run cannot earn faster than max_rate points per second.
+-- One row per game. max_score and max_rate are plausibility limits, not the
+-- defence: the run token is. Keep them generous. Set them too tight and honest
+-- players get refused — which is exactly what happened when a quiz answered
+-- quickly earned 300 points against a ceiling of 40 per second.
+--
+-- min_seconds only exists to stop a script submitting the instant it starts.
+-- Three seconds does that. Ten seconds refuses anyone who dies early.
 create table if not exists public.games (
   slug        text primary key,
   title       text not null,
@@ -25,21 +29,14 @@ create table if not exists public.games (
 );
 
 insert into public.games (slug, title, max_score, max_rate, min_seconds) values
-  ('one-piece-quiz',    'One Piece Quiz',     6000,    40, 20),
-  ('naruto-quiz',       'Naruto Quiz',        6000,    40, 20),
-  ('bleach-quiz',       'Bleach Quiz',        6000,    40, 20),
-  ('dragon-ball-quiz',  'Dragon Ball Quiz',   6000,    40, 20),
-  ('duel',              'Duel',             150000,   600, 10),
-  ('ink-bomb',          'Ink Bomb',         250000,   900,  8),
-  ('shuriken',          'Shuriken',         200000,   800,  8),
-  ('panel-dash',        'Panel Dash',       200000,   900,  5),
-  ('paj-says-survive',  'Paj Says Survive', 250000,   500, 10),
-  -- Words per minute, so the ceiling is tiny next to the arcade games: 250 is
-  -- well past the world record, and 12 a second only bites on a short drill.
-  ('keyboard-dojo',     'Keyboard Dojo',       250,    12, 15),
-  -- Twenty questions at 200 points tops each: 4000 is a perfect round, and a
-  -- rate above 220 would mean answering faster than the questions render.
-  ('kana-dojo',         'Kana Dojo',          4000,   220, 15)
+  ('one-piece-quiz',    'One Piece Quiz',     6000,   400, 12),
+  ('naruto-quiz',       'Naruto Quiz',        6000,   400, 12),
+  ('bleach-quiz',       'Bleach Quiz',        6000,   400, 12),
+  ('dragon-ball-quiz',  'Dragon Ball Quiz',   6000,   400, 12),
+  ('duel',              'Duel',             150000,   900,  3),
+  ('ink-bomb',          'Ink Bomb',         400000,  2000,  3),
+  ('shuriken',          'Shuriken',         200000,   900,  3),
+  ('panel-dash',        'Panel Dash',       200000,   900,  3)
 on conflict (slug) do update
   set title = excluded.title,
       max_score = excluded.max_score,

@@ -5,6 +5,9 @@
 </header>
 
 <section class="section--game wrap">
+  <div class="stage-tools">
+    <button class="fs-toggle" type="button" aria-pressed="false">Fullscreen</button>
+  </div>
   <div class="panel panel--stage">
     <div id="game-root" data-game="{{slug}}"{{data_attrs}}>{{mount}}</div>
   </div>
@@ -24,4 +27,5 @@
 </section>
 
 {{scores_script}}
+<script src="/static/js/fullscreen.js" defer></script>
 {{scripts}}

@@ -48,6 +48,19 @@
     });
   }
 
+  /** The database speaks plainly, but not always usefully. Translate the two
+   *  answers a player can actually do something about. */
+  function friendly(message) {
+    if (!message) return 'That did not go through. Try once more.';
+    if (message.indexOf('cannot be scored') > -1) {
+      return 'This round was not registered with the server. Play one more and it will post.';
+    }
+    if (message.indexOf('too fast') > -1) {
+      return 'That round was too short to count. Survive a few seconds longer.';
+    }
+    return message;
+  }
+
   var Scores = {
     configured: configured,
 
@@ -191,7 +204,7 @@
         }).catch(function (err) {
           button.disabled = false;
           status.className = 'form-status error';
-          status.textContent = err.message || 'That did not go through.';
+          status.textContent = friendly(err && err.message);
         });
       });
 

@@ -49,6 +49,14 @@
     var ctx = canvas.getContext('2d');
     var W = spec.width, H = spec.height;
 
+    /* On a phone the canvas fills the screen, and a canvas that swallows every
+       touch leaves nowhere to swipe. Only take the gestures while a run is
+       actually going; before and after, let the page scroll normally. */
+    function setTouch(playing) {
+      canvas.style.touchAction = playing ? 'none' : 'pan-y';
+    }
+    setTouch(false);
+
     function resize() {
       var dpr = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = W * dpr;
@@ -76,6 +84,7 @@
       over: function () {
         if (game.state !== 'playing') return;
         game.state = 'over';
+        setTouch(false);
         showGameOver();
       }
     };
@@ -191,6 +200,7 @@
       game.time = 0;
       game.token = null;
       game.state = 'playing';
+      setTouch(true);
       spec.init(game);
       startLoop();
       if (window.Scores) {
