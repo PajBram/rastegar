@@ -356,6 +356,8 @@ main { display: block; }
   .dashh.is-open .dashh__notice { display: none; }
   .dashh.is-open .dashh__frame, .dashh.is-open .dashh__full { display: block; }
   .dashh__frame { aspect-ratio: 3 / 4; }
+  /* the game centres its own stats along the top, so keep out of that lane */
+  .dashh__full { right: auto; left: .7rem; font-size: .6rem; padding: .4rem .7rem; }
 }
 
 .grid--split { display: grid; gap: 2.5rem; }
