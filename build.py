@@ -261,6 +261,24 @@ def devlog_card(post: dict) -> str:
 </article>"""
 
 
+def scoreboard(game: dict) -> str:
+    return f"""<div class="panel panel--scores">
+      <h3>Highscores</h3>
+      <div class="scoreboard" data-game="{game['slug']}" data-limit="10">
+        <p class="scoreboard__empty">Loading&hellip;</p>
+      </div>
+    </div>"""
+
+
+def no_scores() -> str:
+    return """<div class="panel panel--scores">
+      <h3>Beta</h3>
+      <p>No highscores on this one yet — it is still being built. Found a bug,
+      or want something changed? Say so in the
+      <a href="/guestbook/">guestbook</a>.</p>
+    </div>"""
+
+
 def game_card(game: dict) -> str:
     art = (f'<img src="{game["cover"]}" alt="" loading="lazy" decoding="async">'
            if game.get("cover") else game.get("glyph", "&#9733;"))
@@ -371,6 +389,11 @@ def build() -> None:
                                for k, v in game.get("data", {}).items()),
             spoiler=(f'<p class="spoiler-warning">{html.escape(game["spoiler"])}</p>'
                      if game.get("spoiler") else ""),
+            # A game that does not report scores says so instead of showing an
+            # empty board that invites a score nobody can post.
+            aside=(scoreboard(game) if game.get("scores", True) else no_scores()),
+            scores_script=('<script src="/static/js/scores.js" defer></script>'
+                           if game.get("scores", True) else ""),
         )
         page(game["url"], title=f"{game['title']} — {site['name']}",
              description=game.get("tagline", ""), active="games", body=body)

@@ -19,14 +19,9 @@
       <h4>Controls</h4>
       <ul class="controls">{{controls}}</ul>
     </div>
-    <div class="panel panel--scores">
-      <h3>Highscores</h3>
-      <div class="scoreboard" data-game="{{slug}}" data-limit="10">
-        <p class="scoreboard__empty">Loading&hellip;</p>
-      </div>
-    </div>
+    {{aside}}
   </div>
 </section>
 
-<script src="/static/js/scores.js" defer></script>
+{{scores_script}}
 {{scripts}}

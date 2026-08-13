@@ -3,6 +3,7 @@
   "title": "Dashh: Voidfall",
   "kind": "BETA",
   "order": 3,
+  "scores": false,
   "tilt": "b",
   "glyph": "&#9670;",
   "tagline": "Two worlds, waves of monsters, and a dash that phases you through them.",
