@@ -1905,13 +1905,51 @@ class Sound {
     src.start(t);
   }
 
+  /** Liten slumpvariation i tonhöjd, annars låter hundra slag som ett enda. */
+  v(amount = 0.08) { return 1 + (Math.random() * 2 - 1) * amount; }
+
   shoot() {
     this.tone({ f: 720, f2: 240, dur: 0.09, type: 'square', vol: 0.10 });
     this.noise({ dur: 0.06, vol: 0.06, freq: 2400, sweep: 700 });
   }
+
+  // ------------------------------------------------------------- svärdet
+  // Tungt och metalliskt: en luftig vissling, en köttig duns och en klang
+  // som ringer ut. Varje slag varieras något i tonhöjd.
+
   swing() {
-    this.noise({ dur: 0.14, vol: 0.11, freq: 420, sweep: 2400, q: 0.8 });
-    this.tone({ f: 190, f2: 340, dur: 0.09, type: 'sine', vol: 0.04 });
+    const p = this.v(0.14);
+    this.noise({ dur: 0.14 * p, vol: 0.11, freq: 400 * p, sweep: 2500 * p, q: 0.8 });
+    this.tone({ f: 190 * p, f2: 350 * p, dur: 0.09, type: 'sine', vol: 0.04 });
+  }
+  swordHit() {
+    const p = this.v(0.10);
+    this.tone({ f: 195 * p, f2: 62 * p, dur: 0.13, type: 'triangle', vol: 0.13 });
+    this.tone({ f: 1180 * p, f2: 700 * p, dur: 0.11, type: 'square', vol: 0.045 });
+    this.tone({ f: 1790 * p, f2: 980 * p, dur: 0.08, type: 'square', vol: 0.025, delay: 0.006 });
+    this.noise({ dur: 0.09, vol: 0.085, freq: 1500 * p, sweep: 480, q: 1.1 });
+  }
+  swordCrit() {
+    const p = this.v(0.07);
+    this.tone({ f: 150 * p, f2: 46 * p, dur: 0.24, type: 'sawtooth', vol: 0.14 });
+    this.tone({ f: 1520 * p, f2: 620 * p, dur: 0.3, type: 'square', vol: 0.06 });
+    this.tone({ f: 2270 * p, f2: 1380 * p, dur: 0.34, type: 'triangle', vol: 0.045, delay: 0.02 });
+    this.noise({ dur: 0.19, vol: 0.12, freq: 2200 * p, sweep: 420, q: 0.9 });
+  }
+
+  // -------------------------------------------------------------- lasern
+  // Torrt och elektriskt: tunnare, kortare och ljusare än stålet, utan bas.
+
+  laserHit() {
+    const p = this.v(0.11);
+    this.tone({ f: 920 * p, f2: 215 * p, dur: 0.07, type: 'square', vol: 0.07 });
+    this.noise({ dur: 0.07, vol: 0.07, freq: 3200 * p, sweep: 900, q: 1.6, type: 'highpass' });
+  }
+  laserCrit() {
+    const p = this.v(0.08);
+    this.tone({ f: 1400 * p, f2: 250 * p, dur: 0.12, type: 'sawtooth', vol: 0.09 });
+    this.tone({ f: 2500 * p, f2: 3500 * p, dur: 0.17, type: 'sine', vol: 0.05, delay: 0.02 });
+    this.noise({ dur: 0.13, vol: 0.09, freq: 4000 * p, sweep: 1100, q: 1.2, type: 'highpass' });
   }
   droneDive() {
     this.tone({ f: 320, f2: 1500, dur: 0.35, type: 'sawtooth', vol: 0.05 });
@@ -1936,9 +1974,10 @@ class Sound {
     this.tone({ f: 520, f2: 900, dur: 0.18, type: 'sine', vol: 0.06 });
   }
   laser() {
-    this.tone({ f: 1600, f2: 340, dur: 0.11, type: 'sawtooth', vol: 0.09 });
-    this.tone({ f: 2400, f2: 900, dur: 0.05, type: 'sine', vol: 0.05 });
-    this.noise({ dur: 0.05, vol: 0.04, freq: 4200, sweep: 1400 });
+    const p = this.v(0.07);
+    this.tone({ f: 1650 * p, f2: 330 * p, dur: 0.11, type: 'sawtooth', vol: 0.085 });
+    this.tone({ f: 2500 * p, f2: 900 * p, dur: 0.05, type: 'sine', vol: 0.045 });
+    this.noise({ dur: 0.05, vol: 0.04, freq: 4200 * p, sweep: 1400 });
   }
   hit() { this.tone({ f: 300, f2: 120, dur: 0.06, type: 'triangle', vol: 0.12 }); }
   crit() {
@@ -3744,7 +3783,7 @@ class Combat {
       const crit = Math.random() < st.crit || fin;
       const dmg = st.damage * (fin ? 2.8 : 1.7) * (crit ? st.critMult : 1);
       const killed = e.damage(dmg, ctx, crit);
-      ctx.sound[crit ? 'crit' : 'hit']();
+      ctx.sound[crit ? 'swordCrit' : 'swordHit']();
       if (st.lifesteal > 0) p.heal(dmg * st.lifesteal);
       // rejäl knockback — svagare mot tunga fiender
       const kb = (fin ? 27 : 16) / (1 + e.radius);
@@ -4012,7 +4051,12 @@ class Combat {
           e.pos.x, e.pos.y + e.height * 0.5, e.pos.z, e.radius + s.radius)) {
           s.hits.add(e);
           const killed = e.damage(s.dmg, ctx, s.crit);
-          ctx.sound[s.crit ? 'crit' : 'hit']();
+          // eldbollen talar genom sin explosion, lasern knäpper elektriskt,
+          // allt annat får den vanliga träffen
+          if (!s.fireball) {
+            ctx.sound[s.beam ? (s.crit ? 'laserCrit' : 'laserHit')
+                             : (s.crit ? 'crit' : 'hit')]();
+          }
           if (p.stats.lifesteal > 0) p.heal(s.dmg * p.stats.lifesteal);
           if (killed) ctx.onEnemyKilled(e);
           if (s.explosive > 0) {
