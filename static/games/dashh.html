@@ -79,6 +79,14 @@
   #crossdot{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;
     border-radius:50%;background:#fff;box-shadow:0 0 8px var(--neon)}
 
+  /* skadesiffror: en pool av element som projiceras från världen varje bildruta */
+  #floaters{position:absolute;inset:0;overflow:hidden}
+  .flt{position:absolute;left:0;top:0;font-weight:900;font-size:19px;line-height:1;
+    letter-spacing:.02em;text-shadow:0 2px 6px rgba(0,0,0,.85);will-change:transform,opacity;
+    opacity:0;white-space:nowrap;font-variant-numeric:tabular-nums}
+  .flt.crit{font-size:24px;color:var(--gold)}
+  .flt.norm{color:#fff}
+
   #vignette{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,
     transparent 42%, rgba(255,20,60,.55) 100%);transition:opacity .18s}
 
@@ -238,6 +246,7 @@
     <div class="bar"><div id="bossFill"></div></div>
   </div>
 
+  <div id="floaters"></div>
   <div id="verTag">BETA 0.9</div>
   <div id="crosshair"><div id="crossdot"></div></div>
   <div id="vignette"></div>
@@ -2929,6 +2938,8 @@ class Enemy {
     this.aimT = 0;
     this.aimPitch = 0;
     this.shieldFlash = 0;
+    this.death = 0;          // > 0 medan kroppen faller ihop
+    this.deathMax = 0.62;
   }
 
   damage(n, ctx, crit) {
@@ -2953,8 +2964,38 @@ class Enemy {
       speed: crit ? 9 : 5, life: 0.34, size: crit ? 0.5 : 0.34,
       col: crit ? [1.0, 0.85, 0.3] : [1.0, 0.55, 0.35], alpha: 0.9, drag: 0.5, grav: -6,
     });
-    if (this.hp <= 0) { this.alive = false; return 1; }
+    ctx.floater(this.pos.x, this.pos.y + this.height * 0.75, this.pos.z, Math.round(n), crit, this);
+    if (this.hp <= 0) {
+      this.alive = false;
+      this.death = this.deathMax = this.boss ? 1.3 : 0.62;
+      this.vel.y = this.fly ? -2 : 3.5;      // svävare tappar höjd, markbundna studsar till
+      ctx.freeze(this.boss ? 0.16 : 0.05);
+      return 1;
+    }
+    if (crit) ctx.freeze(0.045);
     return 0;
+  }
+
+  /** Kroppen faller framåt, sjunker ihop och försvinner. */
+  updateDeath(dt, ctx) {
+    this.death -= dt;
+    this.flash = Math.max(0, this.flash - dt * 3.5);
+    this.vel.y -= 26 * dt;
+    this.pos.x += this.vel.x * dt * 0.35;
+    this.pos.y += this.vel.y * dt;
+    this.pos.z += this.vel.z * dt * 0.35;
+    const gh = terrainHeight(this.pos.x, this.pos.z);
+    if (this.pos.y <= gh) { this.pos.y = gh; this.vel.y = 0; }
+    if (Math.random() < (this.boss ? 0.9 : 0.25)) {
+      ctx.particles.spawn({
+        x: this.pos.x + rand(-this.radius, this.radius),
+        y: this.pos.y + rand(0.2, this.height),
+        z: this.pos.z + rand(-this.radius, this.radius),
+        vx: rand(-0.6, 0.6), vy: rand(0.4, 1.6), vz: rand(-0.6, 0.6),
+        life: rand(0.3, 0.7), size: rand(0.2, 0.5), size2: 0,
+        col: this.col, alpha: 0.5, drag: 0.4,
+      });
+    }
   }
 
   update(dt, ctx) {
@@ -3271,10 +3312,23 @@ class Enemy {
     const bone = [0.92, 0.88, 0.78];
     const x = this.pos.x, y = this.pos.y, z = this.pos.z, yaw = this.yaw;
     const csY = Math.cos(yaw), snY = Math.sin(yaw);
+
+    // Under döden faller hela kroppen framåt, sjunker ner och krymper bort.
+    const dying = this.death > 0;
+    const dT = dying ? 1 - this.death / this.deathMax : 0;
+    const shrink = 1 - dT * dT * 0.75;
+    const fall = dT * 1.5;
+    const cf = Math.cos(fall), sf = Math.sin(fall);
+
     // Lokala koordinater: +z = framåt (mot spelaren), +x = höger.
-    const P = (lx, ly, lz) => [x + csY * lx + snY * lz, y + ly, z - snY * lx + csY * lz];
+    const P = (lx, ly, lz) => {
+      let px = lx * shrink, py = ly * shrink, pz = lz * shrink;
+      if (dying) { const ny = py * cf - pz * sf; pz = py * sf + pz * cf; py = ny; }
+      return [x + csY * px + snY * pz, y + py - dT * 0.3, z - snY * px + csY * pz];
+    };
     const put = (batch, p, sx, sy, sz, col, rx = 0, ryOff = 0, rz = 0, g = 0) =>
-      batch.push(p[0], p[1], p[2], sx, sy, sz, col, rx, yaw + ryOff, rz, g);
+      batch.push(p[0], p[1], p[2], sx * shrink, sy * shrink, sz * shrink, col,
+        rx + fall, yaw + ryOff, rz, g);
     const pop = 1 + f * 0.06;                 // liten "träffstuds" i skalan
     const glow = 0.2 + f * 0.9;
     const blink = Math.sin(time * 1.7 + this.phase * 9) > 0.96 ? 0.15 : 1;
@@ -3514,11 +3568,12 @@ class Enemy {
           put(B.cone, P(lx, 0.55, lz), 0.3, 1.3, 0.3, dark,
             Math.PI + Math.sin(time * 2 + i * 2) * 0.25, Math.atan2(lx, lz), 0, 0.2);
         }
-        // kretsande skärvor
+        // kretsande skärvor — de faller in mot kroppen när bossen dör
         for (let i = 0; i < 5; i++) {
           const a = time * 1.2 + (i / 5) * TAU;
-          B.octa.push(x + Math.cos(a) * 4.2, y + 2.6 + Math.sin(a * 2 + i) * 0.8, z + Math.sin(a) * 4.2,
-            0.8, 1.1, 0.8, [1, 0.5, 0.7], 0, a * 3, 0, 1.1);
+          const r = 4.2 * (1 - dT);
+          B.octa.push(x + Math.cos(a) * r, y + (2.6 + Math.sin(a * 2 + i) * 0.8) * shrink, z + Math.sin(a) * r,
+            0.8 * shrink, 1.1 * shrink, 0.8 * shrink, [1, 0.5, 0.7], 0, a * 3, 0, 1.1);
         }
         if (this.state === 'slam') {
           B.sphere.push(x, y + 0.2, z, 6 + Math.sin(time * 30) * 1.5, 0.4, 6, [1, 0.4, 0.2], 0, 0, 0, 1.2);
@@ -3528,7 +3583,8 @@ class Enemy {
     }
 
     const air = Math.max(0, this.pos.y - terrainHeight(x, z));
-    rend.shadow(x, terrainHeight(x, z), z, this.radius * 2.1, 0.4 * Math.max(0, 1 - air * 0.1));
+    rend.shadow(x, terrainHeight(x, z), z, this.radius * 2.1 * shrink,
+      0.4 * Math.max(0, 1 - air * 0.1) * (1 - dT));
   }
 }
 
@@ -3693,7 +3749,7 @@ class Combat {
       // rejäl knockback — svagare mot tunga fiender
       const kb = (fin ? 27 : 16) / (1 + e.radius);
       if (dist > 0.01) { e.vel.x += (dx / dist) * kb; e.vel.z += (dz / dist) * kb; }
-      if (fin) e.vel.y += 7;
+      if (fin) { e.vel.y += 7; ctx.freeze(0.09); }
       e.slow = Math.max(e.slow, fin ? 0.7 : 0.3);
       if (st.explosive > 0) this.explode(ctx, e.pos.x, e.pos.y + e.height * 0.5, e.pos.z, st.explosive, dmg * 0.4);
       if (killed) ctx.onEnemyKilled(e);
@@ -3872,6 +3928,7 @@ class Combat {
 
   explode(ctx, x, y, z, radius, dmg, source) {
     ctx.sound.explode();
+    ctx.freeze(0.07);
     ctx.particles.burst(x, y, z, 26, {
       speed: radius * 2.6, life: 0.5, size: 1.1, size2: 0.1,
       col: [1.0, 0.6, 0.2], alpha: 0.95, drag: 0.9, grav: -4,
@@ -4123,6 +4180,7 @@ class HUD {
     this.comboRow = $('comboRow');
     this.comboPips = [...this.comboRow.children];
     this.cross = $('crosshair');
+    this.initFloaters();
     this.stick = $('stick');
     this.knob = $('knob');
     this.tFire = $('tFire');
@@ -4134,6 +4192,71 @@ class HUD {
   }
 
   showHUD(on) { this.hud.classList.toggle('hidden', !on); }
+
+  // ------------------------------------------------------- skadesiffror
+
+  initFloaters() {
+    this.fltRoot = $('floaters');
+    this.flts = [];
+    for (let i = 0; i < 22; i++) {
+      const el = document.createElement('div');
+      el.className = 'flt';
+      this.fltRoot.appendChild(el);
+      this.flts.push({ el, life: 0, max: 1, x: 0, y: 0, z: 0, drift: 0, key: null, total: 0 });
+    }
+    this.fltNext = 0;
+  }
+
+  clearFloaters() {
+    if (!this.flts) return;
+    for (const f of this.flts) { f.life = 0; f.key = null; f.el.style.opacity = '0'; }
+  }
+
+  /**
+   * Snabba träffar på samma fiende räknas ihop till en siffra som tickar upp,
+   * i stället för en hög med överlappande tal.
+   */
+  floater(x, y, z, amount, crit, key) {
+    let f = key ? this.flts.find((q) => q.key === key && q.life > 0) : null;
+    if (f) {
+      f.total += amount;
+      f.life = Math.max(f.life, f.max * 0.75);
+      if (crit) f.crit = true;
+    } else {
+      f = this.flts[this.fltNext];
+      this.fltNext = (this.fltNext + 1) % this.flts.length;
+      f.key = key || null;
+      f.total = amount;
+      f.crit = !!crit;
+      f.life = f.max = 0.85;
+      f.drift = (Math.random() - 0.5) * 70;
+      f.rise = 40 + Math.random() * 26;
+    }
+    f.x = x; f.y = y; f.z = z;
+    f.el.textContent = String(Math.round(f.total));
+    f.el.className = `flt ${f.crit ? 'crit' : 'norm'}`;
+  }
+
+  /** Projicerar siffrorna från världen till skärmen. */
+  updateFloaters(dt, g) {
+    const vp = g.renderer.vp;
+    const W = innerWidth, H = innerHeight;
+    for (const f of this.flts) {
+      if (f.life <= 0) continue;
+      f.life -= dt;
+      if (f.life <= 0) { f.el.style.opacity = '0'; f.key = null; continue; }
+      const t = 1 - f.life / f.max;
+      const cw = vp[3] * f.x + vp[7] * f.y + vp[11] * f.z + vp[15];
+      if (cw <= 0.01) { f.el.style.opacity = '0'; continue; }
+      const sx = ((vp[0] * f.x + vp[4] * f.y + vp[8] * f.z + vp[12]) / cw * 0.5 + 0.5) * W;
+      const sy = (1 - ((vp[1] * f.x + vp[5] * f.y + vp[9] * f.z + vp[13]) / cw * 0.5 + 0.5)) * H;
+      const rise = t * (f.rise || 46);
+      const pop = t < 0.18 ? 1 + (0.18 - t) * 2.2 : 1;
+      f.el.style.transform =
+        `translate(${(sx + f.drift * t - 14).toFixed(1)}px, ${(sy - rise).toFixed(1)}px) scale(${pop.toFixed(2)})`;
+      f.el.style.opacity = String(Math.min(1, (1 - t) * 2.2));
+    }
+  }
 
   hideOverlay() { this.overlay.classList.add('hidden'); }
   showOverlay(html) {
@@ -4265,6 +4388,7 @@ class HUD {
       this.setBoss(null);
     }
 
+    this.updateFloaters(dt, g);
     this.drawMinimap(g);
   }
 
@@ -4501,6 +4625,8 @@ class Game {
     this.time = 0;
     this.pendingLevelUps = 0;
     this.ambientTimer = 0;
+    this.hitstop = 0;
+    this.hud.clearFloaters();
     this.hud.setBoss(null);
   }
 
@@ -4567,6 +4693,12 @@ class Game {
 
   toast(msg) { this.hud.toast(msg); }
 
+  /** Kort frys vid tunga träffar — det är den som ger slaget tyngd. */
+  freeze(sec) { this.hitstop = Math.min(0.16, Math.max(this.hitstop, sec)); }
+
+  /** Skadesiffra som flyger upp ur fienden. */
+  floater(x, y, z, amount, crit, key) { this.hud.floater(x, y, z, amount, crit, key); }
+
   spawnEnemy(type, x, z) {
     const e = new Enemy(type, x, z, this.waves.wave, this.worldId);
     this.enemies.push(e);
@@ -4596,6 +4728,7 @@ class Game {
       col: e.col, alpha: 0.95, drag: 0.7, grav: -6,
     });
     this.combat.dropLoot(this, e);
+    this.player.shake = Math.min(1.2, this.player.shake + (e.boss ? 1.0 : 0.12));
     if (e.boss) {
       this.hud.setBoss(null);
       this.hud.showBanner('BOSSEN FÖLL', '', 2.6);
@@ -4690,8 +4823,13 @@ class Game {
 
     this.waves.update(dt, this);
 
-    for (const e of this.enemies) if (e.alive) e.update(dt, this);
-    if (this.enemies.some((e) => !e.alive)) this.enemies = this.enemies.filter((e) => e.alive);
+    for (const e of this.enemies) {
+      if (e.alive) e.update(dt, this);
+      else if (e.death > 0) e.updateDeath(dt, this);
+    }
+    if (this.enemies.some((e) => !e.alive && e.death <= 0)) {
+      this.enemies = this.enemies.filter((e) => e.alive || e.death > 0);
+    }
 
     this.combat.update(dt, this);
     this.particles.update(dt);
@@ -4740,6 +4878,7 @@ class Game {
 
     if (this.state === 'playing') {
       if (this.input.pressed('Escape') || this.input.pressed('KeyP')) this.pause();
+      else if (this.hitstop > 0) this.hitstop -= dt;   // världen står still, bilden rullar
       else this.update(dt);
     } else if (this.state === 'paused') {
       if (this.input.pressed('Escape') || this.input.pressed('KeyP')) this.resume();
