@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="A figure dashing between a forest and a neon city, split down the middle">
+  <defs>
+    <linearGradient id="dashh-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f2ea"/><stop offset="100%" stop-color="#ded3c3"/>
+    </linearGradient>
+    <clipPath id="dashh-right">
+      <path d="M212 0 h188 v300 H176 z"/>
+    </clipPath>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#dashh-sky)"/>
+
+  <!-- screentone -->
+  <g fill="#16120f" opacity=".07">
+    <circle cx="24" cy="24" r="2"/><circle cx="60" cy="24" r="2"/><circle cx="96" cy="24" r="2"/>
+    <circle cx="24" cy="60" r="2"/><circle cx="60" cy="60" r="2"/><circle cx="96" cy="60" r="2"/>
+    <circle cx="24" cy="96" r="2"/><circle cx="60" cy="96" r="2"/>
+  </g>
+
+  <!-- left half: the wilderness, pines on a ridge -->
+  <g fill="#16120f">
+    <path d="M0 232 h176 l-12 68 H0 z"/>
+    <path d="M34 210 l22-58 22 58 z"/>
+    <path d="M40 232 l16-44 16 44 z"/>
+    <path d="M96 218 l17-46 17 46 z"/>
+    <path d="M100 236 l13-36 13 36 z"/>
+    <path d="M138 226 l14-38 14 38 z"/>
+    <rect x="53" y="205" width="6" height="30"/>
+    <rect x="110" y="214" width="5" height="24"/>
+    <rect x="149" y="222" width="5" height="18"/>
+  </g>
+
+  <!-- right half: the city, towers with lit floors -->
+  <g clip-path="url(#dashh-right)">
+    <rect x="176" y="0" width="224" height="300" fill="#16120f"/>
+    <g fill="#f4f1ea" opacity=".16">
+      <rect x="214" y="96" width="46" height="204"/>
+      <rect x="276" y="60" width="52" height="240"/>
+      <rect x="342" y="122" width="44" height="178"/>
+    </g>
+    <g fill="#ff2d55">
+      <rect x="214" y="118" width="46" height="5"/><rect x="214" y="146" width="46" height="5"/>
+      <rect x="214" y="174" width="46" height="5"/><rect x="214" y="202" width="46" height="5"/>
+      <rect x="276" y="82" width="52" height="5"/><rect x="276" y="112" width="52" height="5"/>
+      <rect x="276" y="142" width="52" height="5"/><rect x="276" y="172" width="52" height="5"/>
+      <rect x="342" y="144" width="44" height="5"/><rect x="342" y="174" width="44" height="5"/>
+      <rect x="342" y="204" width="44" height="5"/>
+    </g>
+  </g>
+
+  <!-- the seam between the two worlds -->
+  <path d="M176 300 L212 0 l14 0 -36 300 z" fill="#ff2d55"/>
+
+  <!-- speedlines of the dash -->
+  <g stroke="#16120f" stroke-width="4" stroke-linecap="square">
+    <path d="M44 150 h58" opacity=".9"/>
+    <path d="M28 168 h44" opacity=".6"/>
+    <path d="M56 132 h34" opacity=".45"/>
+  </g>
+
+  <!-- the figure, mid-dash -->
+  <g fill="#16120f">
+    <circle cx="150" cy="128" r="13"/>
+    <path d="M138 144 h26 l7 44 h-40 z"/>
+    <path d="M164 152 l30 -12 5 12 -33 14 z"/>
+    <path d="M126 190 l14 0 -6 40 -14 -2 z"/>
+    <path d="M152 190 l14 0 8 38 -14 4 z"/>
+  </g>
+  <path d="M186 138 l34 -14 4 11 -36 15 z" fill="#ff2d55"/>
+</svg>

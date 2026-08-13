@@ -323,6 +323,41 @@ main { display: block; }
 .section--game { padding: 1rem 0 2rem; }
 .panel--stage { border: 0; padding: 0; background: none; }
 #game-root { position: relative; }
+
+/* Dashh is a whole WebGL page of its own, so it runs in a frame on a black
+   stage rather than in the paper panels the canvas games use. */
+.dashh { position: relative; background: #05060c; border: 1px solid var(--hair); }
+.dashh__frame { display: block; width: 100%; aspect-ratio: 16 / 10; border: 0; }
+.dashh__full {
+  /* top right: the game keeps its own HUD along the bottom and the radar
+     sits in the bottom right corner */
+  position: absolute; right: .7rem; top: .7rem;
+  font-family: var(--sans); font-size: .68rem; font-weight: 600;
+  letter-spacing: .18em; text-transform: uppercase;
+  background: rgba(5,6,12,.75); color: #fff; border: 1px solid rgba(255,255,255,.45);
+  padding: .5rem .9rem; cursor: pointer;
+  transition: background .2s ease, border-color .2s ease;
+}
+.dashh__full:hover, .dashh__full:focus-visible { background: var(--red); border-color: var(--red); }
+.dashh.is-full { display: flex; }
+.dashh.is-full .dashh__frame { aspect-ratio: auto; height: 100%; }
+
+/* A phone cannot play this yet, so say so instead of serving a game with no
+   controls. The frame is only fetched if the visitor asks for it. */
+.dashh__notice { display: none; }
+@media (pointer: coarse) {
+  .dashh__notice {
+    display: grid; gap: 1.2rem; justify-items: center; text-align: center;
+    padding: 2.8rem 1.5rem; color: rgba(246,241,234,.9);
+  }
+  .dashh__notice p { margin: 0; font-size: .95rem; line-height: 1.6; }
+  .dashh__notice strong { color: #fff; }
+  .dashh__frame, .dashh__full { display: none; }
+  .dashh.is-open .dashh__notice { display: none; }
+  .dashh.is-open .dashh__frame, .dashh.is-open .dashh__full { display: block; }
+  .dashh__frame { aspect-ratio: 3 / 4; }
+}
+
 .grid--split { display: grid; gap: 2.5rem; }
 @media (min-width: 900px) { .grid--split { grid-template-columns: 1.6fr 1fr; align-items: start; } }
 .controls { list-style: none; padding: 0; }

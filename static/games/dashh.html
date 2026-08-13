@@ -1,0 +1,4593 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>DASHH — Voidfall</title>
+<style>
+  :root{
+    --neon:#4df3ff;
+    --neon2:#b07bff;
+    --hot:#ff3d7f;
+    --gold:#ffcc4d;
+    --good:#4dffa6;
+    --bg:#05060c;
+    --panel:rgba(10,14,26,.82);
+    --line:rgba(77,243,255,.35);
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:var(--bg);color:#eaf6ff;
+    font-family:"Segoe UI",-apple-system,BlinkMacSystemFont,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;user-select:none;touch-action:none}
+  #gl{position:fixed;inset:0;width:100%;height:100%;display:block;cursor:crosshair}
+  .hidden{display:none !important}
+
+  /* ---------- HUD ---------- */
+  #hud{position:fixed;inset:0;pointer-events:none;z-index:10}
+  .topbar{position:absolute;top:14px;left:50%;transform:translateX(-50%);display:flex;gap:8px}
+  .stat{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:6px 12px;min-width:66px;text-align:center;backdrop-filter:blur(6px)}
+  .stat .label{display:block;font-size:9px;letter-spacing:.18em;opacity:.6}
+  .stat span:last-child{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
+  #waveNum{color:var(--neon)} #levelNum{color:var(--neon2)}
+  #killNum{color:var(--hot)} #fpsNum{color:var(--good)}
+
+  #bottom{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:min(560px,72vw)}
+  .bar{position:relative;height:20px;border-radius:10px;overflow:hidden;
+    background:rgba(4,8,16,.75);border:1px solid var(--line);margin-bottom:7px}
+  .bar > div{position:absolute;inset:0;width:100%;transform-origin:left center;
+    transition:transform .12s ease-out}
+  #hpFill{background:linear-gradient(90deg,#ff2d6f,#ff7a4d)}
+  .bar.xp{height:9px}
+  #xpFill{background:linear-gradient(90deg,var(--neon),var(--neon2))}
+  #hpText{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;letter-spacing:.08em;text-shadow:0 1px 3px #000}
+  #dashRow{display:flex;gap:6px;justify-content:center;margin-top:2px}
+  .pip{width:44px;height:6px;border-radius:3px;background:rgba(255,255,255,.13);
+    border:1px solid rgba(77,243,255,.25)}
+  .pip.on{background:var(--neon);box-shadow:0 0 10px var(--neon)}
+  #fireRow{position:relative;height:15px;width:150px;margin:6px auto 0;border-radius:8px;
+    overflow:hidden;background:rgba(4,8,16,.75);border:1px solid rgba(255,150,60,.4)}
+  #fireFill{position:absolute;inset:0;transform-origin:left center;transform:scaleX(0);
+    background:linear-gradient(90deg,#ff7a2d,#ffcc4d)}
+  #fireRow span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    font-size:9px;letter-spacing:.18em;font-weight:700;text-shadow:0 1px 2px #000}
+  #fireRow.ready{box-shadow:0 0 16px rgba(255,150,60,.7)}
+  #comboRow{display:flex;gap:7px;justify-content:center;margin-top:7px}
+  #comboRow i{width:12px;height:12px;border-radius:50%;background:rgba(255,255,255,.12);
+    border:1px solid rgba(255,180,90,.3);transition:transform .1s}
+  #comboRow i.lit{background:#ff9c3d;box-shadow:0 0 10px #ff9c3d;border-color:#ffcc4d}
+  #comboRow i.next{background:var(--gold);box-shadow:0 0 18px var(--gold);
+    border-color:#fff;animation:comboPulse .55s infinite alternate}
+  @keyframes comboPulse{from{transform:scale(1)}to{transform:scale(1.45)}}
+
+  #bossBar{position:absolute;top:76px;left:50%;transform:translateX(-50%);width:min(520px,70vw)}
+  #bossBar .name{font-size:11px;letter-spacing:.25em;text-align:center;margin-bottom:4px;
+    color:var(--hot);text-shadow:0 0 12px var(--hot)}
+  #bossBar .bar{height:14px;border-color:rgba(255,61,127,.5)}
+  #bossFill{background:linear-gradient(90deg,#ff3d7f,#ffcc4d)}
+
+  #minimap{position:absolute;right:16px;bottom:16px;width:160px;height:160px;border-radius:50%;
+    border:1px solid var(--line);background:rgba(4,10,20,.6);backdrop-filter:blur(4px)}
+
+  #crosshair{position:absolute;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;
+    opacity:.85}
+  #crosshair::before,#crosshair::after{content:"";position:absolute;background:var(--neon);
+    box-shadow:0 0 6px var(--neon)}
+  #crosshair::before{left:50%;top:0;width:2px;height:8px;margin-left:-1px}
+  #crosshair::after{left:50%;bottom:0;width:2px;height:8px;margin-left:-1px}
+  #crossdot{position:absolute;left:50%;top:50%;width:4px;height:4px;margin:-2px 0 0 -2px;
+    border-radius:50%;background:#fff;box-shadow:0 0 8px var(--neon)}
+
+  #vignette{position:absolute;inset:0;opacity:0;background:radial-gradient(ellipse at center,
+    transparent 42%, rgba(255,20,60,.55) 100%);transition:opacity .18s}
+
+  #banner{position:absolute;left:50%;top:26%;transform:translate(-50%,-50%);text-align:center;
+    font-size:46px;font-weight:800;letter-spacing:.2em;opacity:0;
+    text-shadow:0 0 30px var(--neon);white-space:nowrap}
+  #banner .sub{display:block;font-size:14px;letter-spacing:.35em;opacity:.75;margin-top:6px;
+    font-weight:500;text-shadow:none}
+
+  #toasts{position:absolute;left:22px;bottom:22px;display:flex;flex-direction:column-reverse;gap:5px}
+  .toast{background:var(--panel);border-left:3px solid var(--gold);padding:6px 12px;border-radius:4px;
+    font-size:12px;letter-spacing:.05em;animation:toastIn .25s ease-out}
+  @keyframes toastIn{from{opacity:0;transform:translateX(-14px)}to{opacity:1;transform:none}}
+
+  /* ---------- Overlays ---------- */
+  #overlay{position:fixed;inset:0;z-index:20;display:flex;align-items:center;justify-content:center;
+    background:radial-gradient(ellipse at center,rgba(8,10,22,.78),rgba(2,3,8,.95));
+    backdrop-filter:blur(7px)}
+  .screen{text-align:center;max-width:860px;padding:26px}
+  .title{font-size:clamp(56px,11vw,120px);font-weight:900;letter-spacing:.1em;line-height:.95;
+    background:linear-gradient(180deg,#fff,var(--neon) 55%,var(--neon2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 0 26px rgba(77,243,255,.45))}
+  .subtitle{font-size:clamp(13px,2vw,18px);letter-spacing:.6em;opacity:.7;margin:2px 0 26px 10px}
+  .betaTag{display:inline-block;vertical-align:middle;margin-left:14px;padding:4px 12px;
+    border-radius:999px;font-size:11px;font-weight:800;letter-spacing:.22em;
+    color:#04121a;background:linear-gradient(180deg,#ffe08a,var(--gold));
+    box-shadow:0 0 22px rgba(255,204,77,.5);transform:translateY(-2px)}
+  .betaNote{font-size:11px;letter-spacing:.12em;opacity:.5;margin:-14px 0 22px}
+  #verTag{position:absolute;left:14px;top:14px;font-size:10px;letter-spacing:.2em;
+    opacity:.35;font-weight:700}
+  .keys{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:22px 0 26px}
+  .key{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:9px 14px;
+    font-size:12px;letter-spacing:.06em;display:flex;align-items:center;gap:9px}
+  .key b{background:rgba(77,243,255,.14);border:1px solid var(--line);border-radius:5px;
+    padding:2px 8px;font-size:11px;font-weight:700;color:var(--neon)}
+  .cta{pointer-events:auto;cursor:pointer;border:0;border-radius:12px;padding:16px 46px;
+    font-size:17px;font-weight:800;letter-spacing:.2em;color:#04121a;
+    background:linear-gradient(180deg,#8ff9ff,var(--neon));
+    box-shadow:0 0 40px rgba(77,243,255,.45);transition:transform .12s,box-shadow .12s}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 0 60px rgba(77,243,255,.7)}
+  .cta.alt{background:linear-gradient(180deg,#ffb3d1,var(--hot));color:#1a040c;margin-left:12px;
+    box-shadow:0 0 40px rgba(255,61,127,.35)}
+  .cta.alt:hover{box-shadow:0 0 60px rgba(255,61,127,.6)}
+  .hint{margin-top:16px;font-size:11px;letter-spacing:.2em;opacity:.45}
+
+  /* världsval */
+  .worlds{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:6px 0 22px}
+  .world{pointer-events:auto;cursor:pointer;width:min(300px,42vw);padding:22px 18px 16px;
+    border-radius:16px;text-align:center;position:relative;border:1px solid var(--line);
+    transition:transform .14s,box-shadow .14s,border-color .14s}
+  .world.wild{background:linear-gradient(165deg,rgba(20,60,35,.92),rgba(6,18,12,.95))}
+  .world.city{background:linear-gradient(165deg,rgba(55,15,60,.92),rgba(10,6,24,.95))}
+  .world:hover{transform:translateY(-6px)}
+  .world.wild:hover{border-color:#4dffa6;box-shadow:0 16px 50px rgba(77,255,166,.25)}
+  .world.city:hover{border-color:var(--hot);box-shadow:0 16px 50px rgba(255,61,127,.3)}
+  .world .wIcon{font-size:44px;line-height:1;margin-bottom:10px}
+  .world .wName{font-size:20px;font-weight:900;letter-spacing:.18em;margin-bottom:8px}
+  .world.wild .wName{color:#4dffa6;text-shadow:0 0 18px rgba(77,255,166,.5)}
+  .world.city .wName{color:var(--hot);text-shadow:0 0 18px rgba(255,61,127,.55)}
+  .world .wDesc{font-size:12px;line-height:1.55;opacity:.8;min-height:56px}
+  .world .wTag{margin-top:10px;font-size:9px;letter-spacing:.25em;opacity:.55;
+    border-top:1px solid rgba(255,255,255,.12);padding-top:8px}
+
+  /* level up */
+  .lvlTitle{font-size:15px;letter-spacing:.45em;color:var(--gold);
+    text-shadow:0 0 22px rgba(255,204,77,.6);margin-bottom:4px}
+  .lvlSub{font-size:34px;font-weight:900;letter-spacing:.1em;margin-bottom:26px}
+  .cards{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+  .card{pointer-events:auto;cursor:pointer;width:220px;padding:20px 16px 18px;border-radius:14px;
+    background:linear-gradient(180deg,rgba(20,26,44,.95),rgba(10,13,24,.95));
+    border:1px solid var(--line);text-align:center;position:relative;
+    transition:transform .14s,border-color .14s,box-shadow .14s}
+  .card:hover{transform:translateY(-6px);border-color:var(--neon);
+    box-shadow:0 14px 40px rgba(77,243,255,.28)}
+  .card .icon{font-size:38px;line-height:1;margin-bottom:10px}
+  .card .name{font-size:15px;font-weight:800;letter-spacing:.08em;color:var(--neon);margin-bottom:8px}
+  .card .desc{font-size:12px;line-height:1.5;opacity:.78}
+  .card .num{position:absolute;top:8px;left:10px;font-size:10px;opacity:.4;letter-spacing:.1em}
+  .card .lv{position:absolute;top:8px;right:10px;font-size:10px;color:var(--gold);letter-spacing:.1em}
+
+  /* game over */
+  .goTitle{font-size:clamp(44px,9vw,86px);font-weight:900;letter-spacing:.12em;color:var(--hot);
+    text-shadow:0 0 40px rgba(255,61,127,.6)}
+  .results{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin:26px 0 30px}
+  .result{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 22px;min-width:110px}
+  .result .rl{font-size:10px;letter-spacing:.2em;opacity:.55;margin-bottom:5px}
+  .result .rv{font-size:26px;font-weight:800;font-variant-numeric:tabular-nums}
+  #loadErr{max-width:620px;font-size:13px;line-height:1.6;opacity:.85}
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+
+<div id="hud" class="hidden">
+  <div class="topbar">
+    <div class="stat"><span class="label">VÅG</span><span id="waveNum">1</span></div>
+    <div class="stat"><span class="label">NIVÅ</span><span id="levelNum">1</span></div>
+    <div class="stat"><span class="label">KILLS</span><span id="killNum">0</span></div>
+    <div class="stat"><span class="label">TID</span><span id="timeNum">0:00</span></div>
+    <div class="stat"><span class="label">FPS</span><span id="fpsNum">—</span></div>
+  </div>
+
+  <div id="bossBar" class="hidden">
+    <div class="name" id="bossName">VOIDLORD</div>
+    <div class="bar"><div id="bossFill"></div></div>
+  </div>
+
+  <div id="verTag">BETA 0.9</div>
+  <div id="crosshair"><div id="crossdot"></div></div>
+  <div id="vignette"></div>
+  <div id="banner"></div>
+  <div id="toasts"></div>
+  <canvas id="minimap" width="320" height="320"></canvas>
+
+  <div id="bottom">
+    <div class="bar"><div id="hpFill"></div><span id="hpText">100 / 100</span></div>
+    <div class="bar xp"><div id="xpFill"></div></div>
+    <div id="dashRow"></div>
+    <div id="fireRow" class="hidden"><div id="fireFill"></div><span>C · ELDBOLL</span></div>
+    <div id="comboRow" class="hidden"><i></i><i></i><i></i></div>
+  </div>
+</div>
+
+<div id="overlay"></div>
+
+<script>
+// ═══ math.js ═══
+// Små matte-hjälpare: skalärer, vektorer och 4x4-matriser (kolumn-major, som WebGL vill ha dem).
+
+const TAU = Math.PI * 2;
+const DEG = Math.PI / 180;
+
+const clamp = (v, a, b) => (v < a ? a : v > b ? b : v);
+const lerp = (a, b, t) => a + (b - a) * t;
+const sign = (v) => (v < 0 ? -1 : 1);
+
+function smoothstep(e0, e1, x) {
+  const t = clamp((x - e0) / (e1 - e0), 0, 1);
+  return t * t * (3 - 2 * t);
+}
+
+// Rör sig mot ett mål med konstant hastighet per sekund.
+function approach(cur, target, rate) {
+  if (cur < target) return Math.min(cur + rate, target);
+  return Math.max(cur - rate, target);
+}
+
+// Ramhastighetsoberoende utjämning: t = hur mycket som är kvar efter 1 sekund.
+function damp(cur, target, smoothing, dt) {
+  return lerp(target, cur, Math.pow(smoothing, dt));
+}
+
+const rand = (a = 1, b) => (b === undefined ? Math.random() * a : a + Math.random() * (b - a));
+const randInt = (a, b) => Math.floor(a + Math.random() * (b - a + 1));
+const pick = (arr) => arr[(Math.random() * arr.length) | 0];
+
+// Kortaste vinkelskillnad, resultat i [-PI, PI].
+function angleDelta(a, b) {
+  let d = (b - a) % TAU;
+  if (d > Math.PI) d -= TAU;
+  if (d < -Math.PI) d += TAU;
+  return d;
+}
+
+const v3 = (x = 0, y = 0, z = 0) => ({ x, y, z });
+const distXZ = (a, b) => Math.hypot(a.x - b.x, a.z - b.z);
+const dist3 = (a, b) => Math.hypot(a.x - b.x, a.y - b.y, a.z - b.z);
+
+function hsl(h, s, l) {
+  // h,s,l i 0..1 -> [r,g,b]
+  const f = (n) => {
+    const k = (n + h * 12) % 12;
+    const a = s * Math.min(l, 1 - l);
+    return l - a * Math.max(-1, Math.min(k - 3, Math.min(9 - k, 1)));
+  };
+  return [f(0), f(8), f(4)];
+}
+
+// ---------------------------------------------------------------- mat4
+
+const mat4 = () => new Float32Array(16);
+
+function identity(o) {
+  o.fill(0); o[0] = o[5] = o[10] = o[15] = 1; return o;
+}
+
+function perspective(o, fovy, aspect, near, far) {
+  const f = 1 / Math.tan(fovy / 2);
+  o.fill(0);
+  o[0] = f / aspect; o[5] = f; o[11] = -1;
+  o[10] = (far + near) / (near - far);
+  o[14] = (2 * far * near) / (near - far);
+  return o;
+}
+
+function lookAt(o, eye, center, up) {
+  let zx = eye.x - center.x, zy = eye.y - center.y, zz = eye.z - center.z;
+  let l = Math.hypot(zx, zy, zz) || 1;
+  zx /= l; zy /= l; zz /= l;
+  let xx = up.y * zz - up.z * zy, xy = up.z * zx - up.x * zz, xz = up.x * zy - up.y * zx;
+  l = Math.hypot(xx, xy, xz) || 1;
+  xx /= l; xy /= l; xz /= l;
+  const yx = zy * xz - zz * xy, yy = zz * xx - zx * xz, yz = zx * xy - zy * xx;
+  o[0] = xx; o[1] = yx; o[2] = zx; o[3] = 0;
+  o[4] = xy; o[5] = yy; o[6] = zy; o[7] = 0;
+  o[8] = xz; o[9] = yz; o[10] = zz; o[11] = 0;
+  o[12] = -(xx * eye.x + xy * eye.y + xz * eye.z);
+  o[13] = -(yx * eye.x + yy * eye.y + yz * eye.z);
+  o[14] = -(zx * eye.x + zy * eye.y + zz * eye.z);
+  o[15] = 1;
+  return o;
+}
+
+function multiply(o, a, b) {
+  for (let c = 0; c < 4; c++) {
+    const b0 = b[c * 4], b1 = b[c * 4 + 1], b2 = b[c * 4 + 2], b3 = b[c * 4 + 3];
+    o[c * 4]     = a[0] * b0 + a[4] * b1 + a[8]  * b2 + a[12] * b3;
+    o[c * 4 + 1] = a[1] * b0 + a[5] * b1 + a[9]  * b2 + a[13] * b3;
+    o[c * 4 + 2] = a[2] * b0 + a[6] * b1 + a[10] * b2 + a[14] * b3;
+    o[c * 4 + 3] = a[3] * b0 + a[7] * b1 + a[11] * b2 + a[15] * b3;
+  }
+  return o;
+}
+
+function invert(o, m) {
+  const a00 = m[0], a01 = m[1], a02 = m[2], a03 = m[3];
+  const a10 = m[4], a11 = m[5], a12 = m[6], a13 = m[7];
+  const a20 = m[8], a21 = m[9], a22 = m[10], a23 = m[11];
+  const a30 = m[12], a31 = m[13], a32 = m[14], a33 = m[15];
+  const b00 = a00 * a11 - a01 * a10, b01 = a00 * a12 - a02 * a10;
+  const b02 = a00 * a13 - a03 * a10, b03 = a01 * a12 - a02 * a11;
+  const b04 = a01 * a13 - a03 * a11, b05 = a02 * a13 - a03 * a12;
+  const b06 = a20 * a31 - a21 * a30, b07 = a20 * a32 - a22 * a30;
+  const b08 = a20 * a33 - a23 * a30, b09 = a21 * a32 - a22 * a31;
+  const b10 = a21 * a33 - a23 * a31, b11 = a22 * a33 - a23 * a32;
+  let det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+  if (!det) return identity(o);
+  det = 1 / det;
+  o[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+  o[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+  o[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+  o[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+  o[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+  o[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+  o[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+  o[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+  o[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+  o[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+  o[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+  o[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+  o[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
+  o[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+  o[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
+  o[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+  return o;
+}
+
+// ═══ noise.js ═══
+// Deterministiskt värdebrus + världens höjdfunktion.
+
+const SEED = 20260813;
+
+function hash2(ix, iy) {
+  let h = Math.imul(ix | 0, 374761393) + Math.imul(iy | 0, 668265263) + SEED;
+  h = Math.imul(h ^ (h >>> 13), 1274126177);
+  return ((h ^ (h >>> 16)) >>> 0) / 4294967296;
+}
+
+function valueNoise(x, y) {
+  const ix = Math.floor(x), iy = Math.floor(y);
+  const fx = x - ix, fy = y - iy;
+  const ux = fx * fx * (3 - 2 * fx), uy = fy * fy * (3 - 2 * fy);
+  const a = hash2(ix, iy), b = hash2(ix + 1, iy);
+  const c = hash2(ix, iy + 1), d = hash2(ix + 1, iy + 1);
+  return lerp(lerp(a, b, ux), lerp(c, d, ux), uy);
+}
+
+/** Fraktalt brus, resultat ungefär i [-1, 1]. */
+function fbm(x, y, octaves = 4) {
+  let sum = 0, amp = 1, norm = 0, fx = x, fy = y;
+  for (let i = 0; i < octaves; i++) {
+    sum += (valueNoise(fx, fy) * 2 - 1) * amp;
+    norm += amp;
+    amp *= 0.5;
+    fx = fx * 2.03 + 17.3; fy = fy * 2.03 - 9.1;
+  }
+  return sum / norm;
+}
+
+const WATER_LEVEL = 0;
+const ARENA_RADIUS = 112;   // så långt spelaren kommer
+const WORLD_SIZE = 300;     // terrängmeshens sida
+
+// ------------------------------------------------------------ världsväxeln
+
+let WORLD_ID = 'wild';      // 'wild' = Vildheim, 'city' = Neotropolis
+function setWorld(id) { WORLD_ID = id; }
+
+// ------------------------------------------------------- Neotropolis (stad)
+
+const CITY_CELL = 26;       // kvartersstorlek — gator ligger på cellgränserna
+const CITY_N = Math.floor(WORLD_SIZE / CITY_CELL);
+
+/** Deterministisk byggnad för kvarterscell (i, j), eller null för gata/torg. */
+function cityBuildingOfCell(i, j) {
+  if (i < 0 || j < 0 || i >= CITY_N || j >= CITY_N) return null;
+  const r = hash2(i * 13 + 101, j * 17 + 57);
+  const cx = -WORLD_SIZE / 2 + (i + 0.5) * CITY_CELL;
+  const cz = -WORLD_SIZE / 2 + (j + 0.5) * CITY_CELL;
+  const dc = Math.hypot(cx, cz);
+  if (dc < 22) return null;                       // startplazan hålls öppen
+  if (r < 0.24 && dc < 96) return null;           // torg och parker
+  const r2 = hash2(i * 29 - 11, j * 31 + 5);
+  const r3 = hash2(i * 7 + 913, j * 3 - 401);
+  const hx = 6 + r2 * 4.5;
+  const hz = 6 + r3 * 4.5;
+  let h = 7 + Math.floor(r * 5) * 4 + r2 * 14;
+  if (dc > 96) h += (dc - 96) * 1.6;              // skyskrapemur stänger arenan
+  const ox = (r3 - 0.5) * (CITY_CELL - 2 * hx - 5);
+  const oz = (r2 - 0.5) * (CITY_CELL - 2 * hz - 5);
+  return { x: cx + ox, z: cz + oz, hx, hz, h, neon: (r * 7.31) % 1 };
+}
+
+/** Byggnaden vars kvarter täcker (x, z), eller null. */
+function cityBuildingAt(x, z) {
+  return cityBuildingOfCell(
+    Math.floor((x + WORLD_SIZE / 2) / CITY_CELL),
+    Math.floor((z + WORLD_SIZE / 2) / CITY_CELL),
+  );
+}
+
+function cityBuildings() {
+  const out = [];
+  for (let i = 0; i < CITY_N; i++) {
+    for (let j = 0; j < CITY_N; j++) {
+      const b = cityBuildingOfCell(i, j);
+      if (b) out.push(b);
+    }
+  }
+  return out;
+}
+
+/** Markhöjd i världskoordinater. I staden ingår hustaken (väggar är kollisioner). */
+function terrainHeight(x, z) {
+  if (WORLD_ID === 'city') {
+    const b = cityBuildingAt(x, z);
+    if (b && Math.abs(x - b.x) < b.hx && Math.abs(z - b.z) < b.hz) return b.h;
+    return 0;
+  }
+  return wildHeight(x, z);
+}
+
+/** Vildheims kuperade terräng. */
+function wildHeight(x, z) {
+  const d = Math.hypot(x, z);
+  let h = fbm(x * 0.0105, z * 0.0105, 4) * 15.5;
+  h += fbm(x * 0.045 + 31.7, z * 0.045 - 12.3, 3) * 2.4;
+  h += 2.2;
+  // Startområdet planas ut så man inte föds i en backe.
+  h = lerp(3.2, h, smoothstep(9, 44, d));
+  // Bergsrand som stänger arenan.
+  if (d > 96) {
+    const t = (d - 96) / 46;
+    h += t * t * 86;
+  }
+  return h;
+}
+
+/** Marknormal via differenser. */
+function terrainNormal(x, z, out = { x: 0, y: 1, z: 0 }) {
+  const e = 0.75;
+  const hl = terrainHeight(x - e, z), hr = terrainHeight(x + e, z);
+  const hd = terrainHeight(x, z - e), hu = terrainHeight(x, z + e);
+  let nx = hl - hr, ny = 2 * e, nz = hd - hu;
+  const l = Math.hypot(nx, ny, nz) || 1;
+  out.x = nx / l; out.y = ny / l; out.z = nz / l;
+  return out;
+}
+
+/** Lutning 0 (platt) .. 1 (lodrätt). */
+function terrainSlope(x, z) {
+  const n = terrainNormal(x, z);
+  return clamp(1 - n.y, 0, 1);
+}
+
+/** Håller en position innanför arenan. Muterar och returnerar p. */
+function clampToArena(p) {
+  const d = Math.hypot(p.x, p.z);
+  if (d > ARENA_RADIUS) {
+    const s = ARENA_RADIUS / d;
+    p.x *= s; p.z *= s;
+  }
+  return p;
+}
+
+// ═══ meshes.js ═══
+// Proceduella meshar. Alla är centrerade i origo och 1 enhet stora,
+// så instansens skala motsvarar objektets faktiska storlek.
+
+function mesh(positions, normals, indices) {
+  return {
+    positions: new Float32Array(positions),
+    normals: new Float32Array(normals),
+    indices: new Uint16Array(indices),
+  };
+}
+
+function sphere(seg = 18, rings = 12) {
+  const p = [], n = [], idx = [];
+  for (let r = 0; r <= rings; r++) {
+    const phi = (r / rings) * Math.PI;
+    for (let s = 0; s <= seg; s++) {
+      const th = (s / seg) * TAU;
+      const x = Math.sin(phi) * Math.cos(th), y = Math.cos(phi), z = Math.sin(phi) * Math.sin(th);
+      p.push(x * 0.5, y * 0.5, z * 0.5);
+      n.push(x, y, z);
+    }
+  }
+  for (let r = 0; r < rings; r++) {
+    for (let s = 0; s < seg; s++) {
+      const a = r * (seg + 1) + s, b = a + seg + 1;
+      idx.push(a, b, a + 1, a + 1, b, b + 1);
+    }
+  }
+  return mesh(p, n, idx);
+}
+
+function box() {
+  const p = [], n = [], idx = [];
+  const faces = [
+    [[1, 0, 0], [0, 1, 0], [0, 0, 1]],
+    [[-1, 0, 0], [0, 1, 0], [0, 0, -1]],
+    [[0, 1, 0], [0, 0, 1], [1, 0, 0]],
+    [[0, -1, 0], [0, 0, -1], [1, 0, 0]],
+    [[0, 0, 1], [0, 1, 0], [-1, 0, 0]],
+    [[0, 0, -1], [0, 1, 0], [1, 0, 0]],
+  ];
+  for (const [nr, up, right] of faces) {
+    const base = p.length / 3;
+    for (const [su, sr] of [[-1, -1], [-1, 1], [1, 1], [1, -1]]) {
+      p.push(
+        (nr[0] + up[0] * su + right[0] * sr) * 0.5,
+        (nr[1] + up[1] * su + right[1] * sr) * 0.5,
+        (nr[2] + up[2] * su + right[2] * sr) * 0.5,
+      );
+      n.push(nr[0], nr[1], nr[2]);
+    }
+    idx.push(base, base + 1, base + 2, base, base + 2, base + 3);
+  }
+  return mesh(p, n, idx);
+}
+
+function cylinder(seg = 14, topScale = 1) {
+  const p = [], n = [], idx = [];
+  for (let s = 0; s <= seg; s++) {
+    const th = (s / seg) * TAU, cx = Math.cos(th), cz = Math.sin(th);
+    p.push(cx * 0.5 * topScale, 0.5, cz * 0.5 * topScale);
+    n.push(cx, 0.25, cz);
+    p.push(cx * 0.5, -0.5, cz * 0.5);
+    n.push(cx, 0.25, cz);
+  }
+  for (let s = 0; s < seg; s++) {
+    const a = s * 2;
+    idx.push(a, a + 1, a + 2, a + 2, a + 1, a + 3);
+  }
+  for (const y of [0.5, -0.5]) {
+    const base = p.length / 3;
+    const r = y > 0 ? 0.5 * topScale : 0.5;
+    p.push(0, y, 0); n.push(0, Math.sign(y), 0);
+    for (let s = 0; s <= seg; s++) {
+      const th = (s / seg) * TAU;
+      p.push(Math.cos(th) * r, y, Math.sin(th) * r);
+      n.push(0, Math.sign(y), 0);
+    }
+    for (let s = 0; s < seg; s++) {
+      if (y > 0) idx.push(base, base + 1 + s, base + 2 + s);
+      else idx.push(base, base + 2 + s, base + 1 + s);
+    }
+  }
+  return mesh(p, n, idx);
+}
+
+function cone(seg = 14) {
+  const p = [], n = [], idx = [];
+  for (let s = 0; s < seg; s++) {
+    const t0 = (s / seg) * TAU, t1 = ((s + 1) / seg) * TAU, tm = (t0 + t1) / 2;
+    const base = p.length / 3;
+    p.push(0, 0.5, 0, Math.cos(t0) * 0.5, -0.5, Math.sin(t0) * 0.5, Math.cos(t1) * 0.5, -0.5, Math.sin(t1) * 0.5);
+    const nx = Math.cos(tm) * 0.89, nz = Math.sin(tm) * 0.89;
+    for (let k = 0; k < 3; k++) n.push(nx, 0.45, nz);
+    idx.push(base, base + 1, base + 2);
+  }
+  const base = p.length / 3;
+  p.push(0, -0.5, 0); n.push(0, -1, 0);
+  for (let s = 0; s <= seg; s++) {
+    const th = (s / seg) * TAU;
+    p.push(Math.cos(th) * 0.5, -0.5, Math.sin(th) * 0.5);
+    n.push(0, -1, 0);
+  }
+  for (let s = 0; s < seg; s++) idx.push(base, base + 2 + s, base + 1 + s);
+  return mesh(p, n, idx);
+}
+
+/** Platt skiva i XZ-planet — används för skuggor och markringar. */
+function disc(seg = 20) {
+  const p = [0, 0, 0], n = [0, 1, 0], idx = [];
+  for (let s = 0; s <= seg; s++) {
+    const th = (s / seg) * TAU;
+    p.push(Math.cos(th) * 0.5, 0, Math.sin(th) * 0.5);
+    n.push(0, 1, 0);
+  }
+  for (let s = 0; s < seg; s++) idx.push(0, s + 2, s + 1);
+  return mesh(p, n, idx);
+}
+
+/** Oktaeder — kantig kristall för orbs och pickups. */
+function octahedron() {
+  const p = [], n = [], idx = [];
+  const v = [[0, 0.5, 0], [0.5, 0, 0], [0, 0, 0.5], [-0.5, 0, 0], [0, 0, -0.5], [0, -0.5, 0]];
+  const tris = [[0, 1, 2], [0, 2, 3], [0, 3, 4], [0, 4, 1], [5, 2, 1], [5, 3, 2], [5, 4, 3], [5, 1, 4]];
+  for (const t of tris) {
+    const base = p.length / 3;
+    const a = v[t[0]], b = v[t[1]], c = v[t[2]];
+    const ux = b[0] - a[0], uy = b[1] - a[1], uz = b[2] - a[2];
+    const wx = c[0] - a[0], wy = c[1] - a[1], wz = c[2] - a[2];
+    let nx = uy * wz - uz * wy, ny = uz * wx - ux * wz, nz = ux * wy - uy * wx;
+    const l = Math.hypot(nx, ny, nz) || 1;
+    nx /= l; ny /= l; nz /= l;
+    for (const q of [a, b, c]) { p.push(q[0], q[1], q[2]); n.push(nx, ny, nz); }
+    idx.push(base, base + 1, base + 2);
+  }
+  return mesh(p, n, idx);
+}
+
+/** Rutnätsplan i XZ, 1x1 enheter, för vattenytan. */
+function grid(res = 48) {
+  const p = [], n = [], idx = [];
+  for (let z = 0; z <= res; z++) {
+    for (let x = 0; x <= res; x++) {
+      p.push(x / res - 0.5, 0, z / res - 0.5);
+      n.push(0, 1, 0);
+    }
+  }
+  for (let z = 0; z < res; z++) {
+    for (let x = 0; x < res; x++) {
+      const a = z * (res + 1) + x, b = a + res + 1;
+      idx.push(a, b, a + 1, a + 1, b, b + 1);
+    }
+  }
+  return mesh(p, n, idx);
+}
+
+// ═══ gl.js ═══
+// Tunt lager ovanpå WebGL2: program, meshar och instansbatchar.
+
+function initGL(canvas) {
+  const gl = canvas.getContext('webgl2', {
+    antialias: true, alpha: false, depth: true, stencil: false,
+    powerPreference: 'high-performance',
+  });
+  if (!gl) throw new Error('WebGL2 stöds inte av den här webbläsaren.');
+  gl.enable(gl.DEPTH_TEST);
+  gl.enable(gl.CULL_FACE);
+  gl.cullFace(gl.BACK);
+  return gl;
+}
+
+function compile(gl, type, src, name) {
+  const sh = gl.createShader(type);
+  gl.shaderSource(sh, src);
+  gl.compileShader(sh);
+  if (!gl.getShaderParameter(sh, gl.COMPILE_STATUS)) {
+    const log = gl.getShaderInfoLog(sh);
+    console.error(`Shaderfel i ${name}:\n${log}`);
+    throw new Error(`${name}: ${log}`);
+  }
+  return sh;
+}
+
+function makeProgram(gl, vsSrc, fsSrc, name = 'program') {
+  const p = gl.createProgram();
+  gl.attachShader(p, compile(gl, gl.VERTEX_SHADER, vsSrc, name + '.vert'));
+  gl.attachShader(p, compile(gl, gl.FRAGMENT_SHADER, fsSrc, name + '.frag'));
+  gl.linkProgram(p);
+  if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+    throw new Error(`${name} länkfel: ${gl.getProgramInfoLog(p)}`);
+  }
+  const cache = new Map();
+  return {
+    prog: p,
+    use() { gl.useProgram(p); return this; },
+    loc(n) {
+      if (!cache.has(n)) cache.set(n, gl.getUniformLocation(p, n));
+      return cache.get(n);
+    },
+    m4(n, v) { gl.uniformMatrix4fv(this.loc(n), false, v); return this; },
+    f(n, v) { gl.uniform1f(this.loc(n), v); return this; },
+    v2(n, a, b) { gl.uniform2f(this.loc(n), a, b); return this; },
+    v3(n, a, b, c) {
+      if (Array.isArray(a)) gl.uniform3f(this.loc(n), a[0], a[1], a[2]);
+      else gl.uniform3f(this.loc(n), a, b, c);
+      return this;
+    },
+  };
+}
+
+function attrib(gl, loc, size, stride, offset, divisor) {
+  gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc, size, gl.FLOAT, false, stride, offset);
+  if (divisor) gl.vertexAttribDivisor(loc, divisor);
+}
+
+/** Statisk mesh med position (0), normal (1) och valfri färg (2). */
+function uploadMesh(gl, m) {
+  const vao = gl.createVertexArray();
+  gl.bindVertexArray(vao);
+  const put = (data, loc, size) => {
+    const b = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, b);
+    gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+    attrib(gl, loc, size, 0, 0, 0);
+  };
+  put(m.positions, 0, 3);
+  put(m.normals, 1, 3);
+  if (m.colors) put(m.colors, 2, 3);
+  const ebo = gl.createBuffer();
+  gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
+  gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, m.indices, gl.STATIC_DRAW);
+  gl.bindVertexArray(null);
+  return {
+    vao,
+    count: m.indices.length,
+    type: m.indices instanceof Uint32Array ? gl.UNSIGNED_INT : gl.UNSIGNED_SHORT,
+    draw() {
+      gl.bindVertexArray(vao);
+      gl.drawElements(gl.TRIANGLES, this.count, this.type, 0);
+    },
+  };
+}
+
+// Per instans: pos(3) skala(3) färg(3) rotation(3) glöd(1) = 13 flyttal.
+const INST_FLOATS = 13;
+
+class InstancedBatch {
+  constructor(gl, m, capacity = 256) {
+    this.gl = gl;
+    this.capacity = capacity;
+    this.count = 0;
+    this.data = new Float32Array(capacity * INST_FLOATS);
+    this.indexCount = m.indices.length;
+    this.vao = gl.createVertexArray();
+    gl.bindVertexArray(this.vao);
+
+    const put = (data, loc, size) => {
+      const b = gl.createBuffer();
+      gl.bindBuffer(gl.ARRAY_BUFFER, b);
+      gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW);
+      attrib(gl, loc, size, 0, 0, 0);
+    };
+    put(m.positions, 0, 3);
+    put(m.normals, 1, 3);
+
+    const ebo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, m.indices, gl.STATIC_DRAW);
+
+    this.ibo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.ibo);
+    gl.bufferData(gl.ARRAY_BUFFER, this.data.byteLength, gl.DYNAMIC_DRAW);
+    const st = INST_FLOATS * 4;
+    attrib(gl, 2, 3, st, 0, 1);
+    attrib(gl, 3, 3, st, 12, 1);
+    attrib(gl, 4, 3, st, 24, 1);
+    attrib(gl, 5, 3, st, 36, 1);
+    attrib(gl, 6, 1, st, 48, 1);
+    gl.bindVertexArray(null);
+  }
+
+  clear() { this.count = 0; this.dirty = true; return this; }
+
+  grow() {
+    const gl = this.gl;
+    this.capacity *= 2;
+    const next = new Float32Array(this.capacity * INST_FLOATS);
+    next.set(this.data);
+    this.data = next;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.ibo);
+    gl.bufferData(gl.ARRAY_BUFFER, next.byteLength, gl.DYNAMIC_DRAW);
+  }
+
+  /** rot är [x,y,z] i radianer; glow 0..1 lägger till egenljus. */
+  push(x, y, z, sx, sy, sz, col, rx = 0, ry = 0, rz = 0, glow = 0) {
+    if (this.count >= this.capacity) this.grow();
+    const d = this.data;
+    let o = this.count * INST_FLOATS;
+    d[o] = x; d[o + 1] = y; d[o + 2] = z;
+    d[o + 3] = sx; d[o + 4] = sy; d[o + 5] = sz;
+    d[o + 6] = col[0]; d[o + 7] = col[1]; d[o + 8] = col[2];
+    d[o + 9] = rx; d[o + 10] = ry; d[o + 11] = rz;
+    d[o + 12] = glow;
+    this.count++;
+    this.dirty = true;
+  }
+
+  draw() {
+    if (!this.count) return;
+    const gl = this.gl;
+    gl.bindVertexArray(this.vao);
+    if (this.dirty) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.ibo);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.data, 0, this.count * INST_FLOATS);
+      this.dirty = false;
+    }
+    gl.drawElementsInstanced(gl.TRIANGLES, this.indexCount, gl.UNSIGNED_SHORT, 0, this.count);
+  }
+}
+
+// Per partikel: pos(3) storlek(1) färg(4) = 8 flyttal.
+const PART_FLOATS = 8;
+
+class BillboardBatch {
+  constructor(gl, capacity = 2048) {
+    this.gl = gl;
+    this.capacity = capacity;
+    this.count = 0;
+    this.data = new Float32Array(capacity * PART_FLOATS);
+    this.vao = gl.createVertexArray();
+    gl.bindVertexArray(this.vao);
+
+    const quad = new Float32Array([-1, -1, 1, -1, 1, 1, -1, 1]);
+    const vb = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+    gl.bufferData(gl.ARRAY_BUFFER, quad, gl.STATIC_DRAW);
+    attrib(gl, 0, 2, 0, 0, 0);
+
+    const ebo = gl.createBuffer();
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, ebo);
+    gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, new Uint16Array([0, 1, 2, 0, 2, 3]), gl.STATIC_DRAW);
+
+    this.ibo = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.ibo);
+    gl.bufferData(gl.ARRAY_BUFFER, this.data.byteLength, gl.DYNAMIC_DRAW);
+    const st = PART_FLOATS * 4;
+    attrib(gl, 1, 3, st, 0, 1);
+    attrib(gl, 2, 1, st, 12, 1);
+    attrib(gl, 3, 4, st, 16, 1);
+    gl.bindVertexArray(null);
+  }
+
+  clear() { this.count = 0; this.dirty = true; return this; }
+
+  grow() {
+    const gl = this.gl;
+    this.capacity *= 2;
+    const next = new Float32Array(this.capacity * PART_FLOATS);
+    next.set(this.data);
+    this.data = next;
+    gl.bindBuffer(gl.ARRAY_BUFFER, this.ibo);
+    gl.bufferData(gl.ARRAY_BUFFER, next.byteLength, gl.DYNAMIC_DRAW);
+  }
+
+  push(x, y, z, size, r, g, b, a) {
+    if (this.count >= this.capacity) this.grow();
+    const d = this.data;
+    let o = this.count * PART_FLOATS;
+    d[o] = x; d[o + 1] = y; d[o + 2] = z; d[o + 3] = size;
+    d[o + 4] = r; d[o + 5] = g; d[o + 6] = b; d[o + 7] = a;
+    this.count++;
+    this.dirty = true;
+  }
+
+  draw() {
+    if (!this.count) return;
+    const gl = this.gl;
+    gl.bindVertexArray(this.vao);
+    if (this.dirty) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, this.ibo);
+      gl.bufferSubData(gl.ARRAY_BUFFER, 0, this.data, 0, this.count * PART_FLOATS);
+      this.dirty = false;
+    }
+    gl.drawElementsInstanced(gl.TRIANGLES, 6, gl.UNSIGNED_SHORT, 0, this.count);
+  }
+}
+
+// ═══ shaders.js ═══
+// All GLSL på ett ställe. WebGL2 / GLSL ES 3.00.
+
+const FOG = /* glsl */`
+uniform vec3 uFogCol;
+uniform vec2 uFog;            // x = startavstånd, y = slutavstånd
+vec3 applyFog(vec3 col, float dist){
+  return mix(col, uFogCol, smoothstep(uFog.x, uFog.y, dist));
+}`;
+
+const LIGHT = /* glsl */`
+uniform vec3 uSunDir;         // enhetsvektor mot ljuset
+uniform vec3 uSunCol;
+uniform vec3 uAmb;
+vec3 shade(vec3 n, vec3 albedo){
+  float d = max(dot(n, uSunDir), 0.0);
+  float wrap = dot(n, uSunDir) * 0.5 + 0.5;       // mjukt halvljus
+  float sky = n.y * 0.5 + 0.5;                    // himmelsbidrag uppifrån
+  return albedo * (uAmb * (0.55 + 0.45 * sky) + uSunCol * (d * 0.9 + wrap * 0.22));
+}`;
+
+// ------------------------------------------------------------------ terräng
+
+const TERRAIN_VS = /* glsl */`#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNrm;
+layout(location=2) in vec3 aCol;
+uniform mat4 uVP;
+out vec3 vN; out vec3 vC; out vec3 vW;
+void main(){
+  vN = aNrm; vC = aCol; vW = aPos;
+  gl_Position = uVP * vec4(aPos, 1.0);
+}`;
+
+const TERRAIN_FS = /* glsl */`#version 300 es
+precision highp float;
+in vec3 vN; in vec3 vC; in vec3 vW;
+uniform vec3 uEye;
+uniform vec3 uPlayer;
+uniform float uNight;
+uniform float uCity;
+${LIGHT}
+${FOG}
+out vec4 frag;
+void main(){
+  vec3 n = normalize(vN);
+  vec3 col = shade(n, vC);
+  if (uCity > 0.5) {
+    // neonlinjer längs gatorna (kvartersgränserna) + svagt gatunät
+    vec2 cellPos = fract((vW.xz + 150.0) / 26.0);
+    vec2 lineDist = min(cellPos, 1.0 - cellPos) * 26.0;
+    float line = smoothstep(0.55, 0.12, min(lineDist.x, lineDist.y));
+    col += vec3(0.10, 0.65, 0.85) * line * 0.55;
+    vec2 sub = fract(vW.xz / 3.25);
+    vec2 sd = min(sub, 1.0 - sub) * 3.25;
+    float subline = smoothstep(0.14, 0.04, min(sd.x, sd.y));
+    col += vec3(0.30, 0.10, 0.45) * subline * 0.16;
+  }
+  // energilampa runt spelaren — bara i mörker, gör natten läsbar
+  float lamp = 0.15 + uNight * 0.85;
+  float d = length(vW.xz - uPlayer.xz);
+  float ring = smoothstep(3.2, 2.2, abs(d - 2.6)) * 0.10;
+  col += vec3(0.25, 0.85, 1.0) * ring * lamp;
+  col += vec3(0.05, 0.22, 0.30) * max(0.0, 1.0 - d * 0.06) * 0.25 * uNight;
+  frag = vec4(applyFog(col, distance(vW, uEye)), 1.0);
+}`;
+
+// -------------------------------------------------------------- instansierat
+
+const ROT = /* glsl */`
+mat3 rotMat(vec3 r){
+  float cx=cos(r.x), sx=sin(r.x), cy=cos(r.y), sy=sin(r.y), cz=cos(r.z), sz=sin(r.z);
+  mat3 Rx = mat3(1.0,0.0,0.0,  0.0,cx,sx,  0.0,-sx,cx);
+  mat3 Ry = mat3(cy,0.0,-sy,   0.0,1.0,0.0, sy,0.0,cy);
+  mat3 Rz = mat3(cz,sz,0.0,   -sz,cz,0.0,  0.0,0.0,1.0);
+  return Ry * Rx * Rz;
+}`;
+
+const INST_VS = /* glsl */`#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNrm;
+layout(location=2) in vec3 iPos;
+layout(location=3) in vec3 iScale;
+layout(location=4) in vec3 iCol;
+layout(location=5) in vec3 iRot;
+layout(location=6) in float iGlow;
+uniform mat4 uVP;
+${ROT}
+out vec3 vN; out vec3 vC; out vec3 vW; out float vGlow;
+void main(){
+  mat3 R = rotMat(iRot);
+  vec3 world = R * (aPos * iScale) + iPos;
+  vN = normalize(R * (aNrm / max(abs(iScale), vec3(0.0005))));
+  vC = iCol; vW = world; vGlow = iGlow;
+  gl_Position = uVP * vec4(world, 1.0);
+}`;
+
+const INST_FS = /* glsl */`#version 300 es
+precision highp float;
+in vec3 vN; in vec3 vC; in vec3 vW; in float vGlow;
+uniform vec3 uEye;
+${LIGHT}
+${FOG}
+out vec4 frag;
+void main(){
+  vec3 n = normalize(vN);
+  vec3 view = normalize(uEye - vW);
+  vec3 col = shade(n, vC);
+  float rim = pow(1.0 - max(dot(n, view), 0.0), 2.5);
+  col += vC * rim * (0.35 + vGlow * 1.2);
+  col += vC * vGlow * 1.35;
+  float dist = distance(vW, uEye);
+  col = applyFog(col, dist);
+  frag = vec4(col, 1.0);
+}`;
+
+// ------------------------------------------------------------------ skuggor
+
+const SHADOW_VS = /* glsl */`#version 300 es
+layout(location=0) in vec3 aPos;
+layout(location=1) in vec3 aNrm;
+layout(location=2) in vec3 iPos;
+layout(location=3) in vec3 iScale;
+layout(location=4) in vec3 iCol;
+layout(location=5) in vec3 iRot;
+layout(location=6) in float iGlow;
+uniform mat4 uVP;
+out float vAlpha; out vec2 vLocal;
+void main(){
+  vec3 world = aPos * iScale + iPos;
+  vAlpha = iGlow;
+  vLocal = aPos.xz * 2.0;
+  gl_Position = uVP * vec4(world, 1.0);
+}`;
+
+const SHADOW_FS = /* glsl */`#version 300 es
+precision mediump float;
+in float vAlpha; in vec2 vLocal;
+out vec4 frag;
+void main(){
+  float a = vAlpha * smoothstep(1.0, 0.25, length(vLocal));
+  frag = vec4(0.0, 0.02, 0.06, a);
+}`;
+
+// ---------------------------------------------------------------- partiklar
+
+const PART_VS = /* glsl */`#version 300 es
+layout(location=0) in vec2 aCorner;
+layout(location=1) in vec3 iPos;
+layout(location=2) in float iSize;
+layout(location=3) in vec4 iCol;
+uniform mat4 uVP;
+uniform vec3 uRight;
+uniform vec3 uUp;
+out vec2 vUV; out vec4 vCol;
+void main(){
+  vUV = aCorner; vCol = iCol;
+  vec3 w = iPos + uRight * (aCorner.x * iSize) + uUp * (aCorner.y * iSize);
+  gl_Position = uVP * vec4(w, 1.0);
+}`;
+
+const PART_FS = /* glsl */`#version 300 es
+precision mediump float;
+in vec2 vUV; in vec4 vCol;
+out vec4 frag;
+void main(){
+  float d = length(vUV);
+  if (d > 1.0) discard;
+  float a = pow(1.0 - d, 1.6);
+  frag = vec4(vCol.rgb, vCol.a * a);
+}`;
+
+// -------------------------------------------------------------------- himmel
+
+const SKY_VS = /* glsl */`#version 300 es
+out vec2 vNdc;
+void main(){
+  vec2 p = vec2(float((gl_VertexID << 1) & 2), float(gl_VertexID & 2));
+  vNdc = p * 2.0 - 1.0;
+  gl_Position = vec4(vNdc, 1.0, 1.0);
+}`;
+
+const SKY_FS = /* glsl */`#version 300 es
+precision highp float;
+in vec2 vNdc;
+uniform mat4 uInvVP;
+uniform vec3 uEye;
+uniform vec3 uSunDir;
+uniform vec3 uSunCol;
+uniform vec3 uSkyTop;
+uniform vec3 uSkyHorizon;
+uniform float uNight;
+out vec4 frag;
+
+float hash13(vec3 p){
+  p = fract(p * 0.3183099 + 0.1);
+  p *= 17.0;
+  return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
+}
+
+void main(){
+  vec4 far = uInvVP * vec4(vNdc, 1.0, 1.0);
+  vec3 dir = normalize(far.xyz / far.w - uEye);
+
+  float h = clamp(dir.y * 0.5 + 0.5, 0.0, 1.0);
+  vec3 col = mix(uSkyHorizon, uSkyTop, pow(h, 0.85));
+
+  // stjärnor på natten
+  if (uNight > 0.01) {
+    vec3 g = floor(dir * 260.0);
+    float s = hash13(g);
+    float star = smoothstep(0.9975, 1.0, s) * smoothstep(-0.05, 0.35, dir.y);
+    col += vec3(0.85, 0.92, 1.0) * star * uNight * 2.2;
+  }
+
+  // sol/måne med halo
+  float sd = max(dot(dir, uSunDir), 0.0);
+  col += uSunCol * pow(sd, 900.0) * 3.2;
+  col += uSunCol * pow(sd, 22.0) * 0.30;
+  col += uSunCol * pow(sd, 4.0) * 0.06;
+
+  // horisontdis
+  col = mix(col, uSkyHorizon, smoothstep(0.12, -0.02, dir.y));
+  frag = vec4(col, 1.0);
+}`;
+
+// ------------------------------------------------------------------- vatten
+
+const WATER_VS = /* glsl */`#version 300 es
+layout(location=0) in vec3 aPos;
+uniform mat4 uVP;
+uniform float uTime;
+uniform float uSize;
+uniform float uLevel;
+out vec3 vW; out vec3 vN;
+void main(){
+  vec3 p = vec3(aPos.x * uSize, uLevel, aPos.z * uSize);
+  float a = sin(p.x * 0.25 + uTime * 1.3) * 0.10;
+  float b = sin(p.z * 0.31 - uTime * 1.1) * 0.09;
+  float c = sin((p.x + p.z) * 0.13 + uTime * 0.7) * 0.07;
+  p.y += a + b + c;
+  float dx = cos(p.x * 0.25 + uTime * 1.3) * 0.025 + cos((p.x + p.z) * 0.13 + uTime * 0.7) * 0.009;
+  float dz = cos(p.z * 0.31 - uTime * 1.1) * 0.028 + cos((p.x + p.z) * 0.13 + uTime * 0.7) * 0.009;
+  vN = normalize(vec3(-dx, 1.0, -dz));
+  vW = p;
+  gl_Position = uVP * vec4(p, 1.0);
+}`;
+
+const WATER_FS = /* glsl */`#version 300 es
+precision highp float;
+in vec3 vW; in vec3 vN;
+uniform vec3 uEye;
+uniform vec3 uSunDir;
+uniform vec3 uSunCol;
+uniform vec3 uAmb;
+${FOG}
+out vec4 frag;
+void main(){
+  vec3 n = normalize(vN);
+  vec3 view = normalize(uEye - vW);
+  float fres = pow(1.0 - max(dot(n, view), 0.0), 3.0);
+  vec3 deep = vec3(0.02, 0.10, 0.20);
+  vec3 shallow = vec3(0.06, 0.34, 0.46);
+  vec3 col = mix(deep, shallow, fres * 0.8 + 0.2) * (uAmb + 0.6);
+  vec3 hv = normalize(uSunDir + view);
+  col += uSunCol * pow(max(dot(n, hv), 0.0), 190.0) * 1.6;
+  col += uSunCol * fres * 0.16;
+  float dist = distance(vW, uEye);
+  col = applyFog(col, dist);
+  frag = vec4(col, 0.80 + fres * 0.18);
+}`;
+
+// ═══ terrain.js ═══
+// Bygger terrängmeshen, färgar den efter höjd och lutning, och strör ut
+// träd, klippor och kristaller (som också fungerar som hinder).
+
+
+const SAND = [0.62, 0.55, 0.36];
+const GRASS = [0.20, 0.40, 0.20];
+const GRASS2 = [0.28, 0.47, 0.24];
+const ROCK = [0.34, 0.33, 0.37];
+const SNOW = [0.90, 0.93, 0.99];
+const MUD = [0.10, 0.16, 0.16];
+
+function mix3(a, b, t, out) {
+  out[0] = lerp(a[0], b[0], t);
+  out[1] = lerp(a[1], b[1], t);
+  out[2] = lerp(a[2], b[2], t);
+  return out;
+}
+
+/** Neotropolis marknivå: platt asfalt med svag tonvariation. Husen ritas som
+ *  egna lådor och ingår inte i meshen (fysiken hanterar taken separat). */
+function buildCityGroundMesh(res = 60) {
+  const n = res + 1;
+  const positions = new Float32Array(n * n * 3);
+  const normals = new Float32Array(n * n * 3);
+  const colors = new Float32Array(n * n * 3);
+  const step = WORLD_SIZE / res;
+  const half = WORLD_SIZE / 2;
+  for (let j = 0; j < n; j++) {
+    for (let i = 0; i < n; i++) {
+      const idx = (j * n + i) * 3;
+      const x = -half + i * step, z = -half + j * step;
+      positions[idx] = x; positions[idx + 1] = 0; positions[idx + 2] = z;
+      normals[idx] = 0; normals[idx + 1] = 1; normals[idx + 2] = 0;
+      const v = 0.85 + (fbm(x * 0.05, z * 0.05, 2) * 0.5 + 0.5) * 0.3;
+      colors[idx] = 0.052 * v; colors[idx + 1] = 0.058 * v; colors[idx + 2] = 0.082 * v;
+    }
+  }
+  const indices = new Uint32Array(res * res * 6);
+  let k = 0;
+  for (let j = 0; j < res; j++) {
+    for (let i = 0; i < res; i++) {
+      const a = j * n + i, b = a + n;
+      indices[k++] = a; indices[k++] = b; indices[k++] = a + 1;
+      indices[k++] = a + 1; indices[k++] = b; indices[k++] = b + 1;
+    }
+  }
+  return { positions, normals, colors, indices };
+}
+
+/** Terrängmesh med vertexfärger (Vildheim). */
+function buildTerrainMesh(res = 200) {
+  const n = res + 1;
+  const positions = new Float32Array(n * n * 3);
+  const normals = new Float32Array(n * n * 3);
+  const colors = new Float32Array(n * n * 3);
+  const step = WORLD_SIZE / res;
+  const half = WORLD_SIZE / 2;
+  const tmp = [0, 0, 0];
+  const nrm = { x: 0, y: 1, z: 0 };
+
+  for (let j = 0; j < n; j++) {
+    for (let i = 0; i < n; i++) {
+      const idx = (j * n + i) * 3;
+      const x = -half + i * step, z = -half + j * step;
+      const h = terrainHeight(x, z);
+      positions[idx] = x; positions[idx + 1] = h; positions[idx + 2] = z;
+
+      terrainNormal(x, z, nrm);
+      normals[idx] = nrm.x; normals[idx + 1] = nrm.y; normals[idx + 2] = nrm.z;
+
+      const slope = clamp(1 - nrm.y, 0, 1);
+      const variation = fbm(x * 0.09, z * 0.09, 2) * 0.5 + 0.5;
+      mix3(GRASS, GRASS2, variation, tmp);
+      // sten på branta sidor
+      mix3(tmp, ROCK, smoothstep(0.22, 0.55, slope), tmp);
+      // strand vid vattenlinjen
+      mix3(tmp, SAND, smoothstep(1.6, 0.15, h - WATER_LEVEL), tmp);
+      // sjöbotten
+      mix3(tmp, MUD, smoothstep(0.0, -2.5, h - WATER_LEVEL), tmp);
+      // snö på topparna
+      mix3(tmp, SNOW, smoothstep(30, 46, h) * (1 - smoothstep(0.55, 0.8, slope)), tmp);
+      // lite kornighet
+      const g = 0.94 + variation * 0.12;
+      colors[idx] = tmp[0] * g; colors[idx + 1] = tmp[1] * g; colors[idx + 2] = tmp[2] * g;
+    }
+  }
+
+  const indices = new Uint32Array(res * res * 6);
+  let k = 0;
+  for (let j = 0; j < res; j++) {
+    for (let i = 0; i < res; i++) {
+      const a = j * n + i, b = a + n;
+      indices[k++] = a; indices[k++] = b; indices[k++] = a + 1;
+      indices[k++] = a + 1; indices[k++] = b; indices[k++] = b + 1;
+    }
+  }
+  return { positions, normals, colors, indices };
+}
+
+/** Enkel rutnäts-hash för hinder, så kollisionen inte blir O(n). */
+class ColliderGrid {
+  constructor(cell = 8) {
+    this.cell = cell;
+    this.map = new Map();
+  }
+  /** Cirklar {x,z,r} eller rektanglar {rect:true,x,z,hx,hz,top}. Stora hinder
+   *  registreras i alla celler de täcker så 3x3-sökningen alltid hittar dem. */
+  add(c) {
+    const rx = c.rect ? c.hx : c.r, rz = c.rect ? c.hz : c.r;
+    const i0 = Math.floor((c.x - rx) / this.cell), i1 = Math.floor((c.x + rx) / this.cell);
+    const j0 = Math.floor((c.z - rz) / this.cell), j1 = Math.floor((c.z + rz) / this.cell);
+    for (let i = i0; i <= i1; i++) {
+      for (let j = j0; j <= j1; j++) {
+        const k = ((i + 512) << 10) | (j + 512);
+        let list = this.map.get(k);
+        if (!list) { list = []; this.map.set(k, list); }
+        list.push(c);
+      }
+    }
+  }
+  /** Puttar ut en position ur alla hinder den överlappar. */
+  resolve(pos, radius) {
+    let hit = false;
+    const cx = Math.floor(pos.x / this.cell), cz = Math.floor(pos.z / this.cell);
+    for (let i = -1; i <= 1; i++) {
+      for (let j = -1; j <= 1; j++) {
+        const list = this.map.get((((cx + i) + 512) << 10) | ((cz + j) + 512));
+        if (!list) continue;
+        for (const c of list) {
+          if (c.rect) {
+            // hus: väggarna gäller bara under taknivån (flygande passerar ovanför)
+            if (c.top !== undefined && pos.y > c.top - 0.5) continue;
+            const dx = pos.x - c.x, dz = pos.z - c.z;
+            const px = c.hx + radius - Math.abs(dx);
+            const pz = c.hz + radius - Math.abs(dz);
+            if (px > 0 && pz > 0) {
+              if (px < pz) pos.x = c.x + (dx < 0 ? -1 : 1) * (c.hx + radius);
+              else pos.z = c.z + (dz < 0 ? -1 : 1) * (c.hz + radius);
+              hit = true;
+            }
+            continue;
+          }
+          const dx = pos.x - c.x, dz = pos.z - c.z;
+          const min = c.r + radius;
+          const d2 = dx * dx + dz * dz;
+          if (d2 < min * min && d2 > 1e-6) {
+            const d = Math.sqrt(d2);
+            pos.x = c.x + (dx / d) * min;
+            pos.z = c.z + (dz / d) * min;
+            hit = true;
+          }
+        }
+      }
+    }
+    return hit;
+  }
+}
+
+/**
+ * Strör ut världens objekt. Returnerar ritbara listor plus kollisionsrutnätet.
+ */
+function scatterProps() {
+  const trees = [], rocks = [], crystals = [], grassTufts = [];
+  const grid = new ColliderGrid(8);
+  const R = 104;
+
+  const place = (tries, fn) => {
+    for (let i = 0; i < tries; i++) {
+      const a = rand(TAU), d = Math.sqrt(Math.random()) * R;
+      const x = Math.cos(a) * d, z = Math.sin(a) * d;
+      if (Math.hypot(x, z) < 14) continue;            // håll startplatsen fri
+      const h = terrainHeight(x, z);
+      const nrm = terrainNormal(x, z);
+      fn(x, z, h, 1 - nrm.y);
+    }
+  };
+
+  place(520, (x, z, h, slope) => {
+    if (h < WATER_LEVEL + 0.8 || h > 34 || slope > 0.34) return;
+    if (Math.random() > 0.72) return;
+    const scale = rand(0.8, 1.5);
+    const hue = rand(0.6, 1.0);
+    trees.push({
+      x, y: h, z,
+      scale,
+      rot: rand(TAU),
+      trunk: [0.24 * hue, 0.16 * hue, 0.11 * hue],
+      leaf: [lerp(0.10, 0.24, Math.random()), lerp(0.34, 0.55, hue), lerp(0.14, 0.26, Math.random())],
+      tiers: randInt(2, 3),
+    });
+    grid.add({ x, z, r: 0.6 * scale });
+  });
+
+  place(420, (x, z, h, slope) => {
+    if (h < WATER_LEVEL - 1.2) return;
+    if (Math.random() > 0.45) return;
+    const scale = rand(0.7, 2.8);
+    const g = rand(0.85, 1.15);
+    rocks.push({
+      x, y: h, z,
+      sx: scale * rand(0.8, 1.4), sy: scale * rand(0.5, 1.1), sz: scale * rand(0.8, 1.4),
+      rx: rand(-0.25, 0.25), ry: rand(TAU), rz: rand(-0.25, 0.25),
+      col: [0.31 * g, 0.30 * g, 0.34 * g],
+    });
+    if (scale > 1.3) grid.add({ x, z, r: scale * 0.55 });
+  });
+
+  place(160, (x, z, h, slope) => {
+    if (h < WATER_LEVEL + 1.5 || slope > 0.4) return;
+    if (Math.random() > 0.22) return;
+    crystals.push({
+      x, y: h, z,
+      scale: rand(0.9, 2.6),
+      rot: rand(TAU),
+      col: Math.random() < 0.5 ? [0.35, 0.85, 1.0] : [0.72, 0.45, 1.0],
+      phase: rand(TAU),
+    });
+  });
+
+  place(900, (x, z, h, slope) => {
+    if (h < WATER_LEVEL + 0.6 || h > 30 || slope > 0.3) return;
+    grassTufts.push({ x, y: h, z, scale: rand(0.35, 0.85), rot: rand(TAU) });
+  });
+
+  return { trees, rocks, crystals, grassTufts, grid };
+}
+
+/** Neotropolis: husens kollisionslådor plus gatljus och takantenner. */
+function cityProps() {
+  const grid = new ColliderGrid(8);
+  const buildings = cityBuildings();
+  for (const b of buildings) {
+    grid.add({ rect: true, x: b.x, z: b.z, hx: b.hx, hz: b.hz, top: b.h });
+  }
+
+  const lights = [];
+  for (let i = 0; i <= Math.floor(WORLD_SIZE / CITY_CELL); i++) {
+    for (let j = 0; j <= Math.floor(WORLD_SIZE / CITY_CELL); j++) {
+      const x = -WORLD_SIZE / 2 + i * CITY_CELL;
+      const z = -WORLD_SIZE / 2 + j * CITY_CELL;
+      if (Math.hypot(x, z) > 104) continue;
+      if (fbm(i * 3.7, j * 5.1, 1) < -0.1) continue;
+      lights.push({ x, z, warm: (i + j) % 3 === 0 });
+    }
+  }
+
+  const antennas = [];
+  for (const b of buildings) {
+    if (b.neon < 0.45 || b.h > 60) continue;
+    antennas.push({
+      x: b.x + (b.neon - 0.5) * b.hx, z: b.z + ((b.neon * 3) % 1 - 0.5) * b.hz,
+      y: b.h, h: 2.5 + b.neon * 5,
+    });
+  }
+
+  return { buildings, lights, antennas, grid };
+}
+
+// ═══ renderer.js ═══
+// Renderaren: program, statiska världsobjekt, instansbatchar och partiklar.
+
+
+
+
+
+
+// ------------------------------------------------------------- partikelsystem
+
+class Particles {
+  constructor(max = 2600) {
+    this.max = max;
+    this.list = [];
+  }
+
+  spawn(o) {
+    if (this.list.length >= this.max) this.list.shift();
+    this.list.push({
+      x: o.x, y: o.y, z: o.z,
+      vx: o.vx || 0, vy: o.vy || 0, vz: o.vz || 0,
+      life: o.life, max: o.life,
+      size: o.size, size2: o.size2 !== undefined ? o.size2 : 0,
+      r: o.col[0], g: o.col[1], b: o.col[2], a: o.alpha !== undefined ? o.alpha : 1,
+      grav: o.grav !== undefined ? o.grav : 0,
+      drag: o.drag !== undefined ? o.drag : 0.12,
+    });
+  }
+
+  /** Sfäriskt utkast av partiklar. */
+  burst(x, y, z, n, o) {
+    for (let i = 0; i < n; i++) {
+      const th = rand(TAU), ph = Math.acos(rand(-1, 1));
+      const sp = rand(o.speed * 0.35, o.speed);
+      this.spawn({
+        x, y, z,
+        vx: Math.sin(ph) * Math.cos(th) * sp,
+        vy: Math.cos(ph) * sp * (o.up || 1) + (o.lift || 0),
+        vz: Math.sin(ph) * Math.sin(th) * sp,
+        life: rand(o.life * 0.6, o.life),
+        size: rand(o.size * 0.6, o.size),
+        size2: o.size2 || 0,
+        col: o.col, alpha: o.alpha, grav: o.grav, drag: o.drag,
+      });
+    }
+  }
+
+  update(dt) {
+    const L = this.list;
+    for (let i = L.length - 1; i >= 0; i--) {
+      const p = L[i];
+      p.life -= dt;
+      if (p.life <= 0) { L[i] = L[L.length - 1]; L.pop(); continue; }
+      p.vy += p.grav * dt;
+      const d = Math.exp(-p.drag * dt * 60 * 0.05);
+      p.vx *= d; p.vy *= d; p.vz *= d;
+      p.x += p.vx * dt; p.y += p.vy * dt; p.z += p.vz * dt;
+    }
+  }
+
+  fill(batch) {
+    batch.clear();
+    for (const p of this.list) {
+      const t = p.life / p.max;
+      batch.push(p.x, p.y, p.z, lerp(p.size2, p.size, t), p.r, p.g, p.b, p.a * Math.min(1, t * 1.6));
+    }
+  }
+}
+
+// ------------------------------------------------------------------- miljö
+
+const NIGHT = { top: [0.015, 0.025, 0.075], hor: [0.05, 0.07, 0.15], fog: [0.05, 0.07, 0.15], amb: [0.11, 0.14, 0.24], sun: [0.42, 0.52, 0.80] };
+const DUSK  = { top: [0.10, 0.14, 0.38], hor: [0.86, 0.40, 0.26], fog: [0.45, 0.30, 0.36], amb: [0.24, 0.22, 0.32], sun: [1.00, 0.52, 0.26] };
+const DAY   = { top: [0.20, 0.42, 0.82], hor: [0.66, 0.79, 0.95], fog: [0.64, 0.76, 0.92], amb: [0.34, 0.40, 0.50], sun: [1.00, 0.96, 0.88] };
+
+const mixArr = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
+
+/** dayTime 0..1 — 0.25 = soluppgång, 0.5 = middag, 0.75 = solnedgång.
+ *  Neotropolis har evig neonnatt och ignorerar dygnet. */
+function computeEnv(dayTime, worldId = 'wild') {
+  if (worldId === 'city') {
+    return {
+      sunDir: { x: 0.297, y: 0.772, z: 0.545 },   // hög kall måne
+      sunCol: [0.40, 0.34, 0.62],
+      amb: [0.21, 0.16, 0.30],
+      fogCol: [0.055, 0.03, 0.10],
+      skyTop: [0.012, 0.006, 0.045],
+      skyHor: [0.17, 0.05, 0.24],
+      night: 1,
+      fogNear: 42,
+      fogFar: 200,
+    };
+  }
+  const a = (dayTime - 0.25) * TAU;
+  let sx = Math.cos(a), sy = Math.sin(a), sz = 0.32;
+  let l = Math.hypot(sx, sy, sz);
+  sx /= l; sy /= l; sz /= l;
+
+  const above = sy;
+  const night = 1 - smoothstep(-0.16, 0.06, above);
+  const duskT = smoothstep(-0.30, 0.02, above);
+  const dayT = smoothstep(0.02, 0.34, above);
+
+  let pal = { top: mixArr(NIGHT.top, DUSK.top, duskT), hor: mixArr(NIGHT.hor, DUSK.hor, duskT),
+              fog: mixArr(NIGHT.fog, DUSK.fog, duskT), amb: mixArr(NIGHT.amb, DUSK.amb, duskT),
+              sun: mixArr(NIGHT.sun, DUSK.sun, duskT) };
+  pal = { top: mixArr(pal.top, DAY.top, dayT), hor: mixArr(pal.hor, DAY.hor, dayT),
+          fog: mixArr(pal.fog, DAY.fog, dayT), amb: mixArr(pal.amb, DAY.amb, dayT),
+          sun: mixArr(pal.sun, DAY.sun, dayT) };
+
+  // Under horisonten lyser månen i stället — motsatt riktning, svagare.
+  const moon = above < 0;
+  const dir = moon ? { x: -sx, y: -sy, z: -sz } : { x: sx, y: sy, z: sz };
+  const strength = moon ? 0.32 : lerp(0.45, 1.0, dayT);
+
+  return {
+    sunDir: dir,
+    sunCol: [pal.sun[0] * strength, pal.sun[1] * strength, pal.sun[2] * strength],
+    amb: pal.amb,
+    fogCol: pal.fog,
+    skyTop: pal.top,
+    skyHor: pal.hor,
+    night,
+    fogNear: 44,
+    fogFar: 178,
+  };
+}
+
+// ----------------------------------------------------------------- renderare
+
+class Renderer {
+  constructor(canvas) {
+    this.canvas = canvas;
+    const gl = this.gl = initGL(canvas);
+
+    this.pTerrain = makeProgram(gl, TERRAIN_VS, TERRAIN_FS, 'terrain');
+    this.pInst = makeProgram(gl, INST_VS, INST_FS, 'inst');
+    this.pShadow = makeProgram(gl, SHADOW_VS, SHADOW_FS, 'shadow');
+    this.pPart = makeProgram(gl, PART_VS, PART_FS, 'part');
+    this.pSky = makeProgram(gl, SKY_VS, SKY_FS, 'sky');
+    this.pWater = makeProgram(gl, WATER_VS, WATER_FS, 'water');
+
+    this.waterMesh = uploadMesh(gl, grid(90));
+
+    const m = {
+      sphere: sphere(16, 11),
+      box: box(),
+      cone: cone(12),
+      cyl: cylinder(12),
+      cylTaper: cylinder(10, 0.55),
+      disc: disc(20),
+      octa: octahedron(),
+    };
+    this.mesh = m;
+
+    // Dynamiska batchar (fylls om varje bildruta).
+    this.dyn = {
+      sphere: new InstancedBatch(gl, m.sphere, 512),
+      box: new InstancedBatch(gl, m.box, 512),
+      cone: new InstancedBatch(gl, m.cone, 256),
+      cyl: new InstancedBatch(gl, m.cyl, 256),
+      octa: new InstancedBatch(gl, m.octa, 512),
+    };
+    this.shadows = new InstancedBatch(gl, m.disc, 512);
+    this.partBatch = new BillboardBatch(gl, 3200);
+    this.particles = new Particles();
+
+    this.worldCache = {};
+    this.buildWorld('wild');
+
+    this.view = mat4(); this.proj = mat4(); this.vp = mat4(); this.invVP = mat4();
+    this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+    this.width = 1; this.height = 1;
+    this.resize();
+  }
+
+  /** Väljer aktiv värld; geometrin byggs första gången och cachas sedan. */
+  buildWorld(id) {
+    setWorld(id);
+    if (!this.worldCache[id]) {
+      this.worldCache[id] = id === 'city' ? this.buildCityWorld() : this.buildWildWorld();
+    }
+    const w = this.worldCache[id];
+    this.terrain = w.terrain;
+    this.static = w.static;
+    this.props = w.props;
+    this.worldId = id;
+  }
+
+  buildCityWorld() {
+    const gl = this.gl, m = this.mesh;
+    const props = cityProps();
+    const bodies = new InstancedBatch(gl, m.box, 256);
+    const bands = new InstancedBatch(gl, m.box, 2048);
+    const poles = new InstancedBatch(gl, m.cyl, 512);
+    const orbs = new InstancedBatch(gl, m.sphere, 512);
+    const NEON = [[0.25, 0.9, 1.0], [1.0, 0.3, 0.7], [1.0, 0.7, 0.2], [0.5, 1.0, 0.5]];
+
+    for (const b of props.buildings) {
+      const tone = 0.8 + b.neon * 0.5;
+      bodies.push(b.x, b.h / 2, b.z, b.hx * 2, b.h, b.hz * 2,
+        [0.055 * tone, 0.06 * tone, 0.088 * tone], 0, 0, 0, 0);
+      const neon = NEON[Math.floor(b.neon * NEON.length) % NEON.length];
+      // fönsterband runt fasaden + lysande takkant
+      for (let y = 2.4; y < b.h - 1.4; y += 3.4) {
+        bands.push(b.x, y, b.z, b.hx * 2 + 0.06, 0.3, b.hz * 2 + 0.06,
+          [neon[0] * 0.38, neon[1] * 0.38, neon[2] * 0.38], 0, 0, 0, 0.14);
+      }
+      bands.push(b.x, b.h - 0.1, b.z, b.hx * 2 + 0.16, 0.16, b.hz * 2 + 0.16, neon, 0, 0, 0, 0.9);
+    }
+    for (const a of props.antennas) {
+      poles.push(a.x, a.y + a.h / 2, a.z, 0.14, a.h, 0.14, [0.2, 0.2, 0.26], 0, 0, 0, 0.1);
+      orbs.push(a.x, a.y + a.h + 0.2, a.z, 0.34, 0.34, 0.34, [1.0, 0.25, 0.3], 0, 0, 0, 1.3);
+    }
+    for (const l of props.lights) {
+      poles.push(l.x, 2.6, l.z, 0.14, 5.2, 0.14, [0.16, 0.17, 0.22], 0, 0, 0, 0);
+      orbs.push(l.x, 5.35, l.z, 0.45, 0.3, 0.45,
+        l.warm ? [1.0, 0.8, 0.5] : [0.5, 0.9, 1.0], 0, 0, 0, 1.1);
+    }
+    return { terrain: uploadMesh(gl, buildCityGroundMesh(60)), static: [bodies, bands, poles, orbs], props };
+  }
+
+  buildWildWorld() {
+    const gl = this.gl, m = this.mesh;
+    const props = scatterProps();
+    const trunks = new InstancedBatch(gl, m.cylTaper, 512);
+    const leaves = new InstancedBatch(gl, m.cone, 1024);
+    const rocks = new InstancedBatch(gl, m.box, 512);
+    const crystals = new InstancedBatch(gl, m.octa, 256);
+    const tufts = new InstancedBatch(gl, m.cone, 1024);
+
+    for (const t of props.trees) {
+      const h = 3.2 * t.scale;
+      trunks.push(t.x, t.y + h * 0.5, t.z, 0.5 * t.scale, h, 0.5 * t.scale, t.trunk, 0, t.rot, 0, 0);
+      for (let i = 0; i < t.tiers; i++) {
+        const f = i / t.tiers;
+        const r = (3.4 - f * 1.5) * t.scale;
+        leaves.push(t.x, t.y + h * (0.75 + f * 0.72), t.z, r, 3.0 * t.scale, r,
+          [t.leaf[0] * (1 - f * 0.12), t.leaf[1] * (1 - f * 0.1), t.leaf[2]], 0, t.rot + f, 0, 0);
+      }
+    }
+    for (const r of props.rocks) {
+      rocks.push(r.x, r.y + r.sy * 0.28, r.z, r.sx, r.sy, r.sz, r.col, r.rx, r.ry, r.rz, 0);
+    }
+    for (const c of props.crystals) {
+      crystals.push(c.x, c.y + c.scale * 0.8, c.z, c.scale * 0.5, c.scale * 2.2, c.scale * 0.5,
+        c.col, 0.12, c.rot, 0.1, 0.55);
+    }
+    for (const g of props.grassTufts) {
+      tufts.push(g.x, g.y + 0.22 * g.scale, g.z, 0.5 * g.scale, 0.9 * g.scale, 0.5 * g.scale,
+        [0.20, 0.36, 0.16], 0, g.rot, 0, 0);
+    }
+    return {
+      terrain: uploadMesh(gl, buildTerrainMesh(200)),
+      static: [trunks, leaves, rocks, crystals, tufts],
+      props,
+    };
+  }
+
+  resize() {
+    const c = this.canvas;
+    const w = Math.max(1, Math.floor(c.clientWidth * this.dpr));
+    const h = Math.max(1, Math.floor(c.clientHeight * this.dpr));
+    if (c.width !== w || c.height !== h) {
+      c.width = w; c.height = h;
+    }
+    this.width = w; this.height = h;
+  }
+
+  clearBatches() {
+    for (const k in this.dyn) this.dyn[k].clear();
+    this.shadows.clear();
+  }
+
+  /** Skuggfläck på marken. */
+  shadow(x, y, z, radius, alpha) {
+    this.shadows.push(x, y + 0.06, z, radius * 2, 1, radius * 2, [0, 0, 0], 0, 0, 0, alpha);
+  }
+
+  applyEnv(p, env, eye) {
+    p.v3('uSunDir', env.sunDir.x, env.sunDir.y, env.sunDir.z);
+    p.v3('uSunCol', env.sunCol);
+    p.v3('uAmb', env.amb);
+    p.v3('uFogCol', env.fogCol);
+    p.v2('uFog', env.fogNear, env.fogFar);
+    p.v3('uEye', eye.x, eye.y, eye.z);
+    p.m4('uVP', this.vp);
+  }
+
+  render(cam, env, time, player) {
+    const gl = this.gl;
+    this.resize();
+    gl.viewport(0, 0, this.width, this.height);
+
+    perspective(this.proj, cam.fov, this.width / this.height, 0.1, 620);
+    lookAt(this.view, cam.pos, cam.target, { x: 0, y: 1, z: 0 });
+    multiply(this.vp, this.proj, this.view);
+    invert(this.invVP, this.vp);
+
+    gl.clearColor(env.fogCol[0], env.fogCol[1], env.fogCol[2], 1);
+    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+    // --- himmel
+    gl.disable(gl.DEPTH_TEST); gl.depthMask(false);
+    this.pSky.use()
+      .m4('uInvVP', this.invVP)
+      .v3('uEye', cam.pos.x, cam.pos.y, cam.pos.z)
+      .v3('uSunDir', env.sunDir.x, env.sunDir.y, env.sunDir.z)
+      .v3('uSunCol', env.sunCol)
+      .v3('uSkyTop', env.skyTop)
+      .v3('uSkyHorizon', env.skyHor)
+      .f('uNight', env.night);
+    gl.bindVertexArray(null);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
+    gl.enable(gl.DEPTH_TEST); gl.depthMask(true);
+
+    // --- terräng
+    this.pTerrain.use();
+    this.applyEnv(this.pTerrain, env, cam.pos);
+    this.pTerrain.v3('uPlayer', player.x, player.y, player.z)
+      .f('uNight', env.night)
+      .f('uCity', this.worldId === 'city' ? 1 : 0);
+    this.terrain.draw();
+
+    // --- alla instansierade objekt
+    this.pInst.use();
+    this.applyEnv(this.pInst, env, cam.pos);
+    for (const b of this.static) b.draw();
+    for (const k in this.dyn) this.dyn[k].draw();
+
+    // --- markskuggor
+    gl.enable(gl.BLEND);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+    gl.depthMask(false);
+    this.pShadow.use().m4('uVP', this.vp);
+    this.shadows.draw();
+    gl.depthMask(true);
+
+    // --- vatten (Neotropolis har inget)
+    if (this.worldId !== 'city') {
+      gl.disable(gl.CULL_FACE);
+      this.pWater.use();
+      this.pWater.m4('uVP', this.vp)
+        .v3('uEye', cam.pos.x, cam.pos.y, cam.pos.z)
+        .v3('uSunDir', env.sunDir.x, env.sunDir.y, env.sunDir.z)
+        .v3('uSunCol', env.sunCol)
+        .v3('uAmb', env.amb)
+        .v3('uFogCol', env.fogCol)
+        .v2('uFog', env.fogNear, env.fogFar)
+        .f('uTime', time)
+        .f('uSize', WORLD_SIZE)
+        .f('uLevel', WATER_LEVEL);
+      this.waterMesh.draw();
+      gl.enable(gl.CULL_FACE);
+    }
+
+    // --- partiklar (additivt)
+    this.particles.fill(this.partBatch);
+    gl.blendFunc(gl.SRC_ALPHA, gl.ONE);
+    gl.depthMask(false);
+    const rx = this.view[0], ry = this.view[4], rz = this.view[8];
+    const ux = this.view[1], uy = this.view[5], uz = this.view[9];
+    this.pPart.use().m4('uVP', this.vp).v3('uRight', rx, ry, rz).v3('uUp', ux, uy, uz);
+    this.partBatch.draw();
+    gl.depthMask(true);
+    gl.disable(gl.BLEND);
+    gl.bindVertexArray(null);
+  }
+}
+
+// ═══ audio.js ═══
+// Allt ljud syntetiseras i WebAudio — inga ljudfiler behövs.
+
+class Sound {
+  constructor() {
+    this.ctx = null;
+    this.master = null;
+    this.muted = false;
+  }
+
+  init() {
+    if (this.ctx) return;
+    const AC = window.AudioContext || window.webkitAudioContext;
+    if (!AC) return;
+    this.ctx = new AC();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = 0.32;
+    this.master.connect(this.ctx.destination);
+  }
+
+  resume() {
+    if (this.ctx && this.ctx.state === 'suspended') this.ctx.resume();
+  }
+
+  get ready() { return this.ctx && !this.muted; }
+
+  tone({ f = 440, f2 = null, dur = 0.15, type = 'square', vol = 0.3, attack = 0.005, delay = 0 }) {
+    if (!this.ready) return;
+    const c = this.ctx, t = c.currentTime + delay;
+    const o = c.createOscillator(), g = c.createGain();
+    o.type = type;
+    o.frequency.setValueAtTime(f, t);
+    if (f2 !== null) o.frequency.exponentialRampToValueAtTime(Math.max(1, f2), t + dur);
+    g.gain.setValueAtTime(0.0001, t);
+    g.gain.exponentialRampToValueAtTime(vol, t + attack);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    o.connect(g).connect(this.master);
+    o.start(t);
+    o.stop(t + dur + 0.02);
+  }
+
+  noise({ dur = 0.2, vol = 0.3, freq = 900, q = 1.2, type = 'bandpass', delay = 0, sweep = null }) {
+    if (!this.ready) return;
+    const c = this.ctx, t = c.currentTime + delay;
+    const n = Math.floor(c.sampleRate * dur);
+    const buf = c.createBuffer(1, n, c.sampleRate);
+    const d = buf.getChannelData(0);
+    for (let i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+    const src = c.createBufferSource();
+    src.buffer = buf;
+    const filt = c.createBiquadFilter();
+    filt.type = type;
+    filt.frequency.setValueAtTime(freq, t);
+    if (sweep) filt.frequency.exponentialRampToValueAtTime(Math.max(40, sweep), t + dur);
+    filt.Q.value = q;
+    const g = c.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    src.connect(filt).connect(g).connect(this.master);
+    src.start(t);
+  }
+
+  shoot() {
+    this.tone({ f: 720, f2: 240, dur: 0.09, type: 'square', vol: 0.10 });
+    this.noise({ dur: 0.06, vol: 0.06, freq: 2400, sweep: 700 });
+  }
+  swing() {
+    this.noise({ dur: 0.14, vol: 0.11, freq: 420, sweep: 2400, q: 0.8 });
+    this.tone({ f: 190, f2: 340, dur: 0.09, type: 'sine', vol: 0.04 });
+  }
+  droneDive() {
+    this.tone({ f: 320, f2: 1500, dur: 0.35, type: 'sawtooth', vol: 0.05 });
+  }
+  snipe() {
+    this.tone({ f: 2200, f2: 420, dur: 0.09, type: 'square', vol: 0.09 });
+    this.noise({ dur: 0.16, vol: 0.09, freq: 3000, sweep: 500, q: 1.4 });
+  }
+  salvo() {
+    for (let i = 0; i < 3; i++) {
+      this.tone({ f: 420, f2: 150, dur: 0.09, type: 'square', vol: 0.07, delay: i * 0.07 });
+    }
+  }
+  finisher() {
+    this.noise({ dur: 0.22, vol: 0.15, freq: 300, sweep: 2800, q: 0.7 });
+    this.tone({ f: 130, f2: 48, dur: 0.3, type: 'sawtooth', vol: 0.13 });
+    this.tone({ f: 640, f2: 250, dur: 0.16, type: 'triangle', vol: 0.08, delay: 0.06 });
+  }
+  fireball() {
+    this.tone({ f: 190, f2: 55, dur: 0.45, type: 'sawtooth', vol: 0.15 });
+    this.noise({ dur: 0.5, vol: 0.16, freq: 600, sweep: 90, q: 0.6, type: 'lowpass' });
+    this.tone({ f: 520, f2: 900, dur: 0.18, type: 'sine', vol: 0.06 });
+  }
+  laser() {
+    this.tone({ f: 1600, f2: 340, dur: 0.11, type: 'sawtooth', vol: 0.09 });
+    this.tone({ f: 2400, f2: 900, dur: 0.05, type: 'sine', vol: 0.05 });
+    this.noise({ dur: 0.05, vol: 0.04, freq: 4200, sweep: 1400 });
+  }
+  hit() { this.tone({ f: 300, f2: 120, dur: 0.06, type: 'triangle', vol: 0.12 }); }
+  crit() {
+    this.tone({ f: 900, f2: 300, dur: 0.10, type: 'sawtooth', vol: 0.13 });
+    this.noise({ dur: 0.08, vol: 0.08, freq: 3200, sweep: 900 });
+  }
+  kill() {
+    this.noise({ dur: 0.22, vol: 0.16, freq: 1400, sweep: 160, q: 0.7 });
+    this.tone({ f: 180, f2: 60, dur: 0.18, type: 'sawtooth', vol: 0.08 });
+  }
+  explode() {
+    this.noise({ dur: 0.45, vol: 0.24, freq: 700, sweep: 70, q: 0.5, type: 'lowpass' });
+    this.tone({ f: 110, f2: 34, dur: 0.35, type: 'sine', vol: 0.16 });
+  }
+  dash() {
+    this.noise({ dur: 0.20, vol: 0.14, freq: 500, sweep: 3200, q: 0.9 });
+    this.tone({ f: 260, f2: 880, dur: 0.14, type: 'sine', vol: 0.07 });
+  }
+  jump() { this.tone({ f: 340, f2: 620, dur: 0.10, type: 'sine', vol: 0.07 }); }
+  land() { this.noise({ dur: 0.09, vol: 0.07, freq: 320, sweep: 120, q: 0.8 }); }
+  hurt() {
+    this.tone({ f: 200, f2: 70, dur: 0.22, type: 'sawtooth', vol: 0.16 });
+    this.noise({ dur: 0.18, vol: 0.12, freq: 500, sweep: 120 });
+  }
+  pickup() { this.tone({ f: 880, f2: 1320, dur: 0.07, type: 'sine', vol: 0.06 }); }
+  heal() {
+    this.tone({ f: 520, f2: 780, dur: 0.16, type: 'sine', vol: 0.10 });
+    this.tone({ f: 780, f2: 1170, dur: 0.18, type: 'sine', vol: 0.07, delay: 0.06 });
+  }
+  levelUp() {
+    [523, 659, 784, 1047].forEach((f, i) =>
+      this.tone({ f, dur: 0.30, type: 'triangle', vol: 0.12, delay: i * 0.07 }));
+  }
+  waveStart() {
+    [196, 262, 330].forEach((f, i) =>
+      this.tone({ f, dur: 0.45, type: 'sawtooth', vol: 0.09, delay: i * 0.10 }));
+  }
+  bossSpawn() {
+    this.tone({ f: 70, f2: 40, dur: 1.6, type: 'sawtooth', vol: 0.20 });
+    this.tone({ f: 105, f2: 60, dur: 1.6, type: 'square', vol: 0.10, delay: 0.1 });
+    this.noise({ dur: 1.4, vol: 0.12, freq: 260, sweep: 60, q: 0.4 });
+  }
+  gameOver() {
+    [392, 330, 262, 196].forEach((f, i) =>
+      this.tone({ f, f2: f * 0.5, dur: 0.7, type: 'triangle', vol: 0.14, delay: i * 0.22 }));
+  }
+}
+
+// ═══ input.js ═══
+// Tangentbord och mus. Kameran styrs alltid av musrörelser; pointer lock
+// används när webbläsaren tillåter det (låser pekaren så den inte kan lämna
+// fönstret), annars fungerar vanliga musrörelser över canvasen direkt.
+
+const clampDelta = (v) => (v > 150 ? 150 : v < -150 ? -150 : v);
+
+class Input {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.keys = new Set();
+    this.justPressed = new Set();
+    this.mouseDX = 0;
+    this.mouseDY = 0;
+    this.cursorNX = 0;
+    this.cursorNY = 0;
+    this.wheel = 0;
+    this.fireDown = false;
+    this.locked = false;
+    this.sensitivity = 0.0022;
+    this.enabled = true;
+
+    addEventListener('keydown', (e) => {
+      if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'Space', 'Tab'].includes(e.code)) e.preventDefault();
+      if (!this.keys.has(e.code)) this.justPressed.add(e.code);
+      this.keys.add(e.code);
+    });
+    addEventListener('keyup', (e) => this.keys.delete(e.code));
+    addEventListener('blur', () => { this.keys.clear(); this.fireDown = false; });
+
+    canvas.addEventListener('mousemove', (e) => {
+      if (!this.enabled) return;
+      // Kameran följer alltid musen — även utan pointer lock och utan knapp.
+      // Klampen skyddar mot hopp när muspekaren återvänder efter alt-tab e.d.
+      this.mouseDX += clampDelta(e.movementX || 0);
+      this.mouseDY += clampDelta(e.movementY || 0);
+      // Pekarens position i -1..1 — driver kantstyrningen när lås saknas.
+      const nx = (e.clientX / Math.max(1, innerWidth)) * 2 - 1;
+      const ny = (e.clientY / Math.max(1, innerHeight)) * 2 - 1;
+      this.cursorNX = nx < -1 ? -1 : nx > 1 ? 1 : nx;
+      this.cursorNY = ny < -1 ? -1 : ny > 1 ? 1 : ny;
+    });
+    canvas.addEventListener('mousedown', (e) => {
+      if (e.button === 0) this.fireDown = true;
+    });
+    addEventListener('mouseup', (e) => {
+      if (e.button === 0) this.fireDown = false;
+    });
+    canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+    canvas.addEventListener('wheel', (e) => { e.preventDefault(); this.wheel += e.deltaY; }, { passive: false });
+
+    document.addEventListener('pointerlockchange', () => {
+      this.locked = document.pointerLockElement === canvas;
+      if (this.onLockChange) this.onLockChange(this.locked);
+    });
+  }
+
+  requestLock() {
+    if (this.canvas.requestPointerLock) {
+      const r = this.canvas.requestPointerLock();
+      if (r && typeof r.catch === 'function') r.catch(() => {});
+    }
+  }
+  releaseLock() {
+    if (document.pointerLockElement) document.exitPointerLock();
+  }
+
+  down(code) { return this.keys.has(code); }
+  pressed(code) { return this.justPressed.has(code); }
+
+  /** Rörelseriktning i lokala koordinater: x = höger, y = framåt. */
+  moveAxis() {
+    let x = 0, y = 0;
+    if (this.down('KeyW') || this.down('ArrowUp')) y += 1;
+    if (this.down('KeyS') || this.down('ArrowDown')) y -= 1;
+    if (this.down('KeyD') || this.down('ArrowRight')) x += 1;
+    if (this.down('KeyA') || this.down('ArrowLeft')) x -= 1;
+    const l = Math.hypot(x, y);
+    if (l > 1) { x /= l; y /= l; }
+    return { x, y };
+  }
+
+  /** Nollställ engångsvärden i slutet av varje bildruta. */
+  endFrame() {
+    this.justPressed.clear();
+    this.mouseDX = 0;
+    this.mouseDY = 0;
+    this.wheel = 0;
+  }
+}
+
+// ═══ upgrades.js ═══
+// Uppgraderingskorten som erbjuds vid varje nivå.
+
+const UPGRADES = [
+  { id: 'dmg', name: 'ÖVERLADDNING', icon: '⚡', max: 8,
+    desc: '+25% skada per skott',
+    apply: (st) => { st.damage *= 1.25; } },
+
+  { id: 'rate', name: 'SNABBELD', icon: '🔥', max: 6,
+    desc: '+20% eldhastighet',
+    apply: (st) => { st.fireRate *= 1.2; } },
+
+  { id: 'multi', name: 'SPLITTERSKOTT', icon: '🎯', max: 4,
+    desc: '+1 laser/eldboll · bredare svärdssving',
+    apply: (st) => { st.multishot += 1; st.spread += 0.012; } },
+
+  { id: 'hp', name: 'PANSARPLÅT', icon: '🛡️', max: 6,
+    desc: '+30 max HP och läker 30',
+    apply: (st, p) => { st.maxHp += 30; p.heal(30); } },
+
+  { id: 'speed', name: 'SERVOBEN', icon: '🥾', max: 5,
+    desc: '+12% rörelsehastighet',
+    apply: (st) => { st.speed *= 1.12; } },
+
+  { id: 'dashCharge', name: 'FASSKIFTE', icon: '💨', max: 3,
+    desc: '+1 dash-laddning',
+    apply: (st, p) => { st.dashMax += 1; p.dashCharges += 1; } },
+
+  { id: 'dashCd', name: 'KONDENSATOR', icon: '🔋', max: 4,
+    desc: '−25% dash-återladdning',
+    apply: (st) => { st.dashRecharge *= 0.75; } },
+
+  { id: 'regen', name: 'NANITER', icon: '💚', max: 5,
+    desc: '+1.2 HP i sekunden',
+    apply: (st) => { st.regen += 1.2; } },
+
+  { id: 'magnet', name: 'MAGNETFÄLT', icon: '🧲', max: 4,
+    desc: '+70% plockradie för orbs',
+    apply: (st) => { st.pickupRadius *= 1.7; } },
+
+  { id: 'crit', name: 'PRICKSKYTT', icon: '🎲', max: 5,
+    desc: '+12% kritchans, +0.25 kritskada',
+    apply: (st) => { st.crit += 0.12; st.critMult += 0.25; } },
+
+  { id: 'pierce', name: 'GENOMSLAG', icon: '🏹', max: 4,
+    desc: '+1 genomträngning, +15% skotthastighet',
+    apply: (st) => { st.pierce += 1; st.projSpeed *= 1.15; } },
+
+  { id: 'boom', name: 'SPRÄNGLADDNING', icon: '💥', max: 3,
+    desc: 'Skotten exploderar vid träff',
+    apply: (st) => { st.explosive = st.explosive ? st.explosive + 1.4 : 3.8; } },
+
+  { id: 'vamp', name: 'VAMPYRKRETS', icon: '🩸', max: 4,
+    desc: '+6% av skadan läker dig',
+    apply: (st) => { st.lifesteal += 0.06; } },
+
+  { id: 'drone', name: 'STÖDDRÖNARE', icon: '🛸', max: 3,
+    desc: 'En drönare cirklar och skjuter åt dig',
+    apply: (st) => { st.drones += 1; } },
+
+  { id: 'xp', name: 'SYNAPSLÄNK', icon: '🧠', max: 4,
+    desc: '+25% erfarenhet från orbs',
+    apply: (st) => { st.xpMult *= 1.25; } },
+
+  { id: 'jump', name: 'SVÄVSULOR', icon: '🕊️', max: 2,
+    desc: '+1 hopp i luften',
+    apply: (st) => { st.jumps += 1; } },
+];
+
+/** Slumpar n unika kort som spelaren inte redan maxat. */
+function rollChoices(levels, n = 3) {
+  const pool = UPGRADES.filter((u) => (levels.get(u.id) || 0) < u.max);
+  const out = [];
+  while (out.length < n && pool.length) {
+    const i = (Math.random() * pool.length) | 0;
+    out.push(pool[i]);
+    pool.splice(i, 1);
+  }
+  return out;
+}
+
+// ═══ player.js ═══
+// Spelarkaraktären: rörelse, hopp, dash, kamerarigg och den ritade figuren.
+
+
+const GRAVITY = -34;
+const EYE = 1.35;
+
+function rotY(x, z, a) {
+  const c = Math.cos(a), s = Math.sin(a);
+  return [c * x + s * z, -s * x + c * z];
+}
+
+function defaultStats() {
+  return {
+    maxHp: 100,
+    speed: 9.4,
+    damage: 13,
+    fireRate: 4.2,        // skott per sekund
+    projSpeed: 66,
+    projSize: 0.34,
+    multishot: 1,
+    spread: 0.035,
+    pierce: 0,
+    crit: 0.05,
+    critMult: 2.0,
+    explosive: 0,         // radie, 0 = av
+    lifesteal: 0,
+    regen: 0,
+    pickupRadius: 4.5,
+    dashMax: 2,
+    dashRecharge: 2.4,
+    jumps: 1,
+    xpMult: 1,
+    drones: 0,
+  };
+}
+
+class Player {
+  constructor(world) {
+    this.world = world;
+    this.reset();
+  }
+
+  reset() {
+    this.stats = defaultStats();
+    this.pos = { x: 0, y: terrainHeight(0, 0) + 2, z: 0 };
+    this.vel = { x: 0, y: 0, z: 0 };
+    this.hp = this.stats.maxHp;
+    this.yaw = 0;
+    this.camYaw = 0;
+    this.camPitch = -0.18;
+    this.camDist = 8.5;
+    this.camDistNow = 8.5;
+    this.camPos = { x: 0, y: 6, z: 10 };
+    this.fov = 1.15;
+    this.fovNow = 1.15;
+    this.grounded = false;
+    this.jumpsLeft = 1;
+    this.dashCharges = this.stats.dashMax;
+    this.dashTimer = 0;      // återladdning
+    this.dashTime = 0;       // aktiv dash
+    this.dashDir = { x: 0, z: 1 };
+    this.invuln = 0;
+    this.fireTimer = 0;
+    this.walkPhase = 0;
+    this.hitFlash = 0;
+    this.radius = 0.55;
+    this.inWater = false;
+    this.aim = { x: 0, y: 0, z: 1 };
+    this.aimYaw = 0;
+    this.droneAngle = 0;
+    this.droneTimer = 0;
+    this.alive = true;
+    this.shake = 0;
+    this.shotSide = 1;       // Neotropolis: lasern alternerar mellan händerna
+    this.thrusting = false;
+    this.swingTime = 0;      // Vildheim: pågående svärdssving
+    this.swingDur = 0.26;
+    this.swingSide = 1;
+    this.swingFinisher = false;
+    this.combo = -1;         // 0,1,2 — det tredje hugget är en finisher
+    this.comboTimer = 0;
+    this.fireballCdMax = 10;
+    this.fireballCd = 0;
+  }
+
+  get camForward() {
+    const cp = Math.cos(this.camPitch);
+    return { x: Math.sin(this.camYaw) * cp, y: Math.sin(this.camPitch), z: Math.cos(this.camYaw) * cp };
+  }
+
+  look(dx, dy, sens) {
+    this.camYaw -= dx * sens;
+    this.camPitch = clamp(this.camPitch - dy * sens, -1.15, 0.75);
+    if (this.camYaw > Math.PI) this.camYaw -= TAU;
+    if (this.camYaw < -Math.PI) this.camYaw += TAU;
+  }
+
+  zoom(delta) {
+    this.camDist = clamp(this.camDist + delta * 0.006, 4.2, 16);
+  }
+
+  /**
+   * Styrning utan pointer lock. Mitten av skärmen är en stor fri zon där du
+   * siktar med korshåret utan att kameran rör sig; först när pekaren närmar
+   * sig kanterna börjar vyn svepa — mjukt och likadant i båda led.
+   */
+  steer(input, dt) {
+    const dead = 0.42;
+    const ramp = (v) => {
+      const m = Math.abs(v);
+      if (m <= dead) return 0;
+      const t = clamp((m - dead) / (1 - dead), 0, 1);
+      return (v < 0 ? -1 : 1) * t * t * (3 - 2 * t);
+    };
+    this.camYaw -= ramp(input.cursorNX) * 3.1 * dt;
+    if (this.camYaw > Math.PI) this.camYaw -= TAU;
+    if (this.camYaw < -Math.PI) this.camYaw += TAU;
+    this.camPitch = clamp(this.camPitch - ramp(input.cursorNY) * 1.5 * dt, -1.15, 0.75);
+  }
+
+  /**
+   * Riktningen från kameran genom muspekaren — korshåret sitter där pekaren är.
+   * Utgår från kamerans faktiska blickriktning (inte den ideala vinkeln), så
+   * axelförskjutningen och markklampen inte gör siktet skevt.
+   */
+  cursorRay() {
+    const inp = this.world.input;
+    const eye = this.camPos, tgt = this.camTarget || this.pos;
+    let fx = tgt.x - eye.x, fy = tgt.y - eye.y, fz = tgt.z - eye.z;
+    const fl = Math.hypot(fx, fy, fz) || 1;
+    fx /= fl; fy /= fl; fz /= fl;
+    if (!inp || inp.locked) return { x: fx, y: fy, z: fz };
+
+    // kamerans egna höger- och uppvektor
+    let rx = -fz, rz = fx;
+    const rl = Math.hypot(rx, rz) || 1;
+    rx /= rl; rz /= rl;
+    const ux = -rz * fy, uy = rz * fx - rx * fz, uz = rx * fy;
+
+    const rend = this.world.renderer;
+    const aspect = rend && rend.height ? rend.width / rend.height : 1.6;
+    const tan = Math.tan(this.fovNow / 2);
+    const ax = inp.cursorNX * tan * aspect;
+    const ay = -inp.cursorNY * tan;
+    const dx = fx + rx * ax + ux * ay;
+    const dy = fy + uy * ay;
+    const dz = fz + rz * ax + uz * ay;
+    const l = Math.hypot(dx, dy, dz) || 1;
+    return { x: dx / l, y: dy / l, z: dz / l };
+  }
+
+  takeDamage(n) {
+    if (this.invuln > 0 || !this.alive) return false;
+    this.hp -= n;
+    this.invuln = 0.55;
+    this.hitFlash = 1;
+    this.shake = Math.min(1.2, this.shake + 0.35 + n * 0.012);
+    if (this.hp <= 0) { this.hp = 0; this.alive = false; }
+    return true;
+  }
+
+  heal(n) {
+    this.hp = Math.min(this.stats.maxHp, this.hp + n);
+  }
+
+  tryDash(input) {
+    if (this.dashCharges <= 0 || this.dashTime > 0) return false;
+    const ax = input.moveAxis();
+    let dx, dz;
+    if (ax.x || ax.y) {
+      const f = { x: Math.sin(this.camYaw), z: Math.cos(this.camYaw) };
+      const r = { x: -Math.cos(this.camYaw), z: Math.sin(this.camYaw) };
+      dx = f.x * ax.y + r.x * ax.x;
+      dz = f.z * ax.y + r.z * ax.x;
+    } else {
+      dx = Math.sin(this.yaw); dz = Math.cos(this.yaw);
+    }
+    const l = Math.hypot(dx, dz) || 1;
+    this.dashDir.x = dx / l; this.dashDir.z = dz / l;
+    this.dashCharges--;
+    this.dashTime = 0.18;
+    this.invuln = Math.max(this.invuln, 0.30);
+    this.vel.x = this.dashDir.x * 40;
+    this.vel.z = this.dashDir.z * 40;
+    if (!this.grounded) this.vel.y = Math.max(this.vel.y, 1.5);
+    return true;
+  }
+
+  update(dt, input, snap) {
+    const st = this.stats;
+    const w = this.world;
+
+    // ---- kamera-look
+    if (input.enabled) {
+      if (input.locked) this.look(input.mouseDX, input.mouseDY, input.sensitivity);
+      else this.steer(input, dt);
+    }
+    if (input.wheel) this.zoom(input.wheel);
+
+    // ---- rörelse
+    const ax = input.moveAxis();
+    const f = { x: Math.sin(this.camYaw), z: Math.cos(this.camYaw) };
+    const r = { x: -Math.cos(this.camYaw), z: Math.sin(this.camYaw) };
+    let wishX = f.x * ax.y + r.x * ax.x;
+    let wishZ = f.z * ax.y + r.z * ax.x;
+    const wishLen = Math.hypot(wishX, wishZ);
+    if (wishLen > 0.001) { wishX /= wishLen; wishZ /= wishLen; }
+
+    const speed = st.speed * (this.inWater ? 0.62 : 1);
+    const accel = (this.grounded ? 74 : 26) * dt;
+    if (this.dashTime <= 0) {
+      const tx = wishX * speed * wishLen, tz = wishZ * speed * wishLen;
+      this.vel.x += clamp(tx - this.vel.x, -accel, accel);
+      this.vel.z += clamp(tz - this.vel.z, -accel, accel);
+      if (this.grounded && wishLen < 0.01) {
+        const fr = Math.exp(-9 * dt);
+        this.vel.x *= fr; this.vel.z *= fr;
+      }
+    } else {
+      this.dashTime -= dt;
+      const fade = Math.exp(-4 * dt);
+      this.vel.x *= fade; this.vel.z *= fade;
+      w.particles.spawn({
+        x: this.pos.x, y: this.pos.y + 0.9 + rand(-0.4, 0.4), z: this.pos.z,
+        vx: rand(-1.5, 1.5), vy: rand(0, 2), vz: rand(-1.5, 1.5),
+        life: rand(0.25, 0.5), size: rand(0.35, 0.75), size2: 0,
+        col: [0.35, 0.95, 1.0], alpha: 0.9, drag: 0.5,
+      });
+    }
+
+    // ---- hopp / flygning / dash
+    const canFly = w.worldId === 'city';
+    this.thrusting = false;
+    if (canFly && input.down('Space')) {
+      // cyborg-thrusters: håll mellanslag för att lyfta och flyga
+      this.vel.y = Math.min(this.vel.y + 58 * dt, 11);
+      if (this.pos.y > 58) this.vel.y = Math.min(this.vel.y, 0);   // mjukt höjdtak
+      this.grounded = false;
+      this.thrusting = true;
+      if (Math.random() < 0.65) {
+        w.particles.spawn({
+          x: this.pos.x + rand(-0.25, 0.25), y: this.pos.y + 0.3, z: this.pos.z + rand(-0.25, 0.25),
+          vx: rand(-1, 1), vy: rand(-7, -4), vz: rand(-1, 1),
+          life: rand(0.25, 0.45), size: rand(0.3, 0.55), size2: 0,
+          col: [1.0, 0.45, 0.6], alpha: 0.85, drag: 0.3,
+        });
+      }
+    } else if (input.pressed('Space')) {
+      if (this.grounded || this.jumpsLeft > 0) {
+        if (!this.grounded) this.jumpsLeft--;
+        this.vel.y = 13.2;
+        this.grounded = false;
+        w.sound.jump();
+        w.particles.burst(this.pos.x, this.pos.y + 0.1, this.pos.z, 6,
+          { speed: 3, life: 0.35, size: 0.5, col: [0.6, 0.8, 0.9], alpha: 0.5, grav: -6, drag: 0.4 });
+      }
+    }
+    if ((input.pressed('ShiftLeft') || input.pressed('ShiftRight') || input.pressed('KeyE')) && this.tryDash(input)) {
+      w.sound.dash();
+      w.particles.burst(this.pos.x, this.pos.y + 0.9, this.pos.z, 18,
+        { speed: 9, life: 0.4, size: 0.7, col: [0.3, 0.9, 1.0], alpha: 0.8, drag: 0.6 });
+    }
+
+    // ---- gravitation och mark (i staden glidflyger cyborgen)
+    const gravF = this.dashTime > 0 ? 0.25 : this.thrusting ? 0 : canFly && !this.grounded ? 0.4 : 1;
+    this.vel.y += GRAVITY * dt * gravF;
+    if (canFly && this.vel.y < -13) this.vel.y = -13;
+    this.pos.x += this.vel.x * dt;
+    this.pos.y += this.vel.y * dt;
+    this.pos.z += this.vel.z * dt;
+
+    clampToArena(this.pos);
+    if (w.colliders.resolve(this.pos, this.radius)) {
+      // glid längs hindret istället för att fastna
+      this.vel.x *= 0.85; this.vel.z *= 0.85;
+    }
+
+    const gh = terrainHeight(this.pos.x, this.pos.z);
+    const wasAir = !this.grounded;
+    if (this.pos.y <= gh) {
+      if (wasAir && this.vel.y < -12) {
+        w.sound.land();
+        w.particles.burst(this.pos.x, gh + 0.1, this.pos.z, 8,
+          { speed: 4, life: 0.3, size: 0.5, col: [0.75, 0.72, 0.6], alpha: 0.55, grav: -10, drag: 0.5 });
+      }
+      this.pos.y = gh;
+      this.vel.y = 0;
+      this.grounded = true;
+      this.jumpsLeft = st.jumps;
+    } else {
+      this.grounded = false;
+    }
+
+    const wasWater = this.inWater;
+    this.inWater = this.pos.y < WATER_LEVEL + 0.15;
+    if (this.inWater && !wasWater) {
+      w.particles.burst(this.pos.x, WATER_LEVEL + 0.2, this.pos.z, 14,
+        { speed: 5, life: 0.5, size: 0.55, col: [0.45, 0.8, 0.95], alpha: 0.75, grav: -14, drag: 0.4 });
+    }
+
+    // ---- riktning och timers: gubben vänder sig dit korshåret pekar
+    const turnRate = (wishLen > 0.02 || input.fireDown) ? 22 : 15;
+    const face = this.aimYaw === undefined ? this.camYaw : this.aimYaw;
+    this.yaw += angleDelta(this.yaw, face) * Math.min(1, dt * turnRate);
+    const planar = Math.hypot(this.vel.x, this.vel.z);
+    this.walkPhase += dt * (this.grounded ? planar * 1.15 : 3);
+
+    this.invuln = Math.max(0, this.invuln - dt);
+    this.hitFlash = Math.max(0, this.hitFlash - dt * 3);
+    this.fireTimer = Math.max(0, this.fireTimer - dt);
+    this.swingTime = Math.max(0, this.swingTime - dt);
+    this.comboTimer = Math.max(0, this.comboTimer - dt);
+    this.fireballCd = Math.max(0, this.fireballCd - dt);
+    this.shake = Math.max(0, this.shake - dt * 2.4);
+    if (this.dashCharges < st.dashMax) {
+      this.dashTimer += dt;
+      if (this.dashTimer >= st.dashRecharge) { this.dashTimer = 0; this.dashCharges++; }
+    } else this.dashTimer = 0;
+    if (st.regen > 0 && this.hp < st.maxHp) this.heal(st.regen * dt);
+    this.droneAngle += dt * 1.6;
+    this.droneTimer -= dt;
+
+    // ---- kamera
+    this.updateCamera(dt, planar);
+  }
+
+  updateCamera(dt, planar) {
+    // axelkamera: fokus ligger något åt skärm-höger så figuren inte skymmer siktet
+    const rx = -Math.cos(this.camYaw), rz = Math.sin(this.camYaw);
+    const focus = {
+      x: this.pos.x + rx * 0.8,
+      y: this.pos.y + EYE + 0.25,
+      z: this.pos.z + rz * 0.8,
+    };
+    const dir = this.camForward;
+    const want = this.camDist;
+    // dra in kameran om terrängen är i vägen
+    let allowed = want;
+    for (let i = 1; i <= 8; i++) {
+      const t = (i / 8) * want;
+      const px = focus.x - dir.x * t, py = focus.y - dir.y * t, pz = focus.z - dir.z * t;
+      if (py < terrainHeight(px, pz) + 0.7) { allowed = Math.max(1.8, t - 0.5); break; }
+    }
+    // snabb men inte hackig indragning när något skymmer, mjuk utfällning
+    this.camDistNow = damp(this.camDistNow, allowed, allowed < this.camDistNow ? 0.0001 : 0.02, dt);
+
+    const tx = focus.x - dir.x * this.camDistNow;
+    const ty = focus.y - dir.y * this.camDistNow + 0.35;
+    const tz = focus.z - dir.z * this.camDistNow;
+    this.camPos.x = damp(this.camPos.x, tx, 0.0008, dt);
+    this.camPos.y = damp(this.camPos.y, ty, 0.0008, dt);
+    this.camPos.z = damp(this.camPos.z, tz, 0.0008, dt);
+    const minY = terrainHeight(this.camPos.x, this.camPos.z) + 0.6;
+    if (this.camPos.y < minY) this.camPos.y = minY;
+
+    const wantFov = 1.15 + smoothstep(6, 22, planar) * 0.13 + (this.dashTime > 0 ? 0.14 : 0);
+    this.fovNow = damp(this.fovNow, wantFov, 0.002, dt);
+    this.camTarget = focus;
+  }
+
+  /** Kameran som renderaren vill ha den, inklusive skärmskak. */
+  camera(time) {
+    const s = this.shake * this.shake;
+    const jx = Math.sin(time * 47) * s * 0.35, jy = Math.cos(time * 41) * s * 0.35;
+    return {
+      pos: { x: this.camPos.x + jx, y: this.camPos.y + jy, z: this.camPos.z },
+      target: { x: this.camTarget.x + jx * 0.5, y: this.camTarget.y + jy * 0.5, z: this.camTarget.z },
+      fov: this.fovNow,
+    };
+  }
+
+  /** Siktriktning från kameran, med lätt målhjälp. */
+  aimDir(enemies) {
+    const cf = this.cursorRay();
+    const origin = { x: this.camPos.x, y: this.camPos.y, z: this.camPos.z };
+    const far = { x: origin.x + cf.x * 70, y: origin.y + cf.y * 70, z: origin.z + cf.z * 70 };
+    const muzzle = this.muzzle();
+    let dx = far.x - muzzle.x, dy = far.y - muzzle.y, dz = far.z - muzzle.z;
+    let l = Math.hypot(dx, dy, dz) || 1;
+    dx /= l; dy /= l; dz /= l;
+
+    // mild sikthjälp mot närmaste fiende inom en smal kon.
+    // I Neotropolis flyger fienderna — striden är 3D — så konen är bredare där.
+    let best = null, bestDot = this.world.worldId === 'city' ? 0.955 : 0.978;
+    for (const e of enemies) {
+      if (!e.alive) continue;
+      let ex = e.pos.x - muzzle.x, ey = e.pos.y + e.height * 0.5 - muzzle.y, ez = e.pos.z - muzzle.z;
+      const d = Math.hypot(ex, ey, ez);
+      if (d > 55 || d < 0.001) continue;
+      ex /= d; ey /= d; ez /= d;
+      const dot = ex * dx + ey * dy + ez * dz;
+      if (dot > bestDot) { bestDot = dot; best = { x: ex, y: ey, z: ez }; }
+    }
+    if (best) {
+      dx = lerp(dx, best.x, 0.65); dy = lerp(dy, best.y, 0.65); dz = lerp(dz, best.z, 0.65);
+      l = Math.hypot(dx, dy, dz) || 1;
+      dx /= l; dy /= l; dz /= l;
+    }
+    this.aim.x = dx; this.aim.y = dy; this.aim.z = dz;
+    this.aimYaw = Math.atan2(dx, dz);   // gubben vänder sig hit
+    return this.aim;
+  }
+
+  muzzle() {
+    if (this.world.worldId === 'city') {
+      // lasern skjuts ur handflatorna, växelvis vänster/höger
+      const [ox, oz] = rotY(0.48 * this.shotSide, 0.7, this.yaw);
+      return { x: this.pos.x + ox, y: this.pos.y + 1.6, z: this.pos.z + oz };
+    }
+    const [ox, oz] = rotY(0.42, 0.75, this.yaw);
+    return { x: this.pos.x + ox, y: this.pos.y + 1.25, z: this.pos.z + oz };
+  }
+
+  /** Ritar figuren i renderarens batchar. */
+  draw(rend, time) {
+    const B = rend.dyn;
+    const f = this.hitFlash;
+    const city = this.world.worldId === 'city';
+    // Vildheim: vildmarkskrigare i läder med brons och bärnstensmagi.
+    // Neotropolis: gunmetal-cyborg med magenta energi och iskalla detaljer.
+    const base = city ? {
+      plate: [0.16, 0.16, 0.21], suit: [0.06, 0.07, 0.10], accent: [0.85, 0.20, 0.45],
+      trim: [1.0, 0.30, 0.55], gold: [0.55, 0.95, 1.0], cape: [0.20, 0.03, 0.12],
+    } : {
+      plate: [0.40, 0.26, 0.14], suit: [0.19, 0.12, 0.07], accent: [0.30, 0.34, 0.18],
+      trim: [1.0, 0.62, 0.22], gold: [0.72, 0.52, 0.24], cape: [0.11, 0.22, 0.12],
+    };
+    const F = (c0) => [lerp(c0[0], 1.0, f), lerp(c0[1], 0.35, f), lerp(c0[2], 0.4, f)];
+    const plate = F(base.plate), suit = F(base.suit), accent = F(base.accent), cape = F(base.cape);
+    const trim = base.trim, gold = base.gold;
+
+    const y = this.pos.y, x = this.pos.x, z = this.pos.z, yaw = this.yaw;
+    const csY = Math.cos(yaw), snY = Math.sin(yaw);
+    const P = (lx, ly, lz) => [x + csY * lx + snY * lz, y + ly, z - snY * lx + csY * lz];
+    const put = (batch, p, sx, sy, sz, col, rx = 0, ryOff = 0, rz = 0, g = 0) =>
+      batch.push(p[0], p[1], p[2], sx, sy, sz, col, rx, yaw + ryOff, rz, g);
+
+    const inv = this.invuln > 0 ? 0.3 + Math.sin(time * 30) * 0.15 : 0;
+    const dash = this.dashTime > 0 ? 1 : 0;
+    const planar = Math.hypot(this.vel.x, this.vel.z);
+    const moving = this.grounded && planar > 0.6;
+    const air = this.grounded ? 0 : 1;
+    const amp = this.grounded ? clamp(planar * 0.10, 0, 0.9) : 0.3;
+    const swing = Math.sin(this.walkPhase) * amp;
+    const bob = moving ? Math.abs(Math.sin(this.walkPhase)) * 0.07 : 0;
+    const breathe = 1 + Math.sin(time * 2.1) * 0.012;
+    const lean = clamp(planar * 0.011, 0, 0.18) + dash * 0.3;
+
+    // ---- ben i två segment: lårplåt, benskena, knäskydd och känga
+    for (const s of [-1, 1]) {
+      const ph = this.walkPhase + (s > 0 ? 0 : Math.PI);
+      const sw = (moving || air ? Math.sin(ph) * amp : 0) + air * 0.3;
+      const lift = (moving ? Math.max(0, -Math.cos(ph)) * 0.5 : 0) + air * 0.45;
+      const hipY = 1.08 + bob, hx = 0.27 * s;
+      const kneeY = hipY - 0.5 * Math.cos(sw), kneeZ = -0.5 * Math.sin(sw);
+      const shinSw = sw + lift;
+      const footY = kneeY - 0.48 * Math.cos(shinSw), footZ = kneeZ - 0.48 * Math.sin(shinSw);
+      put(B.box, P(hx, hipY - 0.25 * Math.cos(sw), -0.25 * Math.sin(sw)),
+        0.30, 0.52, 0.34, plate, sw, 0, 0, inv);
+      put(B.sphere, P(hx, kneeY, kneeZ), 0.24, 0.2, 0.24, accent, sw, 0, 0, city ? 0.25 : 0);
+      put(B.box, P(hx, kneeY - 0.24 * Math.cos(shinSw), kneeZ - 0.24 * Math.sin(shinSw)),
+        0.24, 0.5, 0.27, suit, shinSw, 0, 0, inv);
+      put(B.box, P(hx, footY + 0.07, footZ + 0.09), 0.28, 0.16, 0.44, plate, shinSw * 0.3, 0, 0, inv);
+    }
+
+    // ---- höftparti med sidoplåtar
+    put(B.box, P(0, 1.16 + bob, 0), 0.74, 0.3, 0.48, plate, 0, 0, 0, inv);
+    for (const s of [-1, 1]) put(B.box, P(0.42 * s, 1.04 + bob, 0), 0.14, 0.4, 0.4, plate, 0, 0, 0.12 * s, inv);
+    put(B.box, P(0, 1.14 + bob, 0.26), 0.2, 0.14, 0.06, gold, 0, 0, 0, 0.3);
+
+    // ---- bål: underdräkt och väst som andas
+    put(B.box, P(0, 1.56 + bob, lean * 0.1), 0.6, 0.76, 0.42, suit, lean, 0, 0, inv);
+    put(B.box, P(0, 1.76 + bob, 0.08 + lean * 0.18), 0.8 * breathe, 0.56, 0.5, plate, lean, 0, 0, inv);
+    if (city) {
+      // glödande energikärna + magdetalj
+      put(B.octa, P(0, 1.78 + bob, 0.3 + lean * 0.2), 0.24, 0.34, 0.2, trim, 0, time * 1.5, 0, 1.0);
+      put(B.box, P(0, 1.38 + bob, 0.24), 0.3, 0.24, 0.06, accent, 0, 0, 0, 0.25);
+    } else {
+      // axelrem tvärs över västen + bärnstensamulett som glöder när eldbollen är redo
+      put(B.box, P(0, 1.72 + bob, 0.3), 0.16, 0.62, 0.05, suit, 0, 0, 0.6, inv);
+      const ready = this.fireballCd <= 0;
+      put(B.octa, P(0, 1.62 + bob, 0.32), 0.13, 0.2, 0.11, trim, 0, time * 1.5, 0,
+        ready ? 0.9 + Math.sin(time * 5) * 0.25 : 0.12);
+      put(B.box, P(0, 1.38 + bob, 0.24), 0.34, 0.14, 0.06, gold, 0, 0, 0, 0.1);
+    }
+
+    // ---- mantel som flödar bakåt när man springer och flaxar i dashen
+    const cp = Math.min(0.24 + planar * 0.045 + dash * 0.5 + Math.sin(time * 2.3) * 0.04, 1.75);
+    put(B.box, P(0, 1.92 - 0.48 * Math.cos(cp) + bob, -0.28 - 0.48 * Math.sin(cp)),
+      0.56, 0.95, 0.05, cape, cp, 0, Math.sin(time * 1.7) * 0.05, 0.05);
+
+    if (city) {
+      // ---- thrusters på ryggen — glöder hårt i dashen och flygningen
+      for (const s of [-1, 1]) {
+        put(B.box, P(0.24 * s, 1.86 + bob, -0.3), 0.16, 0.3, 0.18, suit, 0.1, 0, 0, inv);
+        put(B.octa, P(0.24 * s, 1.7 + bob, -0.34), 0.11, 0.16, 0.11, trim, 0, time * 4, 0,
+          0.35 + (dash || this.thrusting ? 1.6 : 0));
+      }
+    } else {
+      // ---- läderränsel på ryggen
+      put(B.box, P(0, 1.78 + bob, -0.32), 0.42, 0.42, 0.2, suit, 0.05, 0, 0, inv);
+      put(B.box, P(0, 1.9 + bob, -0.33), 0.44, 0.1, 0.22, gold, 0.05, 0, 0, 0);
+    }
+
+    // ---- axelskydd med guldrand
+    for (const s of [-1, 1]) {
+      put(B.sphere, P(0.55 * s, 2.02 + bob, 0), 0.44, 0.30, 0.44, plate, 0, 0, -0.15 * s, inv);
+      put(B.box, P(0.55 * s, 2.13 + bob, 0), 0.3, 0.05, 0.3, gold, 0, 0, -0.15 * s, 0.3);
+    }
+
+    // ---- hals + huvud
+    put(B.cyl, P(0, 2.06 + bob, 0), 0.18, 0.14, 0.18, suit, 0, 0, 0, inv);
+    if (city) {
+      // hjälm med visir, ögonbrynsrand och kam
+      put(B.sphere, P(0, 2.3 + bob, 0.02 + lean * 0.08), 0.5, 0.54, 0.5, plate, lean * 0.5, 0, 0, inv);
+      put(B.box, P(0, 2.31 + bob, 0.25), 0.4, 0.13, 0.12, trim, 0, 0, 0, 1.1);
+      put(B.box, P(0, 2.43 + bob, 0.22), 0.44, 0.05, 0.08, gold, 0, 0, 0, 0.25);
+      put(B.box, P(0, 2.56 + bob, -0.04), 0.06, 0.2, 0.42, accent, -0.1, 0, 0, 0.3);
+    } else {
+      // bart ansikte under läderhuva
+      put(B.sphere, P(0, 2.28 + bob, 0.02 + lean * 0.08), 0.46, 0.5, 0.46,
+        [lerp(0.83, 1, f), lerp(0.62, 0.4, f), lerp(0.46, 0.35, f)], lean * 0.5, 0, 0, inv);
+      put(B.cone, P(0, 2.52 + bob, -0.08), 0.64, 0.56, 0.64, suit, -0.3, 0, 0, inv);
+      put(B.box, P(0, 2.4 + bob, 0.18), 0.5, 0.09, 0.28, suit, -0.35, 0, 0, inv);
+    }
+
+    const armSwing = swing * 0.7;
+    if (city) {
+      // ---- cyborgen: båda armarna sträckta framåt, laser ur handflatorna
+      const charge = this.fireTimer > 0 ? 1 : 0.3;
+      for (const s of [-1, 1]) {
+        put(B.box, P(0.5 * s, 1.9 + bob, 0.12), 0.19, 0.34, 0.19, suit, 0.5, 0, -0.1 * s, inv);
+        put(B.box, P(0.48 * s, 1.62 + bob, 0.38), 0.22, 0.24, 0.5, plate, 0, 0, 0, inv);
+        put(B.sphere, P(0.48 * s, 1.6 + bob, 0.68), 0.17, 0.17, 0.17, trim, 0, 0, 0,
+          0.5 + charge * (s === this.shotSide ? 1.3 : 0.5));
+      }
+    } else {
+      // ---- vänsterarm i två segment med handskydd
+      const shY = 1.95 + bob, shX = -0.55;
+      const elbY = shY - 0.36 * Math.cos(armSwing), elbZ = 0.36 * Math.sin(armSwing);
+      put(B.box, P(shX, shY - 0.18 * Math.cos(armSwing), 0.18 * Math.sin(armSwing)),
+        0.19, 0.4, 0.19, suit, -armSwing, 0, 0.1, inv);
+      const foreSw = armSwing * 0.8 - 0.35;
+      put(B.box, P(shX, elbY - 0.2 * Math.cos(foreSw), elbZ + 0.2 * Math.sin(foreSw)),
+        0.23, 0.42, 0.23, plate, -foreSw, 0, 0.1, inv);
+      put(B.box, P(shX, elbY - 0.42 * Math.cos(foreSw), elbZ + 0.42 * Math.sin(foreSw)),
+        0.2, 0.16, 0.2, suit, -foreSw, 0, 0, inv);
+      // ---- högerarm hålls fram mot vapnet, med pansrad underarm
+      put(B.box, P(0.5, 1.9 + bob, 0.12), 0.19, 0.34, 0.19, suit, 0.5, 0, -0.1, inv);
+      put(B.box, P(0.48, 1.62 + bob, 0.38), 0.22, 0.24, 0.5, plate, 0, 0, 0, inv);
+
+      // ---- svärdet i höger hand: vilar över axeln, sveper i attacken
+      const grip = P(0.52, 1.48 + bob, 0.3);
+      let sYaw, up;
+      if (this.swingTime > 0) {
+        const t = 1 - this.swingTime / this.swingDur;
+        const ease = t * t * (3 - 2 * t);
+        if (this.swingFinisher) {
+          // finisher: rakt överhandshugg uppifrån och ner
+          sYaw = yaw;
+          up = lerp(0.95, -0.5, ease);
+        } else {
+          sYaw = yaw + lerp(-1.7, 1.7, ease) * this.swingSide;
+          up = 0.12;
+        }
+      } else {
+        sYaw = yaw + 0.35;
+        up = 0.82;
+      }
+      const horiz = Math.sqrt(1 - up * up);
+      const bd = { x: Math.sin(sYaw) * horiz, y: up, z: Math.cos(sYaw) * horiz };
+      const rxB = -Math.asin(up);
+      // klinga, parerstång, grepp och knopp
+      const hot = this.swingTime > 0 && this.swingFinisher;
+      B.box.push(grip[0] + bd.x * 0.95, grip[1] + bd.y * 0.95, grip[2] + bd.z * 0.95,
+        0.11, 0.045, 1.5, hot ? [1.0, 0.42, 0.10] : [0.75, 0.78, 0.85],
+        rxB, sYaw, 0, hot ? 0.55 : this.swingTime > 0 ? 0.35 : 0.06);
+      B.box.push(grip[0] + bd.x * 0.14, grip[1] + bd.y * 0.14, grip[2] + bd.z * 0.14,
+        0.4, 0.09, 0.1, gold, rxB, sYaw, 0, 0.1);
+      B.box.push(grip[0] - bd.x * 0.08, grip[1] - bd.y * 0.08, grip[2] - bd.z * 0.08,
+        0.08, 0.08, 0.3, suit, rxB, sYaw, 0, 0);
+      B.octa.push(grip[0] - bd.x * 0.28, grip[1] - bd.y * 0.28, grip[2] - bd.z * 0.28,
+        0.1, 0.13, 0.1, gold, 0, time * 2, 0, 0.15);
+    }
+
+    // dronare från uppgraderingen
+    for (let i = 0; i < this.stats.drones; i++) {
+      const a = this.droneAngle + (i / this.stats.drones) * TAU;
+      const dx = Math.cos(a) * 2.1, dz = Math.sin(a) * 2.1;
+      const dy = y + 2.4 + Math.sin(time * 2 + i) * 0.18;
+      B.octa.push(x + dx, dy, z + dz, 0.42, 0.55, 0.42, [1.0, 0.75, 0.25], 0, a * 2, 0, 0.85);
+    }
+
+    rend.shadow(x, terrainHeight(x, z), z, 1.0 + (this.pos.y - terrainHeight(x, z)) * 0.05,
+      0.42 * Math.max(0, 1 - (this.pos.y - terrainHeight(x, z)) * 0.09));
+  }
+}
+
+// ═══ enemies.js ═══
+// Fiendetyper, deras AI och vågsystemet.
+
+
+const TYPES = {
+  grunt:   { hp: 22,  speed: 6.7, radius: 0.70, height: 1.7, dmg: 9,  xp: 3,  col: [0.93, 0.28, 0.30], ai: 'melee' },
+  spitter: { hp: 17,  speed: 4.7, radius: 0.65, height: 1.6, dmg: 8,  xp: 5,  col: [0.66, 0.34, 0.96], ai: 'ranged', range: 22, cool: 2.1, bullet: 27 },
+  charger: { hp: 38,  speed: 5.4, radius: 0.85, height: 1.9, dmg: 19, xp: 8,  col: [0.98, 0.62, 0.16], ai: 'charge' },
+  tank:    { hp: 105, speed: 3.0, radius: 1.35, height: 2.5, dmg: 25, xp: 15, col: [0.28, 0.80, 0.62], ai: 'melee' },
+  boss:    { hp: 560, speed: 3.7, radius: 2.60, height: 4.6, dmg: 34, xp: 90, col: [1.00, 0.24, 0.50], ai: 'boss', cool: 1.5, bullet: 22 },
+
+  // --- Neotropolis egna maskiner (utnyttjar att striden är i tre dimensioner)
+  drone:  { hp: 14,  speed: 10.5, radius: 0.50, height: 0.9, dmg: 7,  xp: 3,  col: [1.00, 0.85, 0.25], ai: 'drone', turn: 11 },
+  sniper: { hp: 34,  speed: 7.6,  radius: 0.70, height: 1.6, dmg: 24, xp: 10, col: [0.35, 1.00, 0.72], ai: 'sniper', turn: 5, cool: 2.6, bullet: 70 },
+  hover:  { hp: 155, speed: 3.4,  radius: 1.90, height: 2.0, dmg: 20, xp: 17, col: [0.55, 0.60, 1.00], ai: 'hover', turn: 0.8, cool: 2.4, bullet: 32, shield: true },
+};
+
+// Neotropolis-varianternas neonskal.
+const CITY_COLS = {
+  grunt: [1.0, 0.22, 0.5], spitter: [0.4, 0.9, 1.0], charger: [1.0, 0.55, 0.1],
+  tank: [0.45, 0.5, 1.0], boss: [0.85, 0.2, 1.0],
+};
+
+class Enemy {
+  constructor(type, x, z, wave, worldId = 'wild') {
+    const t = TYPES[type];
+    this.type = type;
+    this.def = t;
+    this.boss = type === 'boss';
+    this.fly = worldId === 'city';
+    const hpMul = 1 + (wave - 1) * 0.23 + (wave > 10 ? (wave - 10) * 0.09 : 0);
+    this.maxHp = Math.round(t.hp * hpMul);
+    this.hp = this.maxHp;
+    this.dmg = t.dmg * (1 + (wave - 1) * 0.07);
+    this.speed = t.speed * (1 + Math.min(0.35, (wave - 1) * 0.018));
+    this.radius = t.radius;
+    this.height = t.height;
+    this.xp = t.xp;
+    this.col = ((this.fly && CITY_COLS[type]) || t.col).slice();
+    this.pos = { x, y: terrainHeight(x, z), z };
+    this.vel = { x: 0, y: 0, z: 0 };
+    this.yaw = 0;
+    this.alive = true;
+    this.flash = 0;
+    this.hitCd = 0;
+    this.fireCd = rand(0.4, 1.6);
+    this.state = 'idle';
+    this.stateT = 0;
+    this.phase = rand(TAU);
+    this.grounded = true;
+    this.slow = 0;
+    this.attackIndex = 0;
+    this.walk = rand(TAU);   // gångcykel, drivs av faktisk fart
+    this.planar = 0;
+    this.perch = null;       // taksnipern: byggnaden den sitter på
+    this.aimT = 0;
+    this.aimPitch = 0;
+    this.shieldFlash = 0;
+  }
+
+  damage(n, ctx, crit) {
+    if (!this.alive) return 0;
+    // hover-plattformens frontsköld: måste flankeras
+    if (this.def.shield) {
+      const src = ctx.player.pos;
+      const ang = Math.atan2(src.x - this.pos.x, src.z - this.pos.z);
+      if (Math.abs(angleDelta(this.yaw, ang)) < 1.05) {
+        n *= 0.2;
+        this.shieldFlash = 1;
+        const fx = this.pos.x + Math.sin(this.yaw) * 1.6, fz = this.pos.z + Math.cos(this.yaw) * 1.6;
+        ctx.particles.burst(fx, this.pos.y + 1.3, fz, 5, {
+          speed: 5, life: 0.25, size: 0.4, col: [0.6, 0.85, 1.0], alpha: 0.9, drag: 0.7,
+        });
+      }
+    }
+    ctx.damageDealt += Math.min(n, this.hp);
+    this.hp -= n;
+    this.flash = 1;
+    ctx.particles.burst(this.pos.x, this.pos.y + this.height * 0.6, this.pos.z, crit ? 10 : 5, {
+      speed: crit ? 9 : 5, life: 0.34, size: crit ? 0.5 : 0.34,
+      col: crit ? [1.0, 0.85, 0.3] : [1.0, 0.55, 0.35], alpha: 0.9, drag: 0.5, grav: -6,
+    });
+    if (this.hp <= 0) { this.alive = false; return 1; }
+    return 0;
+  }
+
+  update(dt, ctx) {
+    const p = ctx.player;
+    const dx = p.pos.x - this.pos.x, dz = p.pos.z - this.pos.z;
+    const dist = Math.hypot(dx, dz) || 0.001;
+    const nx = dx / dist, nz = dz / dist;
+    this.stateT -= dt;
+    this.hitCd -= dt;
+    this.fireCd -= dt;
+    this.flash = Math.max(0, this.flash - dt * 3.5);
+    this.slow = Math.max(0, this.slow - dt);
+    const slowF = this.slow > 0 ? 0.55 : 1;
+
+    let wishX = 0, wishZ = 0, speed = this.speed * slowF;
+
+    switch (this.def.ai) {
+      case 'melee':
+        wishX = nx; wishZ = nz;
+        break;
+
+      case 'ranged': {
+        const want = this.def.range;
+        if (dist > want + 3) { wishX = nx; wishZ = nz; }
+        else if (dist < want - 6) { wishX = -nx; wishZ = -nz; }
+        else {
+          // cirkla runt spelaren
+          wishX = -nz * Math.sign(Math.sin(this.phase * 3.1));
+          wishZ = nx * Math.sign(Math.sin(this.phase * 3.1));
+          speed *= 0.8;
+        }
+        if (this.fireCd <= 0 && dist < want + 8) {
+          this.fireCd = this.def.cool * rand(0.85, 1.2);
+          this.state = 'shoot'; this.stateT = 0.3;
+          ctx.spawnEnemyBullet(this, p, this.def.bullet, this.dmg * 0.8);
+        }
+        break;
+      }
+
+      case 'charge': {
+        if (this.state === 'charging') {
+          speed = 0;
+          if (this.stateT <= 0) { this.state = 'recover'; this.stateT = 0.8; }
+          ctx.particles.spawn({
+            x: this.pos.x, y: this.pos.y + 0.6, z: this.pos.z,
+            vx: rand(-1, 1), vy: rand(0.5, 2), vz: rand(-1, 1),
+            life: 0.3, size: 0.5, col: [1.0, 0.6, 0.15], alpha: 0.8, drag: 0.5,
+          });
+        } else if (this.state === 'windup') {
+          speed = 0;
+          if (this.stateT <= 0) {
+            this.state = 'charging'; this.stateT = 0.65;
+            this.vel.x = nx * 30; this.vel.z = nz * 30;
+            ctx.sound.tone({ f: 160, f2: 420, dur: 0.18, type: 'sawtooth', vol: 0.08 });
+          }
+        } else if (this.state === 'recover') {
+          speed = this.speed * 0.3;
+          wishX = nx; wishZ = nz;
+          if (this.stateT <= 0) this.state = 'idle';
+        } else {
+          wishX = nx; wishZ = nz;
+          speed = this.speed * 0.75;
+          if (dist < 15 && dist > 4) { this.state = 'windup'; this.stateT = 0.55; }
+        }
+        break;
+      }
+
+      // Svärmdrönare: cirklar högt ovanför och störtdyker i intervaller.
+      case 'drone': {
+        if (this.state === 'dive') {
+          speed = this.speed * 1.9;
+          wishX = this.diveX; wishZ = this.diveZ;
+          if (this.stateT <= 0) { this.state = 'recover'; this.stateT = rand(0.6, 1.1); }
+        } else if (this.state === 'recover') {
+          speed = this.speed * 0.9;
+          wishX = -nx; wishZ = -nz;
+          if (this.stateT <= 0) { this.state = 'circle'; this.stateT = rand(0.7, 1.5); }
+        } else {
+          const side = Math.sin(this.phase * 2.3) < 0 ? -1 : 1;
+          wishX = -nz * side + nx * 0.35;
+          wishZ = nx * side + nz * 0.35;
+          speed = this.speed * 0.5;
+          if (this.stateT <= 0 && dist < 30) {
+            this.state = 'dive'; this.stateT = 0.8;
+            this.diveX = nx; this.diveZ = nz;
+            ctx.sound.droneDive();
+          }
+        }
+        break;
+      }
+
+      // Taksnipern: slår sig ner på ett hustak, laddar och skjuter långt.
+      case 'sniper': {
+        this.aimPitch = Math.atan2((p.pos.y + 1.1) - (this.pos.y + 1.15), Math.max(dist, 0.1));
+        const list = ctx.buildings;
+        // överger taket om spelaren kommer för nära det
+        if (this.perch && dist < 11 &&
+            Math.hypot(this.perch.x - p.pos.x, this.perch.z - p.pos.z) < 16) {
+          this.perch = null;
+        }
+        if (!this.perch && list && list.length) {
+          let best = null, bestScore = 1e9;
+          for (let k = 0; k < 22; k++) {
+            const b = list[(Math.random() * list.length) | 0];
+            const d = Math.hypot(b.x - p.pos.x, b.z - p.pos.z);
+            if (d < 18 || d > 44) continue;
+            // bra skjutavstånd till spelaren, men nära nog att flyga dit snabbt
+            const own = Math.hypot(b.x - this.pos.x, b.z - this.pos.z);
+            const score = Math.abs(d - 28) + own * 0.7 + Math.abs(b.h - 18) * 0.3;
+            if (score < bestScore) { bestScore = score; best = b; }
+          }
+          this.perch = best;
+          this.aimT = 0;
+        }
+        if (this.perch) {
+          const px = this.perch.x - this.pos.x, pz = this.perch.z - this.pos.z;
+          const pd = Math.hypot(px, pz);
+          if (pd > 1.2) {
+            wishX = px / pd; wishZ = pz / pd;
+            speed = Math.min(this.speed, pd * 3.2);   // bromsa in mot taket
+            this.state = 'travel';
+            this.aimT = 0;
+          } else {
+            speed = 0;
+            this.state = 'aim';
+            if (this.fireCd <= 0) {
+              this.aimT += dt;
+              // röd siktlinje som telegraferar skottet
+              const beads = this.aimT > 1.0 ? 3 : 1;
+              for (let k = 0; k < beads; k++) {
+                const t = Math.random();
+                ctx.particles.spawn({
+                  x: lerp(this.pos.x, p.pos.x, t),
+                  y: lerp(this.pos.y + 1.15, p.pos.y + 1.1, t),
+                  z: lerp(this.pos.z, p.pos.z, t),
+                  life: 0.09, size: 0.1 + this.aimT * 0.06, size2: 0.03,
+                  col: [1.0, 0.2, 0.2], alpha: 0.5 + this.aimT * 0.3, drag: 0,
+                });
+              }
+              if (this.aimT >= 1.5) {
+                this.aimT = 0;
+                this.fireCd = this.def.cool * rand(0.9, 1.3);
+                ctx.spawnEnemyBullet(this, p, this.def.bullet, this.dmg);
+                ctx.sound.snipe();
+                if (Math.random() < 0.45) this.perch = null;   // byter position ibland
+              }
+            } else this.aimT = 0;
+          }
+        } else {
+          // inga tak att välja: håll avstånd som en vanlig skytt
+          if (dist > 26) { wishX = nx; wishZ = nz; }
+          else { wishX = -nz; wishZ = nx; speed *= 0.7; }
+        }
+        break;
+      }
+
+      // Hover-plattform: tung, sköld framåt, vänder långsamt — måste flankeras.
+      case 'hover': {
+        if (dist > 18) { wishX = nx; wishZ = nz; }
+        else if (dist < 11) { wishX = -nx; wishZ = -nz; speed *= 0.75; }
+        else {
+          const side = Math.sin(this.phase * 0.7) < 0 ? -1 : 1;
+          wishX = -nz * side; wishZ = nx * side;
+          speed *= 0.6;
+        }
+        if (this.fireCd <= 0 && dist < 26 &&
+            Math.abs(angleDelta(this.yaw, Math.atan2(nx, nz))) < 0.5) {
+          this.fireCd = this.def.cool * rand(0.9, 1.15);
+          this.state = 'salvo';
+          for (let k = 0; k < 3; k++) {
+            const spread = (k - 1) * 0.09;
+            const c = Math.cos(spread), s = Math.sin(spread);
+            const dy = ((p.pos.y + 1.1) - (this.pos.y + 1.4)) / Math.max(dist, 1);
+            ctx.spawnEnemyBulletDir(this, nx * c + nz * s, dy, -nx * s + nz * c,
+              this.def.bullet, this.dmg * 0.7);
+          }
+          ctx.sound.salvo();
+        }
+        break;
+      }
+
+      case 'boss': {
+        if (this.state === 'volley') {
+          speed = this.speed * 0.2;
+          if (this.stateT <= 0) { this.state = 'idle'; this.stateT = rand(1.6, 2.6); }
+        } else if (this.state === 'slam') {
+          speed = 0;
+          if (this.stateT <= 0) {
+            ctx.shockwave(this.pos.x, this.pos.y, this.pos.z, 13, this.dmg);
+            this.state = 'idle'; this.stateT = rand(1.8, 2.8);
+          }
+        } else if (this.state === 'summon') {
+          speed = 0;
+          if (this.stateT <= 0) {
+            const minion = ctx.worldId === 'city' ? 'drone' : 'grunt';
+            for (let i = 0; i < 3; i++) {
+              const a = rand(TAU), d = rand(5, 9);
+              ctx.spawnEnemy(minion, this.pos.x + Math.cos(a) * d, this.pos.z + Math.sin(a) * d);
+            }
+            this.state = 'idle'; this.stateT = rand(2.2, 3.2);
+          }
+        } else {
+          wishX = nx; wishZ = nz;
+          if (this.stateT <= 0) {
+            const roll = Math.random();
+            if (dist < 11 && roll < 0.45) { this.state = 'slam'; this.stateT = 0.9; }
+            else if (roll < 0.7) {
+              this.state = 'volley'; this.stateT = 0.9;
+              const n = 14;
+              for (let i = 0; i < n; i++) {
+                const a = (i / n) * TAU + this.phase;
+                ctx.spawnEnemyBulletDir(this, Math.sin(a), 0.02, Math.cos(a), this.def.bullet, this.dmg * 0.55);
+              }
+              ctx.sound.tone({ f: 120, f2: 300, dur: 0.3, type: 'square', vol: 0.10 });
+            } else { this.state = 'summon'; this.stateT = 0.8; }
+          }
+        }
+        break;
+      }
+    }
+
+    // separation så de inte staplas på varandra
+    let sx = 0, sz = 0;
+    for (const o of ctx.enemies) {
+      if (o === this || !o.alive) continue;
+      const ox = this.pos.x - o.pos.x, oz = this.pos.z - o.pos.z;
+      const d2 = ox * ox + oz * oz;
+      const min = this.radius + o.radius + 0.25;
+      if (d2 < min * min && d2 > 0.0001) {
+        const d = Math.sqrt(d2);
+        sx += (ox / d) * (1 - d / min);
+        sz += (oz / d) * (1 - d / min);
+      }
+    }
+    wishX += sx * 1.9; wishZ += sz * 1.9;
+
+    const wl = Math.hypot(wishX, wishZ);
+    if (wl > 0.001) {
+      const accel = 30 * dt;
+      const tx = (wishX / wl) * speed, tz = (wishZ / wl) * speed;
+      this.vel.x += clamp(tx - this.vel.x, -accel, accel);
+      this.vel.z += clamp(tz - this.vel.z, -accel, accel);
+    } else {
+      const f = Math.exp(-6 * dt);
+      this.vel.x *= f; this.vel.z *= f;
+    }
+
+    if (this.fly) {
+      // Neotropolis: monstren svävar. Snipern sätter sig på taket, drönarna
+      // cirklar högt och dyker, resten söker spelarens höjd.
+      const gh = terrainHeight(this.pos.x, this.pos.z);
+      let wantY;
+      if (this.def.ai === 'sniper' && this.perch) {
+        wantY = this.perch.h + 1.0;
+      } else {
+        const off = this.def.ai === 'drone' ? (this.state === 'dive' ? 0.5 : 6.5)
+          : this.def.ai === 'hover' ? 2.6
+          : this.boss ? 1.5 : 0.5;
+        wantY = p.pos.y + off + Math.sin(this.phase * 1.7) * 0.9;
+      }
+      wantY = Math.max(gh + 1.0, wantY);
+      this.vel.y += clamp((wantY - this.pos.y) * 4 - this.vel.y * 2.2, -26, 26) * dt;
+    } else {
+      this.vel.y -= 30 * dt;
+    }
+    this.pos.x += this.vel.x * dt;
+    this.pos.y += this.vel.y * dt;
+    this.pos.z += this.vel.z * dt;
+
+    clampToArena(this.pos);
+    ctx.colliders.resolve(this.pos, this.radius);
+
+    const gh = terrainHeight(this.pos.x, this.pos.z);
+    if (this.pos.y <= gh) { this.pos.y = gh; this.vel.y = 0; this.grounded = true; }
+    else this.grounded = false;
+
+    // vänd mot spelaren — hover-plattformen vrider sig trögt, därav flanken
+    this.yaw += angleDelta(this.yaw, Math.atan2(nx, nz)) * Math.min(1, dt * (this.def.turn || 8));
+    this.phase += dt;
+    this.shieldFlash = Math.max(0, this.shieldFlash - dt * 3);
+    this.planar = Math.hypot(this.vel.x, this.vel.z);
+    this.walk += dt * (this.planar * 1.5 + 0.6);
+
+    // chargern frustar under uppladdningen
+    if (this.def.ai === 'charge' && this.state === 'windup' && Math.random() < 0.45) {
+      const hx = this.pos.x + Math.sin(this.yaw) * 1.5, hz = this.pos.z + Math.cos(this.yaw) * 1.5;
+      ctx.particles.spawn({
+        x: hx, y: this.pos.y + 0.9, z: hz,
+        vx: Math.sin(this.yaw) * 3 + rand(-1, 1), vy: rand(0.5, 1.5), vz: Math.cos(this.yaw) * 3 + rand(-1, 1),
+        life: rand(0.3, 0.5), size: 0.5, size2: 0.1, col: [0.8, 0.8, 0.85], alpha: 0.5, drag: 0.6,
+      });
+    }
+
+    // kontaktskada
+    const contact = this.radius + p.radius + 0.35;
+    if (dist < contact && Math.abs(this.pos.y - p.pos.y) < this.height + 1.2 && this.hitCd <= 0) {
+      const boost = this.state === 'charging' ? 1.5 : 1;
+      if (ctx.player.takeDamage(this.dmg * boost)) {
+        this.hitCd = 0.75;
+        ctx.sound.hurt();
+        ctx.particles.burst(p.pos.x, p.pos.y + 1.2, p.pos.z, 12,
+          { speed: 6, life: 0.4, size: 0.5, col: [1.0, 0.25, 0.3], alpha: 0.9, drag: 0.5 });
+        if (this.state === 'charging') { this.state = 'recover'; this.stateT = 1.0; this.vel.x *= -0.3; this.vel.z *= -0.3; }
+      }
+    }
+  }
+
+  draw(rend, time) {
+    const B = rend.dyn;
+    const f = this.flash;
+    const c = [lerp(this.col[0], 1, f), lerp(this.col[1], 1, f), lerp(this.col[2], 1, f)];
+    const dark = [c[0] * 0.42, c[1] * 0.42, c[2] * 0.42];
+    const belly = [lerp(c[0], 1, 0.35), lerp(c[1], 1, 0.35), lerp(c[2], 1, 0.35)];
+    const bone = [0.92, 0.88, 0.78];
+    const x = this.pos.x, y = this.pos.y, z = this.pos.z, yaw = this.yaw;
+    const csY = Math.cos(yaw), snY = Math.sin(yaw);
+    // Lokala koordinater: +z = framåt (mot spelaren), +x = höger.
+    const P = (lx, ly, lz) => [x + csY * lx + snY * lz, y + ly, z - snY * lx + csY * lz];
+    const put = (batch, p, sx, sy, sz, col, rx = 0, ryOff = 0, rz = 0, g = 0) =>
+      batch.push(p[0], p[1], p[2], sx, sy, sz, col, rx, yaw + ryOff, rz, g);
+    const pop = 1 + f * 0.06;                 // liten "träffstuds" i skalan
+    const glow = 0.2 + f * 0.9;
+    const blink = Math.sin(time * 1.7 + this.phase * 9) > 0.96 ? 0.15 : 1;
+
+    switch (this.type) {
+      case 'grunt': {
+        const run = this.walk * 1.7;
+        const sq = 1 + Math.sin(run * 2) * 0.05;
+        const hop = Math.abs(Math.sin(run)) * 0.10;
+        // ben som tassar
+        for (const s of [-1, 1]) {
+          const ph = run + (s > 0 ? 0 : Math.PI);
+          const sw = Math.sin(ph) * 0.75;
+          put(B.box, P(0.34 * s, 0.34 + Math.max(0, -Math.cos(ph)) * 0.1, Math.sin(sw) * 0.12),
+            0.26, 0.55, 0.32, dark, sw, 0, 0, 0);
+        }
+        // kropp med ljusare mage
+        put(B.sphere, P(0, 0.95 + hop, 0), 1.35 * pop, 1.3 * sq * pop, 1.25 * pop, c, 0, 0, 0, glow * 0.4);
+        put(B.sphere, P(0, 0.8 + hop, 0.34), 0.85, 0.72, 0.55, belly, 0, 0, 0, 0);
+        // gapande käft med tänder
+        const gape = 0.1 + (Math.sin(time * 7 + this.phase * 3) * 0.5 + 0.5) * 0.16;
+        put(B.box, P(0, 0.82 + hop, 0.58), 0.66, gape + 0.14, 0.28, [0.08, 0.02, 0.05], 0.15, 0, 0, 0);
+        for (const s of [-1, 1]) {
+          put(B.cone, P(0.2 * s, 0.78 + hop, 0.68), 0.09, 0.2, 0.07, bone, Math.PI, 0, 0, 0);
+        }
+        // ögon med pupiller (blinkar)
+        for (const s of [-1, 1]) {
+          put(B.sphere, P(0.28 * s, 1.32 + hop, 0.46), 0.3, 0.3 * blink, 0.22, [1, 0.97, 0.9], 0, 0, 0, 0.5);
+          put(B.sphere, P(0.28 * s, 1.32 + hop, 0.58), 0.13, 0.13 * blink, 0.1, [0.05, 0.02, 0.02], 0, 0, 0, 0);
+        }
+        // horn och ryggtaggar
+        for (const s of [-1, 1]) {
+          put(B.cone, P(0.32 * s, 1.74 + hop, -0.02), 0.2, 0.5, 0.2, bone, -0.15, 0, -0.55 * s, 0);
+        }
+        put(B.cone, P(0, 1.48 + hop, -0.48), 0.18, 0.42, 0.14, dark, -1.0, 0, 0, 0);
+        put(B.cone, P(0, 1.12 + hop, -0.6), 0.14, 0.32, 0.11, dark, -1.25, 0, 0, 0);
+        // armar
+        for (const s of [-1, 1]) {
+          const sw = Math.sin(run + (s > 0 ? Math.PI : 0)) * 0.6;
+          put(B.box, P(0.72 * s, 0.95 + hop, 0.05), 0.2, 0.5, 0.2, c, sw - 0.3, 0, -0.2 * s, 0);
+        }
+        break;
+      }
+      case 'spitter': {
+        const hover = 0.5 + Math.sin(this.phase * 2.2) * 0.14;
+        const charge = clamp(1 - this.fireCd / (this.def.cool || 1), 0, 1);
+        // slöja i två lager som roterar åt olika håll
+        put(B.cone, P(0, 0.75 + hover * 0.5, 0), 1.45 * pop, 1.8, 1.45 * pop, c, 0, time * 0.5, 0, glow * 0.4);
+        put(B.cone, P(0, 0.55 + hover * 0.5, 0), 1.15, 1.5, 1.15, dark, 0, -time * 0.7, 0, 0.15);
+        // bål, huvud och huva
+        put(B.sphere, P(0, 1.7 + hover, 0), 0.8, 0.9, 0.8, dark, 0, 0, 0, glow * 0.5);
+        put(B.sphere, P(0, 2.25 + hover, 0.05), 0.72, 0.66, 0.72, c, 0, 0, 0, glow * 0.5);
+        put(B.cone, P(0, 2.62 + hover, -0.08), 0.6, 0.7, 0.6, dark, -0.25, 0, 0, 0);
+        // cyklopöga
+        put(B.sphere, P(0, 2.3 + hover, 0.38), 0.42, 0.42 * blink, 0.3, [1, 0.98, 0.92], 0, 0, 0, 0.6);
+        put(B.sphere, P(0, 2.3 + hover, 0.55), 0.2, 0.2 * blink, 0.12, [0.4, 0.05, 0.5], 0, 0, 0, 0.3);
+        // eldrör som glöder upp inför skottet
+        put(B.cyl, P(0, 1.75 + hover, 0.55), 0.3, 0.75, 0.3, dark, Math.PI / 2, 0, 0, 0.1 + charge * 0.6);
+        const orb = 0.22 + charge * 0.16;
+        put(B.sphere, P(0, 1.75 + hover, 0.95), orb, orb, orb, [0.85, 0.5, 1.0], 0, 0, 0, 0.3 + charge * 1.4);
+        // hängande armar som svajar
+        for (const s of [-1, 1]) {
+          put(B.cone, P(0.68 * s, 1.7 + hover, 0.08), 0.16, 0.8, 0.16, c,
+            Math.PI + Math.sin(this.phase * 2 + s) * 0.15, 0, 0.12 * s, glow * 0.3);
+        }
+        break;
+      }
+      case 'charger': {
+        const gallop = this.walk * 1.35;
+        const wind = this.state === 'windup' ? Math.sin(time * 42) * 0.1 : 0;
+        const rage = this.state === 'windup' || this.state === 'charging' ? 1 : 0;
+        const lean = clamp(this.planar * 0.02, 0, 0.22);
+        // fyra ben i galopp: frampar och bakpar i motfas
+        for (const fz of [0.62, -0.72]) {
+          for (const s of [-1, 1]) {
+            const ph = gallop + (fz > 0 ? 0 : Math.PI) + (s > 0 ? 0 : 0.5);
+            const sw = Math.sin(ph) * 0.65;
+            put(B.box, P(0.52 * s, 0.42 + Math.max(0, -Math.cos(ph)) * 0.12, fz + Math.sin(sw) * 0.15),
+              0.28, 0.72, 0.34, dark, sw, 0, 0, 0);
+          }
+        }
+        // kropp som lutar framåt med farten, bogparti
+        put(B.box, P(0, 1.15, -0.1), 1.35 * pop, 1.0 * pop, 1.9, c, lean + wind * 0.3, wind, 0,
+          glow * 0.4 + rage * 0.3);
+        put(B.box, P(0, 1.62, -0.55), 1.05, 0.55, 0.95, dark, -0.15, 0, 0, 0);
+        // sänkt huvud med nos
+        put(B.box, P(0, 0.98, 1.12), 0.85, 0.68, 0.8, dark, -0.22 - rage * 0.15, wind, 0, 0);
+        put(B.box, P(0, 0.8, 1.5), 0.5, 0.35, 0.3, [0.1, 0.06, 0.08], -0.2, 0, 0, 0);
+        // horn av ben, pekar framåt-utåt
+        for (const s of [-1, 1]) {
+          put(B.cone, P(0.44 * s, 1.18, 1.42), 0.17, 0.8, 0.17, bone, 1.15, 0, -0.35 * s, 0);
+        }
+        // glödande ögon — brinner starkare vid anfall
+        for (const s of [-1, 1]) {
+          put(B.sphere, P(0.26 * s, 1.12, 1.48), 0.13, 0.11, 0.1, [1, 0.25, 0.1], 0, 0, 0, 0.9 + rage * 1.3);
+        }
+        // piskande svans
+        put(B.cone, P(0, 1.5, -1.05), 0.13, 0.6, 0.13, dark,
+          -2.3 + Math.sin(time * 4 + this.phase) * 0.25, 0, 0, 0);
+        break;
+      }
+      case 'tank': {
+        const stomp = this.walk * 0.85;
+        const sway = Math.sin(stomp) * 0.05;
+        // tunga stampande ben
+        for (const s of [-1, 1]) {
+          const sw = Math.sin(stomp + (s > 0 ? 0 : Math.PI)) * 0.35;
+          put(B.box, P(0.68 * s, 0.62, Math.sin(sw) * 0.25), 0.62, 1.25, 0.72, dark, sw, 0, 0, 0);
+        }
+        // höft, bål som svajar, bröstplåt
+        put(B.box, P(0, 1.45, 0), 1.7, 0.55, 1.15, dark, 0, 0, sway * 0.4, 0);
+        put(B.box, P(0, 2.3, 0), 2.3 * pop, 1.5 * pop, 1.5, c, 0, 0, sway, glow * 0.4);
+        put(B.box, P(0, 2.32, 0.78), 1.6, 1.05, 0.22, dark, 0, 0, sway, 0);
+        // axlar, armar och nävar
+        for (const s of [-1, 1]) {
+          const sw = Math.sin(stomp + (s > 0 ? Math.PI : 0)) * 0.28;
+          put(B.sphere, P(1.5 * s, 2.95, 0), 1.15, 0.95, 1.05, dark, 0, 0, sway, 0);
+          put(B.box, P(1.55 * s, 1.95, Math.sin(sw) * 0.3), 0.52, 1.5, 0.52, c, sw, 0, 0.06 * s, glow * 0.3);
+          put(B.box, P(1.55 * s, 1.15, Math.sin(sw) * 0.55), 0.68, 0.6, 0.7, dark, sw * 0.5, 0, 0, 0);
+        }
+        // huvud med lysande visir
+        put(B.box, P(0, 3.35, 0.25), 0.72, 0.6, 0.65, dark, 0, 0, sway, 0);
+        put(B.box, P(0, 3.38, 0.58), 0.55, 0.16, 0.12, [0.5, 1.0, 0.9], 0, 0, 0, 1.3);
+        // pulserande energikärna + ryggkristaller
+        put(B.octa, P(0, 2.3, 0.92), 0.42, 0.55, 0.42, [0.6, 1.0, 0.85], 0, time * 2.5, 0,
+          0.9 + Math.sin(time * 4) * 0.35);
+        put(B.octa, P(0, 3.1, -0.7), 0.5, 0.9, 0.5, c, 0.5, 0, 0.15, 0.7);
+        put(B.octa, P(0.5, 2.7, -0.8), 0.35, 0.6, 0.35, c, 0.4, 0.6, -0.2, 0.6);
+        put(B.octa, P(-0.5, 2.65, -0.75), 0.32, 0.55, 0.32, c, 0.45, -0.5, 0.25, 0.6);
+        break;
+      }
+      // --------------------------------------------- Neotropolis-maskinerna
+
+      case 'drone': {
+        const spin = time * 30;
+        const diving = this.state === 'dive';
+        put(B.box, P(0, 0.38, 0), 0.5, 0.26, 0.66, c, diving ? 0.35 : 0, 0, 0,
+          glow + (diving ? 0.9 : 0.15));
+        for (const [ax, az] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+          put(B.box, P(0.3 * ax, 0.38, 0.3 * az), 0.4, 0.06, 0.09, dark, 0, Math.atan2(ax, az), 0, 0);
+          put(B.octa, P(0.52 * ax, 0.46, 0.52 * az), 0.6, 0.05, 0.6, [0.75, 0.8, 0.9],
+            0, spin * (ax * az > 0 ? 1 : -1), 0, 0.3);
+        }
+        // sensoröga
+        put(B.sphere, P(0, 0.36, 0.36), 0.25, 0.25 * blink, 0.18, [1, 0.97, 0.88], 0, 0, 0, 0.6);
+        put(B.sphere, P(0, 0.36, 0.45), 0.12, 0.12 * blink, 0.08, [1, 0.25, 0.12], 0, 0, 0,
+          diving ? 1.6 : 0.8);
+        break;
+      }
+
+      case 'sniper': {
+        const chg = clamp(this.aimT / 1.5, 0, 1);
+        const perched = this.state === 'aim';
+        // tripodben, hopfällda under färd
+        for (let i = 0; i < 3; i++) {
+          const a = (i / 3) * TAU + 0.5;
+          const spread = perched ? 0.45 : 0.16;
+          put(B.cone, P(Math.cos(a) * spread, 0.34, Math.sin(a) * spread),
+            0.15, 0.72, 0.15, dark, Math.PI + (perched ? 0.3 : 0.05),
+            Math.atan2(Math.cos(a), Math.sin(a)), 0, 0);
+        }
+        put(B.box, P(0, 0.88, 0), 0.66, 0.46, 0.76, c, 0, 0, 0, glow * 0.5);
+        put(B.sphere, P(0, 1.2, 0.06), 0.5, 0.46, 0.5, dark, 0, 0, 0, 0);
+        // lång pipa som följer spelaren i höjdled
+        const bp = Math.PI / 2 - this.aimPitch;
+        put(B.cyl, P(0, 1.16, 0.9), 0.12, 1.6, 0.12, [0.24, 0.27, 0.33], bp, 0, 0, 0.05);
+        put(B.box, P(0, 1.16, 0.35), 0.26, 0.2, 0.5, dark, 0, 0, 0, 0);
+        // kikarsikte som laddar upp inför skottet
+        put(B.octa, P(0, 1.46, 0.2), 0.2, 0.28, 0.2, [1.0, 0.35 - chg * 0.25, 0.3],
+          0, time * 3, 0, 0.35 + chg * 1.7);
+        break;
+      }
+
+      case 'hover': {
+        const sh = this.shieldFlash;
+        // skrov
+        put(B.box, P(0, 1.05, 0), 3.3, 0.5, 2.5, c, 0, 0, 0, glow * 0.35);
+        put(B.box, P(0, 0.78, 0), 2.7, 0.3, 1.9, dark, 0, 0, 0, 0);
+        // frontsköld — lyser till när den blockar
+        put(B.box, P(0, 1.35, 1.4), 3.5, 1.5, 0.22,
+          [lerp(0.35, 1, sh), lerp(0.72, 0.95, sh), 1.0], -0.2, 0, 0, 0.4 + sh * 1.6);
+        put(B.box, P(0, 2.12, 1.32), 3.5, 0.14, 0.3, [0.6, 0.85, 1.0], -0.2, 0, 0, 0.9);
+        // torn med dubbelpipor
+        put(B.sphere, P(0, 1.6, -0.25), 1.35, 1.0, 1.35, dark, 0, 0, 0, glow * 0.4);
+        for (const s of [-1, 1]) {
+          put(B.cyl, P(0.32 * s, 1.55, 0.75), 0.15, 1.2, 0.15, [0.28, 0.3, 0.38],
+            Math.PI / 2, 0, 0, this.state === 'salvo' ? 0.7 : 0.08);
+        }
+        put(B.octa, P(0, 2.15, -0.25), 0.4, 0.5, 0.4, [0.7, 0.8, 1.0], 0, time * 2, 0, 0.9);
+        // lyftmotorer under
+        for (const [ax, az] of [[-1, -1], [1, -1], [-1, 1], [1, 1]]) {
+          put(B.cyl, P(1.25 * ax, 0.6, 0.9 * az), 0.44, 0.42, 0.44, dark, 0, 0, 0, 0);
+          put(B.octa, P(1.25 * ax, 0.32, 0.9 * az), 0.34, 0.26, 0.34, [0.5, 0.72, 1.0],
+            0, time * 5, 0, 1.0);
+        }
+        break;
+      }
+
+      case 'boss': {
+        const pulse = 1 + Math.sin(time * 3) * 0.04;
+        const gape = this.state === 'volley' || this.state === 'slam'
+          ? 0.75 : 0.2 + Math.sin(time * 2.3) * 0.08;
+        // massiv kropp
+        put(B.sphere, P(0, 2.5 * pulse, 0), 4.5 * pop, 4.4 * pulse * pop, 4.5 * pop, c, 0, 0, 0, glow * 0.5 + 0.2);
+        // hornkrona som lutar utåt
+        for (let i = 0; i < 6; i++) {
+          const ai = (i / 6) * TAU + 0.26;
+          const lx = Math.cos(ai) * 1.9, lz = Math.sin(ai) * 1.9;
+          put(B.cone, P(lx, 4.55, lz), 0.5, 1.6, 0.5, dark, 0.55, Math.atan2(lx, lz), 0, 0.25);
+        }
+        // tre ögon med pupiller
+        put(B.sphere, P(0, 3.1, 1.95), 0.85, 0.85 * blink, 0.5, [1, 0.95, 0.9], 0, 0, 0, 0.7);
+        put(B.sphere, P(0, 3.1, 2.28), 0.4, 0.4 * blink, 0.2, [0.6, 0.02, 0.1], 0, 0, 0, 0.5);
+        for (const s of [-1, 1]) {
+          put(B.sphere, P(0.95 * s, 3.6, 1.7), 0.42, 0.42 * blink, 0.28, [1, 0.95, 0.9], 0, 0, 0, 0.6);
+          put(B.sphere, P(0.95 * s, 3.6, 1.9), 0.18, 0.18 * blink, 0.1, [0.6, 0.02, 0.1], 0, 0, 0, 0.4);
+        }
+        // käft med tandrader — gapar vid attack
+        put(B.box, P(0, 1.75, 1.9), 1.7, 0.5 + gape, 0.5, [0.06, 0.01, 0.04], 0.2, 0, 0, 0);
+        for (const s of [-1.5, -0.5, 0.5, 1.5]) {
+          put(B.cone, P(0.32 * s, 2.12 + gape * 0.4, 2.02), 0.13, 0.3, 0.1, bone, Math.PI, 0, 0, 0);
+          put(B.cone, P(0.32 * s + 0.16, 1.45 - gape * 0.4, 1.98), 0.11, 0.26, 0.09, bone, 0, 0, 0, 0);
+        }
+        // armar med klor
+        for (const s of [-1, 1]) {
+          const sw = Math.sin(time * 1.1 + s) * 0.12;
+          put(B.box, P(2.9 * s, 2.6, 0.3), 1.0, 2.8, 1.0, dark, sw, 0, 0.12 * s, glow * 0.4);
+          for (let k = -1; k <= 1; k++) {
+            put(B.cone, P(2.9 * s + k * 0.3, 1.0, 0.55 + k * 0.12), 0.16, 0.55, 0.16, bone,
+              Math.PI - 0.25, 0, k * 0.2, 0);
+          }
+        }
+        // svajande tentakler under kroppen
+        for (let i = 0; i < 5; i++) {
+          const a = (i / 5) * TAU + time * 0.4;
+          const lx = Math.cos(a) * 2.3, lz = Math.sin(a) * 2.3;
+          put(B.cone, P(lx, 0.55, lz), 0.3, 1.3, 0.3, dark,
+            Math.PI + Math.sin(time * 2 + i * 2) * 0.25, Math.atan2(lx, lz), 0, 0.2);
+        }
+        // kretsande skärvor
+        for (let i = 0; i < 5; i++) {
+          const a = time * 1.2 + (i / 5) * TAU;
+          B.octa.push(x + Math.cos(a) * 4.2, y + 2.6 + Math.sin(a * 2 + i) * 0.8, z + Math.sin(a) * 4.2,
+            0.8, 1.1, 0.8, [1, 0.5, 0.7], 0, a * 3, 0, 1.1);
+        }
+        if (this.state === 'slam') {
+          B.sphere.push(x, y + 0.2, z, 6 + Math.sin(time * 30) * 1.5, 0.4, 6, [1, 0.4, 0.2], 0, 0, 0, 1.2);
+        }
+        break;
+      }
+    }
+
+    const air = Math.max(0, this.pos.y - terrainHeight(x, z));
+    rend.shadow(x, terrainHeight(x, z), z, this.radius * 2.1, 0.4 * Math.max(0, 1 - air * 0.1));
+  }
+}
+
+// ------------------------------------------------------------------- vågor
+
+class WaveManager {
+  constructor() { this.reset(); }
+
+  reset() {
+    this.wave = 0;
+    this.state = 'idle';
+    this.timer = 2.0;
+    this.queue = [];
+    this.spawnTimer = 0;
+    this.spawnedThisWave = 0;
+  }
+
+  compose(wave, worldId) {
+    const list = [];
+    if (wave % 5 === 0) list.push('boss');
+    const budget = 5 + wave * 2.2;
+    let spent = 0;
+
+    const options = [];
+    if (worldId === 'city') {
+      // Neotropolis har sin egen robotpark
+      options.push(['drone', 0.7]);
+      if (wave >= 2) options.push(['sniper', 2.5]);
+      if (wave >= 3) options.push(['spitter', 1.6]);
+      if (wave >= 4) options.push(['hover', 4.2]);
+    } else {
+      options.push(['grunt', 1]);
+      if (wave >= 2) options.push(['spitter', 1.6]);
+      if (wave >= 3) options.push(['charger', 2.2]);
+      if (wave >= 5) options.push(['tank', 3.4]);
+    }
+
+    while (spent < budget) {
+      const [type, cost] = options[randInt(0, options.length - 1)];
+      if (type === 'drone') {
+        // drönare kommer alltid i svärm
+        const n = randInt(2, 4);
+        for (let i = 0; i < n; i++) list.push('drone');
+        spent += cost * n;
+      } else {
+        list.push(type);
+        spent += cost;
+      }
+    }
+    return list;
+  }
+
+  startWave(ctx) {
+    this.wave++;
+    this.queue = this.compose(this.wave, ctx.worldId);
+    this.spawnTimer = 0;
+    this.state = 'spawning';
+    ctx.onWaveStart(this.wave, this.queue.includes('boss'));
+  }
+
+  update(dt, ctx) {
+    if (this.state === 'idle') {
+      this.timer -= dt;
+      if (this.timer <= 0) this.startWave(ctx);
+      return;
+    }
+    if (this.state === 'spawning') {
+      this.spawnTimer -= dt;
+      if (this.spawnTimer <= 0 && this.queue.length) {
+        const type = this.queue.shift();
+        this.spawnAtRing(type, ctx);
+        this.spawnTimer = type === 'boss' ? 1.2 : rand(0.20, 0.55);
+      }
+      if (!this.queue.length) this.state = 'clearing';
+      return;
+    }
+    if (this.state === 'clearing') {
+      if (!ctx.enemies.some((e) => e.alive)) {
+        this.state = 'idle';
+        this.timer = 4.5;
+        ctx.onWaveClear(this.wave);
+      }
+    }
+  }
+
+  spawnAtRing(type, ctx) {
+    const p = ctx.player.pos;
+    for (let tries = 0; tries < 24; tries++) {
+      const a = rand(TAU);
+      const d = rand(38, 62);
+      let x = p.x + Math.cos(a) * d, z = p.z + Math.sin(a) * d;
+      const r = Math.hypot(x, z);
+      if (r > ARENA_RADIUS - 6) { const s = (ARENA_RADIUS - 8) / r; x *= s; z *= s; }
+      if (ctx.worldId !== 'city' && terrainHeight(x, z) < WATER_LEVEL + 0.4 && tries < 18) continue;
+      ctx.spawnEnemy(type, x, z);
+      return;
+    }
+    ctx.spawnEnemy(type, p.x + 30, p.z + 30);
+  }
+}
+
+// ═══ combat.js ═══
+// Projektiler, explosioner och drops.
+
+
+/** Närmaste träffpunkt mellan en sträcka och en sfär — hindrar snabba skott från att missa. */
+function segmentHitsSphere(px, py, pz, dx, dy, dz, len, cx, cy, cz, r) {
+  const mx = cx - px, my = cy - py, mz = cz - pz;
+  let t = mx * dx + my * dy + mz * dz;
+  t = clamp(t, 0, len);
+  const hx = px + dx * t - cx, hy = py + dy * t - cy, hz = pz + dz * t - cz;
+  return hx * hx + hy * hy + hz * hz <= r * r;
+}
+
+class Combat {
+  constructor() {
+    this.shots = [];
+    this.bullets = [];
+    this.pickups = [];
+    this.patches = [];
+  }
+
+  reset() {
+    this.shots.length = 0; this.bullets.length = 0;
+    this.pickups.length = 0; this.patches.length = 0;
+  }
+
+  // ------------------------------------------------------------ svärdssving
+
+  swordSwing(ctx) {
+    const p = ctx.player, st = p.stats;
+    // tre hugg i följd: det tredje är en finisher med överhandshugg
+    p.combo = p.comboTimer > 0 ? (p.combo + 1) % 3 : 0;
+    p.comboTimer = 1.5;
+    const fin = p.combo === 2;
+
+    p.swingSide = -(p.swingSide || 1);
+    p.swingFinisher = fin;
+    p.swingDur = fin ? 0.34 : 0.26;
+    p.swingTime = p.swingDur;
+    p.fireTimer = 1 / (st.fireRate * (fin ? 0.42 : 0.55));
+    ctx.sound[fin ? 'finisher' : 'swing']();
+
+    const range = (3.8 + st.multishot * 0.35) * (fin ? 1.25 : 1);
+    const arc = (1.15 + st.multishot * 0.12) * (fin ? 1.3 : 1);   // halv svepvinkel
+    p.aimDir(ctx.enemies);
+    let hitAny = false;
+
+    for (const e of ctx.enemies) {
+      if (!e.alive) continue;
+      const dx = e.pos.x - p.pos.x, dz = e.pos.z - p.pos.z;
+      const dist = Math.hypot(dx, dz);
+      if (dist > range + e.radius) continue;
+      if (Math.abs(angleDelta(p.yaw, Math.atan2(dx, dz))) > arc) continue;
+      if (Math.abs((e.pos.y + e.height * 0.5) - (p.pos.y + 1.3)) > e.height * 0.5 + 2.6) continue;
+
+      const crit = Math.random() < st.crit || fin;
+      const dmg = st.damage * (fin ? 2.8 : 1.7) * (crit ? st.critMult : 1);
+      const killed = e.damage(dmg, ctx, crit);
+      ctx.sound[crit ? 'crit' : 'hit']();
+      if (st.lifesteal > 0) p.heal(dmg * st.lifesteal);
+      // rejäl knockback — svagare mot tunga fiender
+      const kb = (fin ? 27 : 16) / (1 + e.radius);
+      if (dist > 0.01) { e.vel.x += (dx / dist) * kb; e.vel.z += (dz / dist) * kb; }
+      if (fin) e.vel.y += 7;
+      e.slow = Math.max(e.slow, fin ? 0.7 : 0.3);
+      if (st.explosive > 0) this.explode(ctx, e.pos.x, e.pos.y + e.height * 0.5, e.pos.z, st.explosive, dmg * 0.4);
+      if (killed) ctx.onEnemyKilled(e);
+      hitAny = true;
+    }
+
+    // svepande partikelbåge framför krigaren
+    const n = fin ? 22 : 13;
+    for (let i = 0; i < n; i++) {
+      const a = p.yaw + (i / (n - 1) - 0.5) * arc * 2;
+      const d = range * 0.75;
+      ctx.particles.spawn({
+        x: p.pos.x + Math.sin(a) * d, y: p.pos.y + 1.3 + (Math.random() - 0.5) * (fin ? 1.6 : 0.4),
+        z: p.pos.z + Math.cos(a) * d,
+        vx: Math.sin(a) * (fin ? 7 : 3), vy: fin ? rand(1, 4) : 0.5, vz: Math.cos(a) * (fin ? 7 : 3),
+        life: fin ? 0.34 : 0.18, size: fin ? 0.95 : 0.55, size2: 0.05,
+        col: fin ? [1.0, 0.72, 0.25] : hitAny ? [1.0, 0.8, 0.5] : [0.8, 0.85, 0.95],
+        alpha: fin ? 0.9 : 0.7, drag: 0.5,
+      });
+    }
+    p.shake = Math.min(0.5, p.shake + (fin ? 0.3 : hitAny ? 0.08 : 0.03));
+  }
+
+  // -------------------------------------------------------------- eldhärdar
+
+  /** Brinnande mark efter en eldboll — skadar fiender som står kvar i lågorna. */
+  spawnFirePatch(ctx, x, z, radius, dmg) {
+    if (this.patches.length > 7) this.patches.shift();
+    this.patches.push({
+      x, y: terrainHeight(x, z), z,
+      r: radius, life: 4.5, max: 4.5, tick: 0, dmg,
+    });
+  }
+
+  updatePatches(dt, ctx) {
+    for (let i = this.patches.length - 1; i >= 0; i--) {
+      const q = this.patches[i];
+      q.life -= dt;
+      if (q.life <= 0) { this.patches.splice(i, 1); continue; }
+      const fade = Math.min(1, q.life / 1.2);
+
+      // lågor och glöd
+      for (let k = 0; k < 3; k++) {
+        const a = rand(TAU), d = Math.sqrt(Math.random()) * q.r;
+        const px = q.x + Math.cos(a) * d, pz = q.z + Math.sin(a) * d;
+        ctx.particles.spawn({
+          x: px, y: terrainHeight(px, pz) + 0.1, z: pz,
+          vx: rand(-0.5, 0.5), vy: rand(2.2, 4.5), vz: rand(-0.5, 0.5),
+          life: rand(0.35, 0.7), size: rand(0.5, 1.0) * fade, size2: 0.05,
+          col: [1.0, rand(0.35, 0.65), 0.12], alpha: 0.75 * fade, drag: 0.5,
+        });
+      }
+
+      // skada var 0,35 s
+      q.tick -= dt;
+      if (q.tick <= 0) {
+        q.tick = 0.35;
+        for (const e of ctx.enemies) {
+          if (!e.alive) continue;
+          if (Math.hypot(e.pos.x - q.x, e.pos.z - q.z) > q.r + e.radius) continue;
+          if (e.pos.y - q.y > 3.5) continue;
+          if (e.damage(q.dmg, ctx, false)) ctx.onEnemyKilled(e);
+        }
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------- eldboll
+
+  castFireball(ctx) {
+    const p = ctx.player, st = p.stats;
+    const dir = p.aimDir(ctx.enemies);
+    const m = p.muzzle();
+    const n = st.multishot;
+    for (let i = 0; i < n; i++) {
+      const off = n === 1 ? 0 : (i / (n - 1) - 0.5) * 0.22;
+      const c = Math.cos(off), s = Math.sin(off);
+      this.shots.push({
+        x: m.x, y: m.y + 0.3, z: m.z,
+        vx: (dir.x * c + dir.z * s) * st.projSpeed * 0.6,
+        vy: dir.y * st.projSpeed * 0.6 + 2,
+        vz: (-dir.x * s + dir.z * c) * st.projSpeed * 0.6,
+        life: 2.6,
+        dmg: st.damage * 3.2,
+        crit: false,
+        pierce: 0,
+        radius: 0.95,
+        explosive: 4.5 + st.explosive,
+        hits: new Set(),
+        fireball: true,
+        col: [1.0, 0.55, 0.15],
+      });
+    }
+    p.fireballCd = p.fireballCdMax;
+    ctx.sound.fireball();
+    p.shake = Math.min(0.6, p.shake + 0.25);
+    ctx.particles.burst(m.x, m.y + 0.3, m.z, 10, {
+      speed: 5, life: 0.3, size: 0.6, col: [1.0, 0.6, 0.2], alpha: 0.9, drag: 0.6,
+    });
+  }
+
+  // ------------------------------------------------------------- spelarskott
+
+  playerShoot(ctx) {
+    const p = ctx.player, st = p.stats;
+    const city = ctx.worldId === 'city';
+    const dir = p.aimDir(ctx.enemies);
+    const m = p.muzzle();
+    const n = st.multishot;
+    for (let i = 0; i < n; i++) {
+      const off = n === 1 ? 0 : (i / (n - 1) - 0.5) * st.spread * (n + 1);
+      const yawOff = off + rand(-st.spread * 0.5, st.spread * 0.5);
+      const c = Math.cos(yawOff), s = Math.sin(yawOff);
+      const dx = dir.x * c + dir.z * s;
+      const dz = -dir.x * s + dir.z * c;
+      const crit = Math.random() < st.crit;
+      this.shots.push({
+        x: m.x, y: m.y, z: m.z,
+        vx: dx * st.projSpeed, vy: dir.y * st.projSpeed, vz: dz * st.projSpeed,
+        life: 1.7,
+        dmg: st.damage * (crit ? st.critMult : 1),
+        crit,
+        pierce: st.pierce,
+        radius: st.projSize + 0.25,
+        explosive: st.explosive,
+        hits: new Set(),
+        beam: city,
+        col: crit ? [1.0, 0.85, 0.35] : city ? [1.0, 0.30, 0.42] : [0.45, 0.95, 1.0],
+      });
+    }
+    ctx.sound[city ? 'laser' : 'shoot']();
+    ctx.particles.burst(m.x, m.y, m.z, 4, {
+      speed: 4, life: 0.16, size: 0.32,
+      col: city ? [1.0, 0.5, 0.6] : [0.6, 0.95, 1.0], alpha: 0.9, drag: 0.7,
+    });
+    p.shotSide = -p.shotSide;
+    p.fireTimer = 1 / st.fireRate;
+    p.shake = Math.min(0.35, p.shake + 0.045);
+  }
+
+  droneShoot(ctx, x, y, z, target) {
+    let dx = target.pos.x - x, dy = target.pos.y + target.height * 0.5 - y, dz = target.pos.z - z;
+    const l = Math.hypot(dx, dy, dz) || 1;
+    dx /= l; dy /= l; dz /= l;
+    this.shots.push({
+      x, y, z, vx: dx * 52, vy: dy * 52, vz: dz * 52,
+      life: 1.5, dmg: ctx.player.stats.damage * 0.55, crit: false,
+      pierce: 0, radius: 0.5, explosive: 0, hits: new Set(),
+      col: [1.0, 0.75, 0.25],
+    });
+    ctx.sound.tone({ f: 900, f2: 420, dur: 0.06, type: 'triangle', vol: 0.05 });
+  }
+
+  // ------------------------------------------------------------ fiendeskott
+
+  enemyBullet(e, target, speed, dmg) {
+    let dx = target.pos.x - e.pos.x;
+    let dy = (target.pos.y + 1.1) - (e.pos.y + e.height * 0.6);
+    let dz = target.pos.z - e.pos.z;
+    const l = Math.hypot(dx, dy, dz) || 1;
+    this.enemyBulletDir(e, dx / l, dy / l, dz / l, speed, dmg);
+  }
+
+  enemyBulletDir(e, dx, dy, dz, speed, dmg) {
+    this.bullets.push({
+      x: e.pos.x + dx * (e.radius + 0.4),
+      y: e.pos.y + e.height * 0.6 + dy * 0.4,
+      z: e.pos.z + dz * (e.radius + 0.4),
+      vx: dx * speed, vy: dy * speed, vz: dz * speed,
+      life: 4.5, dmg, radius: 0.45,
+      col: e.boss ? [1.0, 0.35, 0.55] : [0.85, 0.45, 1.0],
+    });
+  }
+
+  // -------------------------------------------------------------- explosion
+
+  explode(ctx, x, y, z, radius, dmg, source) {
+    ctx.sound.explode();
+    ctx.particles.burst(x, y, z, 26, {
+      speed: radius * 2.6, life: 0.5, size: 1.1, size2: 0.1,
+      col: [1.0, 0.6, 0.2], alpha: 0.95, drag: 0.9, grav: -4,
+    });
+    ctx.particles.burst(x, y, z, 12, {
+      speed: radius * 1.4, life: 0.7, size: 1.6, size2: 0.2,
+      col: [0.4, 0.25, 0.2], alpha: 0.5, drag: 1.2, grav: 2,
+    });
+    for (const e of ctx.enemies) {
+      if (!e.alive) continue;
+      const d = Math.hypot(e.pos.x - x, e.pos.y + e.height * 0.5 - y, e.pos.z - z);
+      if (d < radius + e.radius) {
+        const falloff = 1 - clamp((d - e.radius) / radius, 0, 1);
+        if (e.damage(dmg * (0.45 + falloff * 0.55), ctx, false)) ctx.onEnemyKilled(e);
+      }
+    }
+    ctx.player.shake = Math.min(1.4, ctx.player.shake + 0.35);
+  }
+
+  /** Bossens markvåg — träffar bara spelaren. */
+  shockwave(ctx, x, y, z, radius, dmg) {
+    ctx.sound.explode();
+    for (let i = 0; i < 46; i++) {
+      const a = (i / 46) * TAU;
+      ctx.particles.spawn({
+        x, y: y + 0.4, z,
+        vx: Math.cos(a) * radius * 1.5, vy: rand(1, 4), vz: Math.sin(a) * radius * 1.5,
+        life: 0.65, size: 1.2, size2: 0.2, col: [1.0, 0.35, 0.45], alpha: 0.9, drag: 1.1, grav: -6,
+      });
+    }
+    const d = Math.hypot(ctx.player.pos.x - x, ctx.player.pos.z - z);
+    if (d < radius && Math.abs(ctx.player.pos.y - y) < 6) {
+      if (ctx.player.takeDamage(dmg)) ctx.sound.hurt();
+    }
+    ctx.player.shake = Math.min(1.6, ctx.player.shake + 0.6);
+  }
+
+  // ------------------------------------------------------------------ drops
+
+  dropLoot(ctx, e) {
+    const orbs = e.boss ? 8 : e.xp > 10 ? 3 : 1;
+    const each = Math.max(1, Math.round((e.xp / orbs) * ctx.player.stats.xpMult));
+    for (let i = 0; i < orbs; i++) {
+      const a = rand(TAU);
+      this.pickups.push({
+        kind: 'xp', value: each,
+        x: e.pos.x + Math.cos(a) * rand(0, 1.2),
+        y: e.pos.y + e.height * 0.5,
+        z: e.pos.z + Math.sin(a) * rand(0, 1.2),
+        vx: Math.cos(a) * rand(2, 6), vy: rand(4, 8), vz: Math.sin(a) * rand(2, 6),
+        life: 26, phase: rand(TAU), col: [0.4, 1.0, 0.75],
+      });
+    }
+    if (e.boss || Math.random() < 0.07) {
+      this.pickups.push({
+        kind: 'hp', value: e.boss ? 60 : 25,
+        x: e.pos.x, y: e.pos.y + 1, z: e.pos.z,
+        vx: rand(-2, 2), vy: 6, vz: rand(-2, 2),
+        life: 30, phase: rand(TAU), col: [1.0, 0.35, 0.45],
+      });
+    }
+  }
+
+  // ----------------------------------------------------------------- update
+
+  update(dt, ctx) {
+    const p = ctx.player;
+    this.updatePatches(dt, ctx);
+
+    // spelarens skott
+    for (let i = this.shots.length - 1; i >= 0; i--) {
+      const s = this.shots[i];
+      s.life -= dt;
+      const len = Math.hypot(s.vx, s.vy, s.vz) * dt;
+      const dx = s.vx / (len / dt || 1), dy = s.vy / (len / dt || 1), dz = s.vz / (len / dt || 1);
+      let removed = false;
+
+      for (const e of ctx.enemies) {
+        if (!e.alive || s.hits.has(e)) continue;
+        if (segmentHitsSphere(s.x, s.y, s.z, dx, dy, dz, len,
+          e.pos.x, e.pos.y + e.height * 0.5, e.pos.z, e.radius + s.radius)) {
+          s.hits.add(e);
+          const killed = e.damage(s.dmg, ctx, s.crit);
+          ctx.sound[s.crit ? 'crit' : 'hit']();
+          if (p.stats.lifesteal > 0) p.heal(s.dmg * p.stats.lifesteal);
+          if (killed) ctx.onEnemyKilled(e);
+          if (s.explosive > 0) {
+            this.explode(ctx, s.x, s.y, s.z, s.explosive, s.dmg * 0.6);
+            if (s.fireball) this.spawnFirePatch(ctx, s.x, s.z, s.explosive * 0.85, s.dmg * 0.09);
+            removed = true;
+            break;
+          }
+          if (s.pierce-- <= 0) { removed = true; break; }
+        }
+      }
+      if (removed) { this.shots.splice(i, 1); continue; }
+
+      s.x += s.vx * dt; s.y += s.vy * dt; s.z += s.vz * dt;
+      if (s.life <= 0 || s.y < terrainHeight(s.x, s.z) - 0.2) {
+        if (s.explosive > 0 && s.life > 0) {
+          this.explode(ctx, s.x, s.y, s.z, s.explosive, s.dmg * 0.6);
+          if (s.fireball) this.spawnFirePatch(ctx, s.x, s.z, s.explosive * 0.85, s.dmg * 0.09);
+        } else ctx.particles.burst(s.x, s.y, s.z, 4,
+          { speed: 3, life: 0.2, size: 0.3, col: s.col, alpha: 0.8, drag: 0.8 });
+        this.shots.splice(i, 1);
+        continue;
+      }
+      ctx.particles.spawn({
+        x: s.x, y: s.y, z: s.z, life: 0.14, size: s.radius * 1.1, size2: 0,
+        col: s.col, alpha: 0.65, drag: 0.2,
+      });
+    }
+
+    // fiendens skott
+    for (let i = this.bullets.length - 1; i >= 0; i--) {
+      const b = this.bullets[i];
+      b.life -= dt;
+      b.vy -= 3.2 * dt;
+      b.x += b.vx * dt; b.y += b.vy * dt; b.z += b.vz * dt;
+      const hitPlayer = Math.hypot(b.x - p.pos.x, b.y - (p.pos.y + 1.1), b.z - p.pos.z) < b.radius + p.radius + 0.35;
+      if (hitPlayer) {
+        if (p.takeDamage(b.dmg)) {
+          ctx.sound.hurt();
+          ctx.particles.burst(b.x, b.y, b.z, 10,
+            { speed: 5, life: 0.35, size: 0.45, col: b.col, alpha: 0.9, drag: 0.6 });
+        }
+        this.bullets.splice(i, 1);
+        continue;
+      }
+      if (b.life <= 0 || b.y < terrainHeight(b.x, b.z) - 0.3) {
+        ctx.particles.burst(b.x, b.y, b.z, 5,
+          { speed: 3, life: 0.25, size: 0.35, col: b.col, alpha: 0.7, drag: 0.8 });
+        this.bullets.splice(i, 1);
+        continue;
+      }
+      ctx.particles.spawn({
+        x: b.x, y: b.y, z: b.z, life: 0.16, size: 0.4, size2: 0,
+        col: b.col, alpha: 0.5, drag: 0.2,
+      });
+    }
+
+    // upplockningar
+    const magnet = p.stats.pickupRadius;
+    for (let i = this.pickups.length - 1; i >= 0; i--) {
+      const q = this.pickups[i];
+      q.life -= dt;
+      q.phase += dt * 3;
+      const dx = p.pos.x - q.x, dy = (p.pos.y + 1) - q.y, dz = p.pos.z - q.z;
+      const d = Math.hypot(dx, dy, dz);
+      if (d < magnet) {
+        const pull = lerp(26, 64, 1 - d / magnet) * dt;
+        q.vx += (dx / d) * pull; q.vy += (dy / d) * pull; q.vz += (dz / d) * pull;
+      } else {
+        q.vy -= 24 * dt;
+      }
+      const fr = Math.exp(-1.6 * dt);
+      q.vx *= fr; q.vz *= fr;
+      q.x += q.vx * dt; q.y += q.vy * dt; q.z += q.vz * dt;
+      const gh = Math.max(terrainHeight(q.x, q.z), WATER_LEVEL) + 0.5;
+      if (q.y < gh) { q.y = gh; q.vy = Math.abs(q.vy) * 0.35; }
+
+      if (d < 1.5) {
+        if (q.kind === 'xp') { ctx.addXP(q.value); ctx.sound.pickup(); }
+        else { p.heal(q.value); ctx.sound.heal(); ctx.toast(`+${q.value} HP`); }
+        ctx.particles.burst(q.x, q.y, q.z, 6,
+          { speed: 3, life: 0.3, size: 0.35, col: q.col, alpha: 0.9, drag: 0.7 });
+        this.pickups.splice(i, 1);
+        continue;
+      }
+      if (q.life <= 0) this.pickups.splice(i, 1);
+    }
+  }
+
+  draw(rend, time) {
+    const B = rend.dyn;
+    for (const s of this.shots) {
+      if (s.fireball) {
+        // eldboll: pulserande klot med eldsvans
+        const pulse = 1 + Math.sin(time * 26) * 0.12;
+        B.sphere.push(s.x, s.y, s.z, s.radius * 2.2 * pulse, s.radius * 2.2 * pulse,
+          s.radius * 2.2 * pulse, s.col, 0, time * 8, 0, 1.4);
+        B.octa.push(s.x, s.y, s.z, s.radius * 1.4, s.radius * 2.0, s.radius * 1.4,
+          [1.0, 0.85, 0.4], 0, -time * 10, 0, 1.2);
+        rend.particles.spawn({
+          x: s.x + rand(-0.3, 0.3), y: s.y + rand(-0.3, 0.3), z: s.z + rand(-0.3, 0.3),
+          vx: -s.vx * 0.06, vy: -s.vy * 0.06 + 1.5, vz: -s.vz * 0.06,
+          life: rand(0.3, 0.55), size: rand(0.6, 1.0), size2: 0.1,
+          col: [1.0, rand(0.35, 0.6), 0.12], alpha: 0.9, drag: 0.4,
+        });
+        continue;
+      }
+      if (s.beam) {
+        // laserstråle: oktaedern sträcks ut längs färdriktningen
+        const sp = Math.hypot(s.vx, s.vy, s.vz) || 1;
+        const yawD = Math.atan2(s.vx, s.vz);
+        const pitchD = Math.asin(s.vy / sp) + Math.PI / 2;
+        B.octa.push(s.x, s.y, s.z, s.radius * 0.55, 1.5, s.radius * 0.55, s.col,
+          pitchD, yawD, 0, 1.5);
+      } else {
+        B.octa.push(s.x, s.y, s.z, s.radius * 1.5, s.radius * 2.4, s.radius * 1.5, s.col,
+          0, time * 12, time * 6, 1.3);
+      }
+    }
+    for (const b of this.bullets) {
+      B.sphere.push(b.x, b.y, b.z, 0.75, 0.75, 0.75, b.col, 0, 0, 0, 1.2);
+    }
+    for (const q of this.pickups) {
+      const s = q.kind === 'xp' ? 0.55 : 0.9;
+      const lift = Math.sin(q.phase) * 0.12;
+      B.octa.push(q.x, q.y + lift, q.z, s, s * 1.5, s, q.col, 0, q.phase, 0, 1.1);
+      rend.particles.spawn({
+        x: q.x, y: q.y + lift, z: q.z, life: 0.2, size: s * 1.6, size2: 0,
+        col: q.col, alpha: 0.35, drag: 0.1,
+      });
+    }
+  }
+}
+
+// ═══ hud.js ═══
+// All DOM-baserad UI: HUD-siffror, banderoller, radar, menyer.
+
+
+const $ = (id) => document.getElementById(id);
+
+const VERSION = 'BETA 0.9';
+
+const DOT_COL = {
+  grunt: '#ff5b5b', spitter: '#c07bff', charger: '#ffab3d',
+  tank: '#4ce0a8', boss: '#ff3d7f',
+  drone: '#ffd93d', sniper: '#4dffc3', hover: '#8f9bff',
+};
+
+class HUD {
+  constructor() {
+    this.hud = $('hud');
+    this.overlay = $('overlay');
+    this.hpFill = $('hpFill');
+    this.hpText = $('hpText');
+    this.xpFill = $('xpFill');
+    this.dashRow = $('dashRow');
+    this.banner = $('banner');
+    this.vignette = $('vignette');
+    this.bossBar = $('bossBar');
+    this.bossFill = $('bossFill');
+    this.bossName = $('bossName');
+    this.toasts = $('toasts');
+    this.fireRow = $('fireRow');
+    this.fireFill = $('fireFill');
+    this.comboRow = $('comboRow');
+    this.comboPips = [...this.comboRow.children];
+    this.cross = $('crosshair');
+    this.map = $('minimap');
+    this.mapCtx = this.map.getContext('2d');
+    this.bannerT = 0;
+    this.dashPips = [];
+    this.lastFps = 0;
+  }
+
+  showHUD(on) { this.hud.classList.toggle('hidden', !on); }
+
+  hideOverlay() { this.overlay.classList.add('hidden'); }
+  showOverlay(html) {
+    this.overlay.innerHTML = html;
+    this.overlay.classList.remove('hidden');
+  }
+
+  setDashPips(n) {
+    if (this.dashPips.length === n) return;
+    this.dashRow.innerHTML = '';
+    this.dashPips = [];
+    for (let i = 0; i < n; i++) {
+      const d = document.createElement('div');
+      d.className = 'pip';
+      this.dashRow.appendChild(d);
+      this.dashPips.push(d);
+    }
+  }
+
+  toast(msg) {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.textContent = msg;
+    this.toasts.appendChild(el);
+    setTimeout(() => {
+      el.style.transition = 'opacity .4s';
+      el.style.opacity = '0';
+      setTimeout(() => el.remove(), 420);
+    }, 2600);
+  }
+
+  showBanner(text, sub = '', time = 2.2) {
+    this.banner.innerHTML = text + (sub ? `<span class="sub">${sub}</span>` : '');
+    this.bannerT = time;
+  }
+
+  setBoss(e, name) {
+    this.boss = e;
+    if (name) this.bossName.textContent = name;
+    this.bossBar.classList.toggle('hidden', !e);
+  }
+
+  /** Uppdaterar allt som ändras varje bildruta. */
+  update(g, dt) {
+    const p = g.player;
+
+    // Korshåret sitter där muspekaren är (utan muslås), annars i mitten.
+    const inp = g.input;
+    const free = inp && !inp.locked;
+    const cx = free ? (inp.cursorNX * 0.5 + 0.5) * 100 : 50;
+    const cy = free ? (inp.cursorNY * 0.5 + 0.5) * 100 : 50;
+    this.cross.style.left = `${cx}%`;
+    this.cross.style.top = `${cy}%`;
+    // bara ett sikte på skärmen: göm systempekaren under spelets gång
+    const want = g.state === 'playing' && free ? 'none' : 'crosshair';
+    if (this._cursor !== want) { this._cursor = want; g.canvas.style.cursor = want; }
+    const hpFrac = clamp(p.hp / p.stats.maxHp, 0, 1);
+    this.hpFill.style.transform = `scaleX(${hpFrac})`;
+    this.hpText.textContent = `${Math.ceil(p.hp)} / ${Math.round(p.stats.maxHp)}`;
+    this.xpFill.style.transform = `scaleX(${clamp(g.xp / g.xpNeeded, 0, 1)})`;
+
+    this.setDashPips(p.stats.dashMax);
+    for (let i = 0; i < this.dashPips.length; i++) {
+      const on = i < p.dashCharges;
+      this.dashPips[i].classList.toggle('on', on);
+      if (!on && i === p.dashCharges) {
+        const f = p.dashTimer / p.stats.dashRecharge;
+        this.dashPips[i].style.background =
+          `linear-gradient(90deg, rgba(77,243,255,.75) ${f * 100}%, rgba(255,255,255,.13) ${f * 100}%)`;
+      } else {
+        this.dashPips[i].style.background = '';
+      }
+    }
+
+    // eldboll + svärdskombo (bara Vildheim)
+    if (g.worldId === 'wild') {
+      this.fireRow.classList.remove('hidden');
+      const frac = 1 - clamp(p.fireballCd / p.fireballCdMax, 0, 1);
+      this.fireFill.style.transform = `scaleX(${frac})`;
+      this.fireRow.classList.toggle('ready', frac >= 1);
+
+      this.comboRow.classList.remove('hidden');
+      const hits = p.comboTimer > 0 ? p.combo + 1 : 0;
+      for (let i = 0; i < 3; i++) {
+        const lit = i < hits;
+        this.comboPips[i].classList.toggle('lit', lit && !(hits === 2 && i === 2));
+        // tredje pricken pulsar guld när nästa hugg blir en finisher
+        this.comboPips[i].classList.toggle('next', i === 2 && hits === 2);
+      }
+    } else {
+      this.fireRow.classList.add('hidden');
+      this.comboRow.classList.add('hidden');
+    }
+
+    $('waveNum').textContent = g.waves.wave || '—';
+    $('levelNum').textContent = g.level;
+    $('killNum').textContent = g.kills;
+    const t = Math.floor(g.elapsed);
+    $('timeNum').textContent = `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
+    if (g.frameCount % 15 === 0) $('fpsNum').textContent = Math.round(g.fps);
+
+    this.vignette.style.opacity = String(clamp(p.hitFlash * 0.8 + (1 - hpFrac) * 0.35, 0, 1));
+
+    if (this.bannerT > 0) {
+      this.bannerT -= dt;
+      const a = clamp(this.bannerT > 1.6 ? (2.2 - this.bannerT) / 0.6 : this.bannerT / 1.0, 0, 1);
+      this.banner.style.opacity = String(a);
+      this.banner.style.transform = `translate(-50%,-50%) scale(${1 + (1 - a) * 0.06})`;
+    } else if (this.banner.style.opacity !== '0') {
+      this.banner.style.opacity = '0';
+    }
+
+    if (this.boss && this.boss.alive) {
+      this.bossFill.style.transform = `scaleX(${clamp(this.boss.hp / this.boss.maxHp, 0, 1)})`;
+    } else if (this.boss) {
+      this.setBoss(null);
+    }
+
+    this.drawMinimap(g);
+  }
+
+  drawMinimap(g) {
+    const c = this.mapCtx, S = this.map.width, R = S / 2;
+    const range = 82;
+    const p = g.player;
+    const yaw = p.camYaw;
+    const cos = Math.cos(yaw), sin = Math.sin(yaw);
+
+    c.clearRect(0, 0, S, S);
+    c.save();
+    c.beginPath(); c.arc(R, R, R - 2, 0, Math.PI * 2); c.clip();
+    c.fillStyle = 'rgba(4,10,20,.55)';
+    c.fillRect(0, 0, S, S);
+
+    // arenagräns
+    const scale = R / range;
+    const pr = Math.hypot(p.pos.x, p.pos.z);
+    c.strokeStyle = 'rgba(77,243,255,.25)';
+    c.lineWidth = 3;
+    c.beginPath();
+    const relx = -p.pos.x, relz = -p.pos.z;
+    const mx = (-cos * relx + sin * relz) * scale + R;
+    const my = -(sin * relx + cos * relz) * scale + R;
+    c.arc(mx, my, ARENA_RADIUS * scale, 0, Math.PI * 2);
+    c.stroke();
+
+    const plot = (wx, wz) => {
+      const rx = wx - p.pos.x, rz = wz - p.pos.z;
+      return [(-cos * rx + sin * rz) * scale + R, -(sin * rx + cos * rz) * scale + R];
+    };
+
+    c.globalAlpha = 0.85;
+    for (const q of g.combat.pickups) {
+      const [x, y] = plot(q.x, q.z);
+      c.fillStyle = q.kind === 'xp' ? '#4dffa6' : '#ff5b7f';
+      c.fillRect(x - 2, y - 2, 4, 4);
+    }
+    for (const e of g.enemies) {
+      if (!e.alive) continue;
+      const [x, y] = plot(e.pos.x, e.pos.z);
+      c.fillStyle = DOT_COL[e.type] || '#fff';
+      c.beginPath();
+      c.arc(x, y, e.boss ? 9 : e.type === 'tank' ? 6 : 4.5, 0, Math.PI * 2);
+      c.fill();
+    }
+    c.globalAlpha = 1;
+
+    // spelaren + blickriktning
+    c.fillStyle = '#eaf6ff';
+    c.beginPath();
+    c.moveTo(R, R - 9); c.lineTo(R - 6, R + 7); c.lineTo(R + 6, R + 7);
+    c.closePath(); c.fill();
+    c.restore();
+
+    c.strokeStyle = 'rgba(77,243,255,.35)';
+    c.lineWidth = 2;
+    c.beginPath(); c.arc(R, R, R - 2, 0, Math.PI * 2); c.stroke();
+  }
+
+  // ------------------------------------------------------------- menyskärmar
+
+  showStart(onPick) {
+    this._cursor = null;
+    this.showOverlay(`
+      <div class="screen">
+        <div class="title">DASHH</div>
+        <div class="subtitle">VOIDFALL<span class="betaTag">${VERSION}</span></div>
+        <div class="betaNote">tidig version — buggar och konstigheter förekommer, säg gärna till</div>
+        <div class="worlds">
+          <div class="world wild" data-w="wild">
+            <div class="wIcon">🌲</div>
+            <div class="wName">VILDHEIM</div>
+            <div class="wDesc">Grönskande vildmark med skogar, sjöar och berg.
+              En krigare i läder med svärd — och eldbollar på <b>C</b>.</div>
+            <div class="wTag">SVÄRD · C = ELDBOLL</div>
+          </div>
+          <div class="world city" data-w="city">
+            <div class="wIcon">🌆</div>
+            <div class="wName">NEOTROPOLIS</div>
+            <div class="wDesc">Neonstad i evig natt. Flyg som cyborg mellan skyskraporna
+              och bränn monstren med laser ur händerna.</div>
+            <div class="wTag">HÅLL MELLANSLAG = FLYG</div>
+          </div>
+        </div>
+        <div class="keys">
+          <div class="key"><b>WASD</b> Rör dig</div>
+          <div class="key"><b>MUS</b> Sikta · mot kanten = svep vyn</div>
+          <div class="key"><b>VÄNSTERKLICK</b> Attack</div>
+          <div class="key"><b>C</b> Eldboll (Vildheim)</div>
+          <div class="key"><b>SHIFT</b> Dash</div>
+          <div class="key"><b>MELLANSLAG</b> Hoppa / flyg</div>
+          <div class="key"><b>ESC</b> Paus</div>
+        </div>
+        <div class="hint">välj din värld — överlev vågorna</div>
+      </div>`);
+    this.overlay.querySelectorAll('.world').forEach((el) => {
+      el.addEventListener('click', () => onPick(el.dataset.w));
+    });
+  }
+
+  showLevelUp(level, choices, onPick) {
+    const cards = choices.map((u, i) => `
+      <div class="card" data-i="${i}">
+        <div class="num">${i + 1}</div>
+        <div class="icon">${u.icon}</div>
+        <div class="name">${u.name}</div>
+        <div class="desc">${u.desc}</div>
+      </div>`).join('');
+    this.showOverlay(`
+      <div class="screen">
+        <div class="lvlTitle">NIVÅ ${level}</div>
+        <div class="lvlSub">VÄLJ EN UPPGRADERING</div>
+        <div class="cards">${cards}</div>
+        <div class="hint">klicka eller tryck 1 · 2 · 3</div>
+      </div>`);
+    this.overlay.querySelectorAll('.card').forEach((el) => {
+      el.addEventListener('click', () => onPick(+el.dataset.i));
+    });
+  }
+
+  showPause(onResume) {
+    this.showOverlay(`
+      <div class="screen">
+        <div class="title" style="font-size:clamp(40px,8vw,84px)">PAUSAD</div>
+        <button class="cta" id="btnResume">FORTSÄTT</button>
+        <div class="hint">esc eller klicka för att återgå</div>
+      </div>`);
+    $('btnResume').addEventListener('click', onResume);
+  }
+
+  showGameOver(g, onRestart, onMenu) {
+    const t = Math.floor(g.elapsed);
+    this.showOverlay(`
+      <div class="screen">
+        <div class="goTitle">DU FÖLL</div>
+        <div class="hint" style="margin:4px 0 0">${g.worldId === 'city' ? 'NEOTROPOLIS' : 'VILDHEIM'}</div>
+        <div class="results">
+          <div class="result"><div class="rl">VÅG</div><div class="rv">${g.waves.wave}</div></div>
+          <div class="result"><div class="rl">NIVÅ</div><div class="rv">${g.level}</div></div>
+          <div class="result"><div class="rl">KILLS</div><div class="rv">${g.kills}</div></div>
+          <div class="result"><div class="rl">TID</div><div class="rv">${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}</div></div>
+          <div class="result"><div class="rl">SKADA</div><div class="rv">${Math.round(g.damageDealt)}</div></div>
+        </div>
+        <button class="cta" id="btnRestart">SPELA IGEN</button>
+        <button class="cta alt" id="btnMenu">BYT VÄRLD</button>
+        <div class="hint">bäst hittills: våg ${g.best.wave} · ${g.best.kills} kills</div>
+      </div>`);
+    $('btnRestart').addEventListener('click', onRestart);
+    $('btnMenu').addEventListener('click', onMenu);
+  }
+}
+
+// ═══ game.js ═══
+// Spelets nav: tillstånd, huvudloop och limmet mellan alla system.
+
+
+
+
+
+
+
+
+
+
+const DAY_LENGTH = 320;   // sekunder per dygn
+
+class Game {
+  constructor(canvas) {
+    this.canvas = canvas;
+    this.renderer = new Renderer(canvas);
+    this.particles = this.renderer.particles;
+    this.colliders = this.renderer.props.grid;
+    this.input = new Input(canvas);
+    this.sound = new Sound();
+    this.hud = new HUD();
+    this.combat = new Combat();
+    this.waves = new WaveManager();
+    this.player = new Player(this);
+    this.enemies = [];
+    this.state = 'menu';
+    this.worldId = 'wild';
+    this.usedLock = false;
+    this.best = this.loadBest();
+    this.fps = 60;
+    this.frameCount = 0;
+    this.resetRun();
+
+    this.input.onLockChange = (locked) => {
+      if (locked) this.usedLock = true;
+      else if (this.state === 'playing' && this.usedLock) this.pause();
+    };
+    canvas.addEventListener('mousedown', () => {
+      if (this.state === 'playing' && !this.input.locked) this.input.requestLock();
+    });
+  }
+
+  // ---------------------------------------------------------------- tillstånd
+
+  loadBest() {
+    try {
+      return JSON.parse(localStorage.getItem('dashh.best')) || { wave: 0, kills: 0 };
+    } catch (e) { return { wave: 0, kills: 0 }; }
+  }
+
+  saveBest() {
+    this.best.wave = Math.max(this.best.wave, this.waves.wave);
+    this.best.kills = Math.max(this.best.kills, this.kills);
+    try { localStorage.setItem('dashh.best', JSON.stringify(this.best)); } catch (e) { /* ignoreras */ }
+  }
+
+  resetRun() {
+    this.player.reset();
+    this.enemies.length = 0;
+    this.combat.reset();
+    this.waves.reset();
+    this.particles.list.length = 0;
+    this.upgradeLevels = new Map();
+    this.level = 1;
+    this.xp = 0;
+    this.xpNeeded = 12;
+    this.kills = 0;
+    this.elapsed = 0;
+    this.damageDealt = 0;
+    this.dayTime = 0.34;   // förmiddag — se computeEnv
+    this.time = 0;
+    this.pendingLevelUps = 0;
+    this.ambientTimer = 0;
+    this.hud.setBoss(null);
+  }
+
+  start(worldId) {
+    if (worldId) this.worldId = worldId;
+    this.renderer.buildWorld(this.worldId);
+    this.colliders = this.renderer.props.grid;
+    this.buildings = this.renderer.props.buildings || null;   // taksnipern behöver dem
+    this.sound.init();
+    this.sound.resume();
+    this.resetRun();
+    this.state = 'playing';
+    this.hud.hideOverlay();
+    this.hud.showHUD(true);
+    if (this.worldId === 'city') this.hud.showBanner('NEOTROPOLIS', 'håll mellanslag — flyg', 3);
+    else this.hud.showBanner('VILDHEIM', 'vågorna kommer');
+    this.input.enabled = true;
+    this.input.requestLock();
+  }
+
+  showMenu() {
+    this.state = 'menu';
+    this.input.enabled = false;
+    this.input.releaseLock();
+    this.hud.showHUD(false);
+    this.hud.showStart((w) => this.start(w));
+  }
+
+  pause() {
+    if (this.state !== 'playing') return;
+    this.state = 'paused';
+    this.input.enabled = false;
+    this.input.releaseLock();
+    this.hud.showPause(() => this.resume());
+  }
+
+  resume() {
+    if (this.state !== 'paused') return;
+    this.state = 'playing';
+    this.input.enabled = true;
+    this.hud.hideOverlay();
+    this.input.requestLock();
+    this.sound.resume();
+  }
+
+  die() {
+    this.state = 'dead';
+    this.player.alive = false;
+    this.input.enabled = false;
+    this.input.releaseLock();
+    this.sound.gameOver();
+    this.particles.burst(this.player.pos.x, this.player.pos.y + 1.2, this.player.pos.z, 40, {
+      speed: 12, life: 1.1, size: 1.0, size2: 0.1, col: [0.4, 0.9, 1.0], alpha: 0.9, drag: 0.7, grav: -8,
+    });
+    this.saveBest();
+    setTimeout(() => {
+      if (this.state === 'dead') {
+        this.hud.showGameOver(this, () => this.start(), () => this.showMenu());
+      }
+    }, 900);
+  }
+
+  // ------------------------------------------------------- gränssnitt utåt
+
+  toast(msg) { this.hud.toast(msg); }
+
+  spawnEnemy(type, x, z) {
+    const e = new Enemy(type, x, z, this.waves.wave, this.worldId);
+    this.enemies.push(e);
+    this.particles.burst(x, terrainHeight(x, z) + 1, z, e.boss ? 40 : 12, {
+      speed: e.boss ? 14 : 6, life: 0.6, size: e.boss ? 1.4 : 0.6,
+      col: e.col, alpha: 0.9, drag: 0.7, grav: -4,
+    });
+    if (e.boss) {
+      const city = this.worldId === 'city';
+      this.hud.setBoss(e, city ? 'OVERSEER' : 'VOIDLORD');
+      this.hud.showBanner('BOSS', city ? 'overseer aktiveras' : 'voidlord stiger upp', 3);
+      this.sound.bossSpawn();
+      this.player.shake = 1.2;
+    }
+    return e;
+  }
+
+  spawnEnemyBullet(e, target, speed, dmg) { this.combat.enemyBullet(e, target, speed, dmg); }
+  spawnEnemyBulletDir(e, dx, dy, dz, speed, dmg) { this.combat.enemyBulletDir(e, dx, dy, dz, speed, dmg); }
+  shockwave(x, y, z, r, dmg) { this.combat.shockwave(this, x, y, z, r, dmg); }
+
+  onEnemyKilled(e) {
+    this.kills++;
+    this.sound.kill();
+    this.particles.burst(e.pos.x, e.pos.y + e.height * 0.5, e.pos.z, e.boss ? 60 : 16, {
+      speed: e.boss ? 16 : 8, life: e.boss ? 1.2 : 0.55, size: e.boss ? 1.5 : 0.6, size2: 0.1,
+      col: e.col, alpha: 0.95, drag: 0.7, grav: -6,
+    });
+    this.combat.dropLoot(this, e);
+    if (e.boss) {
+      this.hud.setBoss(null);
+      this.hud.showBanner('BOSSEN FÖLL', '', 2.6);
+      this.player.shake = 1.0;
+    }
+  }
+
+  addXP(n) {
+    this.xp += n;
+    while (this.xp >= this.xpNeeded) {
+      this.xp -= this.xpNeeded;
+      this.level++;
+      this.xpNeeded = Math.round(12 + this.level * 7 + Math.pow(this.level, 1.7));
+      this.pendingLevelUps++;
+    }
+    if (this.pendingLevelUps > 0 && this.state === 'playing') this.openLevelUp();
+  }
+
+  openLevelUp() {
+    this.state = 'levelup';
+    this.input.enabled = false;
+    this.input.releaseLock();
+    this.sound.levelUp();
+    this.choices = rollChoices(this.upgradeLevels, 3);
+    this.hud.showLevelUp(this.level, this.choices, (i) => this.pickUpgrade(i));
+  }
+
+  pickUpgrade(i) {
+    const u = this.choices[i];
+    if (!u) return;
+    u.apply(this.player.stats, this.player);
+    this.upgradeLevels.set(u.id, (this.upgradeLevels.get(u.id) || 0) + 1);
+    this.toast(`${u.icon} ${u.name}`);
+    this.pendingLevelUps--;
+    this.sound.pickup();
+    if (this.pendingLevelUps > 0) { this.openLevelUp(); return; }
+    this.state = 'playing';
+    this.input.enabled = true;
+    this.hud.hideOverlay();
+    this.input.requestLock();
+  }
+
+  onWaveStart(wave, isBoss) {
+    this.hud.showBanner(`VÅG ${wave}`, isBoss ? 'något stort närmar sig' : '');
+    this.sound.waveStart();
+  }
+
+  onWaveClear(wave) {
+    this.hud.showBanner('VÅGEN RENSAD', 'nästa startar snart', 2.0);
+    this.toast(`Våg ${wave} klarad`);
+    this.player.heal(this.player.stats.maxHp * 0.08);
+  }
+
+  // ------------------------------------------------------------------ update
+
+  update(dt) {
+    this.time += dt;
+    this.elapsed += dt;
+    this.dayTime = (this.dayTime + dt / DAY_LENGTH) % 1;
+
+    const p = this.player;
+    p.update(dt, this.input, this);
+
+    // attack: svärd i Vildheim, laser i Neotropolis
+    if (this.input.fireDown && p.fireTimer <= 0) {
+      if (this.worldId === 'wild') this.combat.swordSwing(this);
+      else this.combat.playerShoot(this);
+    } else p.aimDir(this.enemies);
+
+    // eldboll på C (bara Vildheim, 10 s nedkylning)
+    if (this.worldId === 'wild' && this.input.pressed('KeyC') && p.alive) {
+      if (p.fireballCd <= 0) this.combat.castFireball(this);
+      else this.toast(`🔥 Eldboll om ${Math.ceil(p.fireballCd)} s`);
+    }
+
+    // drönare
+    if (p.stats.drones > 0 && p.droneTimer <= 0) {
+      let target = null, bestD = 46;
+      for (const e of this.enemies) {
+        if (!e.alive) continue;
+        const d = Math.hypot(e.pos.x - p.pos.x, e.pos.z - p.pos.z);
+        if (d < bestD) { bestD = d; target = e; }
+      }
+      if (target) {
+        for (let i = 0; i < p.stats.drones; i++) {
+          const a = p.droneAngle + (i / p.stats.drones) * TAU;
+          this.combat.droneShoot(this, p.pos.x + Math.cos(a) * 2.1, p.pos.y + 2.4, p.pos.z + Math.sin(a) * 2.1, target);
+        }
+        p.droneTimer = 1.15;
+      } else p.droneTimer = 0.3;
+    }
+
+    this.waves.update(dt, this);
+
+    for (const e of this.enemies) if (e.alive) e.update(dt, this);
+    if (this.enemies.some((e) => !e.alive)) this.enemies = this.enemies.filter((e) => e.alive);
+
+    this.combat.update(dt, this);
+    this.particles.update(dt);
+
+    // stämningspartiklar: gnistor på dagen, glödmott på natten
+    this.ambientTimer -= dt;
+    if (this.ambientTimer <= 0) {
+      this.ambientTimer = 0.06;
+      const env = this.env || computeEnv(this.dayTime, this.worldId);
+      const night = env.night;
+      const a = rand(TAU), d = rand(6, 34);
+      const x = p.pos.x + Math.cos(a) * d, z = p.pos.z + Math.sin(a) * d;
+      const gh = terrainHeight(x, z);
+      this.particles.spawn({
+        x, y: Math.max(gh, WATER_LEVEL) + rand(0.4, 5), z,
+        vx: rand(-0.4, 0.4), vy: rand(0.1, 0.7), vz: rand(-0.4, 0.4),
+        life: rand(1.6, 3.4), size: rand(0.10, 0.24), size2: 0,
+        col: night > 0.4 ? [0.45, 0.95, 0.8] : [1.0, 0.95, 0.75],
+        alpha: night > 0.4 ? 0.75 : 0.3, drag: 0.05,
+      });
+    }
+
+    if (!p.alive && this.state === 'playing') this.die();
+  }
+
+  // ------------------------------------------------------------------ render
+
+  render() {
+    const r = this.renderer;
+    const p = this.player;
+    this.env = computeEnv(this.dayTime, this.worldId);
+    r.clearBatches();
+    if (p.alive) p.draw(r, this.time);
+    for (const e of this.enemies) e.draw(r, this.time);
+    this.combat.draw(r, this.time);
+    r.render(p.camera(this.time), this.env, this.time, p.pos);
+  }
+
+  // -------------------------------------------------------------------- loop
+
+  frame(now) {
+    const dt = Math.min(0.05, (now - (this.lastTime || now)) / 1000);
+    this.lastTime = now;
+    this.frameCount++;
+    this.fps = lerp(this.fps, 1 / Math.max(dt, 0.0001), 0.1);
+
+    if (this.state === 'playing') {
+      if (this.input.pressed('Escape') || this.input.pressed('KeyP')) this.pause();
+      else this.update(dt);
+    } else if (this.state === 'paused') {
+      if (this.input.pressed('Escape') || this.input.pressed('KeyP')) this.resume();
+    } else if (this.state === 'levelup') {
+      for (let i = 0; i < 3; i++) {
+        if (this.input.pressed(`Digit${i + 1}`) || this.input.pressed(`Numpad${i + 1}`)) {
+          this.pickUpgrade(i);
+          break;
+        }
+      }
+      this.particles.update(dt * 0.25);
+    } else {
+      // meny eller game over: låt världen leva vidare i bakgrunden
+      this.time += dt;
+      this.dayTime = (this.dayTime + dt / DAY_LENGTH) % 1;
+      this.particles.update(dt);
+      if (this.state !== 'dead') {
+        this.player.camYaw += dt * 0.06;
+        this.player.updateCamera(dt, 0);
+      }
+    }
+
+    if (this.state !== 'menu') this.hud.update(this, dt);
+    this.render();
+    this.input.endFrame();
+    requestAnimationFrame((t) => this.frame(t));
+  }
+
+  run() {
+    this.player.updateCamera(0.016, 0);
+    requestAnimationFrame((t) => this.frame(t));
+  }
+}
+
+// ═══ main.js ═══
+// Start: bygger spelet och kopplar startknappen.
+
+const canvas = document.getElementById('gl');
+let game = null;
+
+try {
+  game = new Game(canvas);
+  window.DASHH = game;               // praktiskt för felsökning i konsolen
+} catch (err) {
+  console.error(err);
+  document.getElementById('overlay').innerHTML =
+    `<div class="screen"><div class="goTitle">GRAFIKFEL</div>
+     <p id="loadErr">${err.message}<br><br>
+     Spelet kräver WebGL2. Prova en uppdaterad Chrome, Edge, Firefox eller Safari 15+,
+     och kontrollera att hårdvaruacceleration är påslaget.</p></div>`;
+}
+
+if (game) {
+  game.showMenu();
+
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) game.pause();
+  });
+
+  game.run();
+}
+</script>
+
+</body>
+</html>
