@@ -168,7 +168,7 @@
     function showIntro() {
       clearOverlay();
       overlay = el('div', 'stage__overlay');
-      overlay.appendChild(el('h3', null, spec.title || 'Ready?'));
+      overlay.appendChild(el('h2', null, spec.title || 'Ready?'));
       overlay.appendChild(el('p', null, spec.intro || ''));
       var button = el('button', 'btn');
       button.type = 'button';
@@ -182,7 +182,7 @@
     function showGameOver() {
       clearOverlay();
       overlay = el('div', 'stage__overlay');
-      overlay.appendChild(el('h3', null, spec.overTitle || 'Down you go'));
+      overlay.appendChild(el('h2', null, spec.overTitle || 'Down you go'));
       overlay.appendChild(el('p', 'big', String(Math.round(game.score))));
       if (spec.summary) overlay.appendChild(el('p', null, spec.summary(game)));
       if (window.Scores) {

@@ -67,7 +67,7 @@
     var stage = el('div', 'stage');
     var body = el('div', 'stage__body');
 
-    var heading = el('h3', 'quiz__question', 'Pick your level');
+    var heading = el('h2', 'quiz__question', 'Pick your level');
     body.appendChild(heading);
     var list = el('div', 'difficulties');
 
@@ -150,7 +150,7 @@
     body.appendChild(el('p', 'quiz__progress',
       'Question ' + (state.index + 1) + ' of ' + state.questions.length
       + (state.streak > 1 ? '  •  streak ' + state.streak : '')));
-    var heading = el('h3', 'quiz__question', question.q);
+    var heading = el('h2', 'quiz__question', question.q);
     body.appendChild(heading);
 
     var options = el('div', 'quiz__options');
@@ -244,7 +244,7 @@
     var stage = el('div', 'stage');
     var overlay = el('div', 'stage__overlay');
 
-    var heading = el('h3', null, 'Round over');
+    var heading = el('h2', null, 'Round over');
     overlay.appendChild(heading);
     overlay.appendChild(el('p', 'big', String(state.score)));
     overlay.appendChild(el('p', null,

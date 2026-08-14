@@ -280,7 +280,7 @@ def devlog_card(post: dict) -> str:
     # nested links are invalid HTML that browsers rearrange behind your back.
     return f"""<article class="panel panel--post">
   <div class="post-meta"><time datetime="{post['date']}">{pretty_date(post['date'])}</time>{tag_chips(post['tags'])}</div>
-  <h3>{html.escape(post['title'])}</h3>
+  <h2>{html.escape(post['title'])}</h2>
   <p>{html.escape(post['summary'])}</p>
   <span class="more">Read it <span aria-hidden="true">&rarr;</span></span>
 </article>"""
@@ -288,7 +288,7 @@ def devlog_card(post: dict) -> str:
 
 def scoreboard(game: dict) -> str:
     return f"""<div class="panel panel--scores">
-      <h3>Highscores</h3>
+      <h2>Highscores</h2>
       <div class="scoreboard" data-game="{game['slug']}" data-limit="10">
         <p class="scoreboard__empty">Loading&hellip;</p>
       </div>
@@ -297,7 +297,7 @@ def scoreboard(game: dict) -> str:
 
 def no_scores() -> str:
     return """<div class="panel panel--scores">
-      <h3>Beta</h3>
+      <h2>Beta</h2>
       <p>No highscores on this one yet — it is still being built. Found a bug,
       or want something changed? Say so in the
       <a href="/guestbook/">guestbook</a>.</p>
@@ -324,7 +324,7 @@ def series_block(s: dict, games: list[dict]) -> str:
     entries = "".join(
         f"""<li class="entry">
       <div class="entry__head">
-        <h4>{html.escape(e['title'])}</h4>
+        <h3>{html.escape(e['title'])}</h3>
         <span class="stars" title="{e['rating']} out of 5" aria-label="{e['rating']} out of 5">{'&#9733;' * int(e['rating'])}{'&#9734;' * (5 - int(e['rating']))}</span>
       </div>
       <span class="entry__status status--{html.escape(str(e.get('status', 'watched')).replace(' ', '-'))}">{html.escape(str(e.get('status', 'watched'))).upper()}</span>
@@ -333,7 +333,7 @@ def series_block(s: dict, games: list[dict]) -> str:
     return f"""<section class="panel panel--series">
   <header class="series__head">
     <span class="kicker">{html.escape(s.get('kicker', ''))}</span>
-    <h3>{html.escape(s['title'])}</h3>
+    <h2>{html.escape(s['title'])}</h2>
     <p class="series__verdict">{inline(s['verdict'])}</p>
   </header>
   <ul class="entries">{entries}</ul>

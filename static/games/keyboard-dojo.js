@@ -194,7 +194,7 @@
     var table = bests();
     var names = Object.keys(table).sort(function (a, b) { return table[b].wpm - table[a].wpm; });
     var wrap = el('div', 'dojo__board');
-    wrap.appendChild(el('h4', null, 'Your best on this keyboard'));
+    wrap.appendChild(el('h3', null, 'Your best on this keyboard'));
     if (!names.length) {
       wrap.appendChild(el('p', 'scoreboard__empty', 'Finish a drill and it lands here.'));
       return wrap;
@@ -619,7 +619,7 @@
     ui.overlay.innerHTML = '';
     ui.overlay.classList.remove('hidden');
     ui.overlay.classList.remove('stage__overlay--list');
-    ui.overlay.appendChild(el('h3', null, record ? 'Personal best' : 'Run complete'));
+    ui.overlay.appendChild(el('h2', null, record ? 'Personal best' : 'Run complete'));
     ui.overlay.appendChild(el('p', 'big', String(s.wpm)));
     ui.overlay.appendChild(el('p', null, 'words per minute at ' + s.accuracy + '% accuracy'));
 
@@ -681,7 +681,7 @@
     // Ten drills are taller than the stage, and centred content clips its own
     // top when it overflows.
     ui.overlay.classList.add('stage__overlay--list');
-    ui.overlay.appendChild(el('h3', null, 'Pick a drill'));
+    ui.overlay.appendChild(el('h2', null, 'Pick a drill'));
 
     var list = el('div', 'difficulties');
     availableDrills().forEach(function (d) {

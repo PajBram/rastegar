@@ -561,7 +561,7 @@
     ui.overlay.innerHTML = '';
     ui.overlay.classList.remove('hidden');
     ui.overlay.classList.remove('stage__overlay--list');
-    ui.overlay.appendChild(el('h3', null, 'Round complete'));
+    ui.overlay.appendChild(el('h2', null, 'Round complete'));
     ui.overlay.appendChild(el('p', 'big', String(score)));
     ui.overlay.appendChild(el('p', null, nRight + ' of ' + (nRight + nWrong) + ' right — ' + accuracy + '% accuracy'));
 
@@ -600,7 +600,7 @@
     ui.overlay.innerHTML = '';
     ui.overlay.classList.remove('hidden');
     ui.overlay.classList.add('stage__overlay--list');
-    ui.overlay.appendChild(el('h3', null, 'Pick a lesson'));
+    ui.overlay.appendChild(el('h2', null, 'Pick a lesson'));
 
     var list = el('div', 'difficulties');
     LESSONS.forEach(function (entry) {
