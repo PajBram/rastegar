@@ -14,7 +14,7 @@
   var target = new Date(box.getAttribute('data-starts')).getTime();
   if (!target) return;
 
-  var MATCH_MINUTES = 90;
+  var MATCH_MINUTES = 60;   // how long "On court now" lasts before "Full time"
   var state = box.querySelector('.countdown__state');
   var clock = box.querySelector('.countdown__clock');
   var units = {
