@@ -491,9 +491,6 @@ def build() -> None:
                      starts=html.escape(starts_raw, quote=True),
                      when_label=html.escape(when_label),
                      when_long=html.escape(when_long),
-                     home_team=html.escape(padel_meta.get("home_team", "")),
-                     away_team=html.escape(padel_meta.get("away_team", "")),
-                     venue=html.escape(padel_meta.get("venue", "")),
                      celebration=celebration,
                      shout=inline(padel_meta.get("shout", "")))
          + '\n<script src="/static/js/padel.js" defer></script>')

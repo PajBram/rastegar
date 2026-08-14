@@ -698,21 +698,6 @@ form textarea { resize: vertical; }
 }
 .countdown.is-live .countdown__state { color: var(--red); }
 
-.matchup {
-  display: flex; align-items: center; justify-content: center;
-  gap: 1.2rem; flex-wrap: wrap; text-align: center;
-}
-.matchup__side { flex: 1 1 12rem; }
-.matchup__side .kicker { margin-bottom: .5rem; }
-.matchup__names { font-family: var(--serif); font-size: clamp(1.2rem, 4vw, 1.8rem); margin: 0; }
-.matchup__v {
-  font-family: var(--serif); font-style: italic; font-size: 1.6rem; color: var(--tan);
-}
-.matchup__venue {
-  text-align: center; color: var(--ink-soft); margin: 1.6rem 0 0;
-  font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
-}
-
 /* The one line under the clock. It is the whole paragraph, so it gets to be
    the size of one — swap the wording in the front matter of padel.md. */
 .shout {
