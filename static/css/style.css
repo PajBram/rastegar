@@ -664,9 +664,62 @@ form textarea { resize: vertical; }
 .footer__small { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(239,232,223,.6); margin: 0; }
 .footer a { color: #efe8df; text-decoration-color: var(--tan); }
 
+/* ---------------------------------------------------------------- mascot */
+/* The little chase along the bottom of the window. Built entirely by
+   static/js/mascot.js; nothing here runs on its own. */
+.mascot {
+  position: fixed; left: 0; right: 0; bottom: 0; height: 60px;
+  z-index: 40; overflow: hidden;
+  pointer-events: none;                 /* the page underneath keeps working */
+  transition: opacity .35s ease;
+}
+/* Out of the way while the page is moving under it. */
+.mascot.is-away { opacity: 0; }
+.mascot__actor { position: absolute; left: 0; bottom: 4px; pointer-events: none; }
+.mascot__svg { overflow: visible; display: block; }
+
+/* Only the figure itself takes a tap — a transparent patch cut to its own
+   size, so the mascot can never sit on top of a link and swallow it. */
+.mascot__hit { pointer-events: auto; cursor: pointer; }
+
+.mascot__limb, .mascot__body {
+  fill: none; stroke: var(--ink); stroke-width: 2.1;
+  stroke-linecap: round; stroke-linejoin: round;
+}
+.mascot__limb--back { stroke: var(--ink-soft); }
+.mascot__head { fill: var(--ink); }
+/* Both figures carry a headband; only the one who is *it* wears it. */
+.mascot__band { stroke: none; stroke-width: 2.6; stroke-linecap: round; }
+.is-it .mascot__band { stroke: var(--red); }
+
+/* Whoever is *it* wears the red, the same red the app uses for it. */
+.is-it .mascot__body, .is-it .mascot__limb { stroke: var(--red); }
+.is-it .mascot__limb--back { stroke: rgba(255, 45, 85, .5); }
+.is-it .mascot__head { fill: var(--red); }
+
+.mascot__puff {
+  position: absolute; bottom: 40px; left: 0;
+  font-family: var(--sans); font-size: .6rem; font-weight: 700;
+  letter-spacing: .18em; color: var(--red);
+  opacity: 0; transform: translateY(6px);
+  transition: opacity .18s ease, transform .18s ease;
+}
+.mascot__puff.is-on { opacity: 1; transform: translateY(0); }
+
+/* Walking onto the dark footer, the ink figure would simply vanish. It picks
+   up a chalk line instead. Toggled from JS when the footer reaches the strip. */
+.mascot.on-dark .mascot__limb, .mascot.on-dark .mascot__body { stroke: #efe8df; }
+.mascot.on-dark .mascot__limb--back { stroke: rgba(239, 232, 223, .55); }
+.mascot.on-dark .mascot__head { fill: #efe8df; }
+.mascot.on-dark .is-it .mascot__body,
+.mascot.on-dark .is-it .mascot__limb { stroke: #ff6b88; }
+.mascot.on-dark .is-it .mascot__head { fill: #ff6b88; }
+.mascot.on-dark .mascot__puff { color: #ff6b88; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
   html { scroll-behavior: auto; }
+  .mascot { display: none; }
 }
 
 /* ------------------------------------------------------------ fullscreen */
