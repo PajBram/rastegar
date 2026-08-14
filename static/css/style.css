@@ -713,6 +713,15 @@ form textarea { resize: vertical; }
   font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
 }
 
+/* The one line under the clock. It is the whole paragraph, so it gets to be
+   the size of one — swap the wording in the front matter of padel.md. */
+.shout {
+  text-align: center; margin: 0 auto; max-width: 20ch;
+  font-family: var(--serif); font-weight: 700; line-height: 1.05;
+  letter-spacing: -.01em;
+  font-size: clamp(2.2rem, 9vw, 4.2rem);
+}
+
 .proof { margin: 0; text-align: center; }
 .proof img { margin: 0 auto; max-width: min(480px, 100%); height: auto; }
 .proof figcaption {

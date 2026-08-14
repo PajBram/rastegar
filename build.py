@@ -459,7 +459,7 @@ def build() -> None:
     # content/pages/padel.md as a full ISO time with its offset, and both the
     # heading and the fallback line underneath the clock are derived from it —
     # so the day is written down in exactly one place.
-    padel_meta, padel_body = page_source("padel.md")
+    padel_meta, _ = page_source("padel.md")
     starts_raw = padel_meta.get("starts", "")
     try:
         starts_at = datetime.fromisoformat(starts_raw)
@@ -495,7 +495,7 @@ def build() -> None:
                      away_team=html.escape(padel_meta.get("away_team", "")),
                      venue=html.escape(padel_meta.get("venue", "")),
                      celebration=celebration,
-                     content=markdown(padel_body))
+                     shout=inline(padel_meta.get("shout", "")))
          + '\n<script src="/static/js/padel.js" defer></script>')
 
     # Standalone documents (privacy policy and anything like it) ------------
