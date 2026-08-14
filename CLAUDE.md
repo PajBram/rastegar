@@ -58,7 +58,7 @@ templates/             base.html + en mall per sidtyp. {{token}} ersätts av bui
 static/                Kopieras rakt av till dist/static/
   css/style.css        Hela designsystemet, ett enda ark
   js/                  main.js (meny), quiz.js (quizmotor), arcade.js (spelskal),
-                       scores.js (highscore), guestbook.js
+                       scores.js (highscore), guestbook.js, mascot.js (kullgubbarna)
   games/               Ett canvas-spel per fil, byggt ovanpå arcade.js
   img/                 scene-*.svg (sidscener), games/<slug>.svg (spelomslag)
   fonts/               Självhostade typsnitt
@@ -97,14 +97,31 @@ Principer:
 - **Loggan** är skrivstil (`Great Vibes`) över en hårlinje med domänen under i
   spärrade versaler. Rör den inte utan att fråga.
 - **Inget mörkt läge.** Det togs bort i omgörningen; sajten är ljus, punkt.
+- **Maskoten** (`static/js/mascot.js`) är en liten bläckfigur som går längs
+  fönstrets underkant och spelar kull med en besökare i rött pannband. Den
+  finns inte alls vid `prefers-reduced-motion`, aldrig på spelsidorna, tonas
+  bort medan man scrollar, och byter till kritstreck över den mörka foten.
+  `__mascot.step()` och `__mascot.chase()` driver den utan att vänta på riktig
+  tid.
 
-Två fällor jag redan gått i, båda i spelens slutruta:
+Fällor jag redan gått i:
 
+- **Ordningen i `style.css` avgör.** En modifierare (`.panel--game`) och sin
+  bas (`.panel`) väger lika tungt, så den som står SIST vinner. Basen måste
+  därför stå ÖVANFÖR alla sina `--`-varianter. Samma sak med kortkommandon:
+  `padding: 4rem 0` i `.section` nollställde sidmarginalen som `.wrap` satte,
+  eftersom kortkommandot skriver alla fyra sidorna. Detta har bitit tre gånger
+  på en dag — spelkortens ramar, brödtextens sidmarginal och en rubrikstorlek
+  som aldrig gällde. **Kontrollera alltid i webbläsaren vad som faktiskt
+  vann**, inte vad filen säger.
 - Fält inuti `.stage__overlay` **måste** sätta sin egen textfärg. Ärver de overlayens
   vita blir texten osynlig mot ett vitt fält.
 - `arcade.js` blockerar mellanslag och piltangenter under spel. Blockeringen måste
   hoppas över när tangenttrycket är riktat mot ett textfält, annars går namnrutan
   inte att skriva i.
+- **Rubriknivåer är en disposition, inte storlekar.** Det som hänger direkt
+  under sidans `h1` ska vara `h2` — även rubriker som spelen ritar själva i
+  sina overlays. Vill du ändra storleken, ändra CSS:en, inte taggen.
 
 ---
 
