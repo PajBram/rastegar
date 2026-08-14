@@ -30,11 +30,6 @@
       "url": "/padel/"
     },
     {
-      "id": "about",
-      "label": "About",
-      "url": "/about/"
-    },
-    {
       "id": "guestbook",
       "label": "Guestbook",
       "url": "/guestbook/"

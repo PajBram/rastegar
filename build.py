@@ -561,7 +561,10 @@ def check_links() -> list:
 
 
 def sitemap(site: dict, posts: list[dict], games: list[dict]) -> str:
-    urls = ["/", "/games/", "/devlog/", "/anime/", "/padel/", "/about/", "/guestbook/"]
+    # /about/ is built and reachable, but deliberately left out until it is
+    # finished — off the nav, off the footer, and out of here so search
+    # engines are not handed a half-written page.
+    urls = ["/", "/games/", "/devlog/", "/anime/", "/padel/", "/guestbook/"]
     urls += [g["url"] for g in games] + [p["url"] for p in posts]
     base = site["url"].rstrip("/")
     body = "".join(f"<url><loc>{base}{u}</loc></url>" for u in urls)
