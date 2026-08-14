@@ -1,24 +1,41 @@
-<section class="pagehead">
-  <span class="kicker">{{when_label}}</span>
-  <h1 class="pagehead__title">{{title}}</h1>
-  <p class="pagehead__sub">{{summary}}</p>
-</section>
+<div class="padel">
 
-<section class="section section--tight wrap">
-  <div class="countdown" data-starts="{{starts}}">
-    <p class="countdown__state">Counting down to the first serve</p>
-    <div class="countdown__clock">
-      <span class="countdown__unit"><b data-unit="days">--</b><small>days</small></span>
-      <span class="countdown__unit"><b data-unit="hours">--</b><small>hours</small></span>
-      <span class="countdown__unit"><b data-unit="minutes">--</b><small>minutes</small></span>
-      <span class="countdown__unit"><b data-unit="seconds">--</b><small>seconds</small></span>
+  <!-- Vincent, cut out and stuck around the margins like snapshots on a
+       noticeboard. Decorative repetitions of one face, so they carry no alt
+       text: a screen reader reading "Vincent" five times helps nobody. -->
+  <span class="vinne vinne--a" aria-hidden="true"><img src="/static/img/vincent.jpg" alt="" width="152" height="254" loading="lazy" decoding="async"></span>
+  <span class="vinne vinne--b" aria-hidden="true"><img src="/static/img/vincent.jpg" alt="" width="152" height="254" loading="lazy" decoding="async"></span>
+  <span class="vinne vinne--d" aria-hidden="true"><img src="/static/img/vincent.jpg" alt="" width="152" height="254" loading="lazy" decoding="async"></span>
+
+  <section class="pagehead">
+    <span class="kicker">{{when_label}}</span>
+    <h1 class="pagehead__title">{{title}}</h1>
+    <p class="pagehead__sub">{{summary}}</p>
+  </section>
+
+  <section class="section section--tight wrap">
+    <div class="countdown" data-starts="{{starts}}">
+      <p class="countdown__state">Counting down to the first serve</p>
+      <div class="countdown__clock">
+        <span class="countdown__unit"><b data-unit="days">--</b><small>days</small></span>
+        <span class="countdown__unit"><b data-unit="hours">--</b><small>hours</small></span>
+        <span class="countdown__unit"><b data-unit="minutes">--</b><small>minutes</small></span>
+        <span class="countdown__unit"><b data-unit="seconds">--</b><small>seconds</small></span>
+      </div>
+      <p class="countdown__fallback">{{when_long}}</p>
     </div>
-    <p class="countdown__fallback">{{when_long}}</p>
-  </div>
-</section>
+  </section>
 
-{{celebration}}
+  {{celebration}}
 
-<section class="section wrap">
-  <p class="shout">{{shout}}</p>
-</section>
+  <section class="section wrap">
+    <p class="shout">{{shout}}</p>
+  </section>
+
+  <!-- Last in the source on purpose. On a wide screen it is positioned out in
+       the margin like the others; on a phone, where the headline runs edge to
+       edge and reflows at every width, it drops into the flow underneath it
+       instead — which is the only way it can never land on a word. -->
+  <span class="vinne vinne--c" aria-hidden="true"><img src="/static/img/vincent.jpg" alt="" width="152" height="254" loading="lazy" decoding="async"></span>
+
+</div>

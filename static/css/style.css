@@ -698,6 +698,48 @@ form textarea { resize: vertical; }
 }
 .countdown.is-live .countdown__state { color: var(--red); }
 
+/* Vincent, stuck around the margins. The page is a centred column with a lot
+   of white either side of it, and that white is where these live — never over
+   the type. Rotated a degree or two each so they read as pasted on rather
+   than placed. */
+.padel { position: relative; }
+.vinne { position: absolute; z-index: 1; pointer-events: none; }
+.vinne img {
+  display: block; width: 100%; height: auto;
+  border: 1px solid var(--hair);
+  /* A snapshot has a back. This is the white edge of it. */
+  padding: 5px; background: var(--paper);
+}
+/* All four hang from the top. Anchoring some of them to the bottom instead
+   made them collide the moment the page changed height — which it does, every
+   second, as the clock counts down a digit. */
+.vinne--a { width: 88px; top: 2.5rem;  left: 4%;  transform: rotate(-6deg); }
+.vinne--b { width: 66px; top: 10rem;   right: 9%; transform: rotate(5deg); }
+.vinne--c { width: 96px; top: 21rem;   left: 8%;  transform: rotate(3deg); }
+.vinne--d { width: 74px; top: 20rem;   right: 5%; transform: rotate(-8deg); }
+
+/* Wider still, and the margins can take bigger ones further out. */
+@media (min-width: 1100px) {
+  .vinne--a { width: 116px; left: 7%; }
+  .vinne--b { width: 88px;  right: 12%; }
+  .vinne--c { width: 124px; left: 12%; }
+  .vinne--d { width: 96px;  right: 7%; }
+}
+
+/* On a phone there are no margins to hide in. Two of them, small, tucked into
+   the corners the layout leaves empty — the rest would land on the words. */
+@media (max-width: 720px) {
+  .vinne--b, .vinne--d { display: none; }
+  .vinne--a { width: 58px; top: 1rem; left: 3%; }
+  /* Into the flow, below the headline. The headline runs the full width of a
+     phone and rewraps at every size, so any fixed offset lands on a word at
+     some width — 360 and 414 both did. */
+  .vinne--c {
+    position: static; display: block; width: 64px;
+    margin: 0 4% 3.5rem auto;
+  }
+}
+
 /* The one line under the clock. It is the whole paragraph, so it gets to be
    the size of one — swap the wording in the front matter of padel.md. */
 .shout {
