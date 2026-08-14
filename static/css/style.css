@@ -112,7 +112,13 @@ h1, h2, h3, h4 {
   .logo__domain { font-size: .56rem; }
 }
 
-.menu-toggle { background: none; border: 0; padding: .4rem; cursor: pointer; color: inherit; }
+/* 44px square: the smallest thing a thumb should be asked to hit. It measured
+   37 by 41 before, which is a miss waiting to happen on the one control every
+   phone visitor needs. */
+.menu-toggle {
+  background: none; border: 0; padding: 0; cursor: pointer; color: inherit;
+  min-width: 44px; min-height: 44px; display: grid; place-items: center;
+}
 .menu-toggle__bars { display: block; width: 24px; }
 .menu-toggle__bars i {
   display: block; height: 1.5px; background: currentColor; margin: 6px 0;
@@ -183,6 +189,12 @@ main { display: block; }
   color: rgba(255,255,255,.92);
 }
 .hero__cta { display: flex; flex-wrap: wrap; gap: .8rem; justify-content: center; }
+/* Stacked, the two buttons were 204px and 212px wide — an eight-pixel ragged
+   edge down the middle of the first thing anyone sees. Give them one width. */
+@media (max-width: 520px) {
+  .hero__cta { flex-direction: column; align-items: center; }
+  .hero__cta .btn { width: min(260px, 100%); text-align: center; }
+}
 
 /* full-bleed illustrated band used between sections */
 .band {
@@ -228,6 +240,12 @@ main { display: block; }
 .pagehead--game { padding-bottom: 1.5rem; }
 .pagehead__title--huge { font-size: clamp(4rem, 18vw, 8rem); }
 
+/* The base every .panel--* modifier overrides. It has to sit ABOVE all of
+   them: modifier and base weigh the same to the cascade, so whichever is
+   written last wins. Written below the game shelf, this rule put a hairline
+   box and 28px of padding back on cards that had asked for neither. */
+.panel { background: var(--paper); border: 1px solid var(--hair); padding: 1.75rem; }
+
 /* ------------------------------------------------------------ game shelf */
 .grid { display: grid; gap: 2.2rem 1.6rem; }
 .grid--games { grid-template-columns: 1fr; }
@@ -253,7 +271,6 @@ main { display: block; }
 .panel--game:hover .game-card__title { text-decoration: underline; text-underline-offset: 4px; }
 
 /* ------------------------------------------------------------- text cards */
-.panel { background: var(--paper); border: 1px solid var(--hair); padding: 1.75rem; }
 .panel--intro, .panel--note { border: 0; padding: 0; }
 .panel--status { background: var(--sand); border: 0; border-left: 2px solid var(--tan); padding: 1.5rem 1.75rem; }
 .panel--status h3 { font-size: 1.2rem; }
