@@ -25,6 +25,11 @@
       "url": "/anime/"
     },
     {
+      "id": "padel",
+      "label": "Padel",
+      "url": "/padel/"
+    },
+    {
       "id": "about",
       "label": "About",
       "url": "/about/"

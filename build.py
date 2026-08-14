@@ -454,6 +454,50 @@ def build() -> None:
                      links="".join(f'<a class="btn btn--small" href="{l["url"]}">{html.escape(l["label"])}</a>'
                                    for l in site.get("links", []))))
 
+    # Padel ------------------------------------------------------------------
+    # One match, one clock. The date lives in the front matter of
+    # content/pages/padel.md as a full ISO time with its offset, and both the
+    # heading and the fallback line underneath the clock are derived from it —
+    # so the day is written down in exactly one place.
+    padel_meta, padel_body = page_source("padel.md")
+    starts_raw = padel_meta.get("starts", "")
+    try:
+        starts_at = datetime.fromisoformat(starts_raw)
+    except ValueError:
+        starts_at = None
+    when_label = starts_at.strftime("%-d %B · %H:%M") if starts_at else ""
+    when_long = starts_at.strftime("%A %-d %B %Y, %H:%M") if starts_at else ""
+
+    # The photo only joins in once there is one. Until then the section is
+    # simply absent rather than a broken image.
+    proof = STATIC / "img" / "padel.gif"
+    celebration = ""
+    if proof.exists():
+        celebration = (
+            '<section class="section section--tight wrap">\n'
+            '  <figure class="proof">\n'
+            '    <img src="/static/img/padel.gif" alt="Paj slapping his doubles partner on the backside"'
+            ' width="480" loading="lazy" decoding="async">\n'
+            f'    <figcaption>{inline(padel_meta.get("caption", "Warm-up routine."))}</figcaption>\n'
+            '  </figure>\n'
+            '</section>'
+        )
+
+    page("/padel/", title=f"Padel — {site['name']}",
+         description=padel_meta.get("summary", ""), active="padel",
+         body=render(read_template("padel.html"),
+                     title=html.escape(padel_meta.get("title", "Padel")),
+                     summary=html.escape(padel_meta.get("summary", "")),
+                     starts=html.escape(starts_raw, quote=True),
+                     when_label=html.escape(when_label),
+                     when_long=html.escape(when_long),
+                     home_team=html.escape(padel_meta.get("home_team", "")),
+                     away_team=html.escape(padel_meta.get("away_team", "")),
+                     venue=html.escape(padel_meta.get("venue", "")),
+                     celebration=celebration,
+                     content=markdown(padel_body))
+         + '\n<script src="/static/js/padel.js" defer></script>')
+
     # Standalone documents (privacy policy and anything like it) ------------
     # Each file in content/docs/ names its own address in the front matter, so
     # a legal page can live at a stable URL of its own.
@@ -519,7 +563,7 @@ def check_links() -> list:
 
 
 def sitemap(site: dict, posts: list[dict], games: list[dict]) -> str:
-    urls = ["/", "/games/", "/devlog/", "/anime/", "/about/", "/guestbook/"]
+    urls = ["/", "/games/", "/devlog/", "/anime/", "/padel/", "/about/", "/guestbook/"]
     urls += [g["url"] for g in games] + [p["url"] for p in posts]
     base = site["url"].rstrip("/")
     body = "".join(f"<url><loc>{base}{u}</loc></url>" for u in urls)

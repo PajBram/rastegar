@@ -667,6 +667,58 @@ form textarea { resize: vertical; }
 .footer__small { font-size: .78rem; letter-spacing: .14em; text-transform: uppercase; color: rgba(239,232,223,.6); margin: 0; }
 .footer a { color: #efe8df; text-decoration-color: var(--tan); }
 
+/* ----------------------------------------------------------------- padel */
+.countdown { text-align: center; }
+.countdown__state {
+  font-size: .72rem; font-weight: 600; letter-spacing: .22em; text-transform: uppercase;
+  color: var(--ink-soft); margin: 0 0 1.4rem;
+}
+.countdown__clock {
+  display: flex; justify-content: center; flex-wrap: wrap;
+  gap: 1rem 1.6rem; margin-bottom: 1.2rem;
+}
+.countdown__clock[hidden] { display: none; }
+.countdown__unit { display: block; min-width: 3.6rem; }
+.countdown__unit b {
+  display: block; font-family: var(--serif); font-weight: 700;
+  font-size: clamp(2.6rem, 12vw, 4.6rem); line-height: 1;
+  /* Tabular figures, or the seconds shove the minutes sideways every tick. */
+  font-variant-numeric: tabular-nums; font-feature-settings: "tnum";
+}
+.countdown__unit small {
+  display: block; margin-top: .5rem;
+  font-size: .62rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.countdown__fallback { color: var(--ink-soft); margin: 0; font-size: .95rem; }
+.countdown.is-close .countdown__unit b { color: var(--red); }
+.countdown.is-live .countdown__state, .countdown.is-done .countdown__state {
+  font-family: var(--serif); font-size: clamp(1.8rem, 7vw, 3rem);
+  letter-spacing: -.01em; text-transform: none; color: var(--ink); margin-bottom: .8rem;
+}
+.countdown.is-live .countdown__state { color: var(--red); }
+
+.matchup {
+  display: flex; align-items: center; justify-content: center;
+  gap: 1.2rem; flex-wrap: wrap; text-align: center;
+}
+.matchup__side { flex: 1 1 12rem; }
+.matchup__side .kicker { margin-bottom: .5rem; }
+.matchup__names { font-family: var(--serif); font-size: clamp(1.2rem, 4vw, 1.8rem); margin: 0; }
+.matchup__v {
+  font-family: var(--serif); font-style: italic; font-size: 1.6rem; color: var(--tan);
+}
+.matchup__venue {
+  text-align: center; color: var(--ink-soft); margin: 1.6rem 0 0;
+  font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+}
+
+.proof { margin: 0; text-align: center; }
+.proof img { margin: 0 auto; max-width: min(480px, 100%); height: auto; }
+.proof figcaption {
+  margin-top: .9rem; color: var(--ink-soft); font-size: .9rem;
+}
+
 /* ---------------------------------------------------------------- mascot */
 /* The little chase along the bottom of the window. Built entirely by
    static/js/mascot.js; nothing here runs on its own. */

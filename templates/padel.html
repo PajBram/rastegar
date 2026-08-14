@@ -1,0 +1,39 @@
+<section class="pagehead">
+  <span class="kicker">{{when_label}}</span>
+  <h1 class="pagehead__title">{{title}}</h1>
+  <p class="pagehead__sub">{{summary}}</p>
+</section>
+
+<section class="section section--tight wrap">
+  <div class="countdown" data-starts="{{starts}}">
+    <p class="countdown__state">Counting down to the first serve</p>
+    <div class="countdown__clock">
+      <span class="countdown__unit"><b data-unit="days">--</b><small>days</small></span>
+      <span class="countdown__unit"><b data-unit="hours">--</b><small>hours</small></span>
+      <span class="countdown__unit"><b data-unit="minutes">--</b><small>minutes</small></span>
+      <span class="countdown__unit"><b data-unit="seconds">--</b><small>seconds</small></span>
+    </div>
+    <p class="countdown__fallback">{{when_long}}</p>
+  </div>
+</section>
+
+<section class="section section--tight wrap">
+  <div class="matchup">
+    <div class="matchup__side">
+      <span class="kicker">Us</span>
+      <p class="matchup__names">{{home_team}}</p>
+    </div>
+    <span class="matchup__v" aria-hidden="true">v</span>
+    <div class="matchup__side">
+      <span class="kicker">Them</span>
+      <p class="matchup__names">{{away_team}}</p>
+    </div>
+  </div>
+  <p class="matchup__venue">{{venue}}</p>
+</section>
+
+{{celebration}}
+
+<section class="section wrap">
+  <div class="prose measure">{{content}}</div>
+</section>
