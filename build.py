@@ -476,9 +476,10 @@ def build() -> None:
         celebration = (
             '<section class="section section--tight wrap">\n'
             '  <figure class="proof">\n'
-            '    <img src="/static/img/padel.gif" alt="Paj slapping his doubles partner on the backside"'
-            ' width="480" loading="lazy" decoding="async">\n'
-            f'    <figcaption>{inline(padel_meta.get("caption", "Warm-up routine."))}</figcaption>\n'
+            '    <img src="/static/img/padel.gif" alt="A padel racket swinging in and'
+            ' smashing a ball with Vincent&#39;s face on it out of play"'
+            ' width="320" height="240" loading="lazy" decoding="async">\n'
+            f'    <figcaption>{inline(padel_meta.get("caption", "A rehearsal."))}</figcaption>\n'
             '  </figure>\n'
             '</section>'
         )
