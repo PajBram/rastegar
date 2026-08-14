@@ -30,7 +30,8 @@
   .stat .label{display:block;font-size:9px;letter-spacing:.18em;opacity:.6}
   .stat span:last-child{font-size:17px;font-weight:700;font-variant-numeric:tabular-nums}
   #waveNum{color:var(--neon)} #levelNum{color:var(--neon2)}
-  #killNum{color:var(--hot)} #fpsNum{color:var(--good)}
+  #killNum{color:var(--hot)} #fpsNum{color:var(--good)} #goldNum{color:var(--gold)}
+  .stat.hidden{display:none}
 
   #bottom{position:absolute;left:50%;bottom:22px;transform:translateX(-50%);width:min(560px,72vw)}
   .bar{position:relative;height:20px;border-radius:10px;overflow:hidden;
@@ -42,6 +43,11 @@
   #xpFill{background:linear-gradient(90deg,var(--neon),var(--neon2))}
   #hpText{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
     font-size:11px;font-weight:700;letter-spacing:.08em;text-shadow:0 1px 3px #000}
+  /* rustningsnivån sitter i hälsobalken, till höger om siffrorna */
+  #armTag{position:absolute;right:8px;top:0;bottom:0;display:flex;align-items:center;
+    font-size:11px;font-weight:700;letter-spacing:.06em;color:#cfe0ff;
+    text-shadow:0 1px 3px #000}
+  #armTag.hidden{display:none}
   #dashRow{display:flex;gap:6px;justify-content:center;margin-top:2px}
   .pip{width:44px;height:6px;border-radius:3px;background:rgba(255,255,255,.13);
     border:1px solid rgba(77,243,255,.25)}
@@ -61,7 +67,19 @@
     border-color:#fff;animation:comboPulse .55s infinite alternate}
   @keyframes comboPulse{from{transform:scale(1)}to{transform:scale(1.45)}}
 
+  /* uppdragsraden i äventyret */
+  #objective{position:absolute;top:60px;left:50%;transform:translateX(-50%);
+    display:flex;align-items:center;gap:10px;background:var(--panel);
+    border:1px solid var(--line);border-left:3px solid var(--gold);border-radius:8px;
+    padding:6px 14px;backdrop-filter:blur(6px);white-space:nowrap}
+  #objective.hidden{display:none}
+  #objLabel{font-size:10px;letter-spacing:.2em;opacity:.7}
+  #objValue{font-size:14px;font-weight:800;color:var(--gold);font-variant-numeric:tabular-nums}
+  #objective.done{border-left-color:var(--good)} #objective.done #objValue{color:var(--good)}
+
   #bossBar{position:absolute;top:76px;left:50%;transform:translateX(-50%);width:min(520px,70vw)}
+  /* med uppdragsraden på plats får bosshälsan flytta ner */
+  #hud.obj #bossBar{top:112px}
   #bossBar .name{font-size:11px;letter-spacing:.25em;text-align:center;margin-bottom:4px;
     color:var(--hot);text-shadow:0 0 12px var(--hot)}
   #bossBar .bar{height:14px;border-color:rgba(255,61,127,.5)}
@@ -135,17 +153,22 @@
     #verTag{display:none}
     .topbar{top:8px;gap:5px;transform:translateX(-50%) scale(.82);transform-origin:top center}
     #minimap{width:96px;height:96px;right:10px;top:64px;bottom:auto}
+    #objective{top:46px;transform:translateX(-50%) scale(.85)}
+    #hud.obj #bossBar{top:92px}
     #bottom{width:min(300px,68vw);bottom:auto;top:112px;left:14px;transform:none}
     .bar{height:14px} .bar.xp{height:7px} #hpText{font-size:10px}
     .pip{width:30px;height:5px}
     #fireRow{width:120px;height:13px;margin-left:0}
     #banner{font-size:30px;top:34%}
     #toasts{bottom:auto;top:210px;left:14px}
+    .wares{gap:8px} .ware{width:min(150px,42vw);padding:10px 8px 9px}
+    .ware .icon{font-size:22px} .ware .desc{font-size:10px;min-height:28px}
     .cards{gap:10px} .card{width:min(260px,80vw);padding:14px 12px}
     .card .icon{font-size:30px;margin-bottom:6px}
     .keys{gap:6px} .key{padding:7px 10px;font-size:11px}
-    .worlds{gap:12px} .world{width:min(300px,86vw);padding:16px 14px}
-    .world .wDesc{min-height:0}
+    .worlds,.modes{gap:12px}
+    .world,.mode{width:min(300px,86vw);padding:16px 14px}
+    .world .wDesc,.mode .wDesc{min-height:0}
     .screen{padding:18px 14px}
     .results{gap:8px} .result{padding:10px 14px;min-width:88px} .result .rv{font-size:20px}
   }
@@ -184,6 +207,14 @@
   .cta.alt:hover{box-shadow:0 0 60px rgba(255,61,127,.6)}
   .hint{margin-top:16px;font-size:11px;letter-spacing:.2em;opacity:.45}
 
+  /* fortsätt-rutan när det finns en checkpoint */
+  .resume{margin:0 0 24px;padding:18px 20px 14px;border-radius:14px;
+    background:linear-gradient(165deg,rgba(58,44,12,.85),rgba(18,12,5,.9));
+    border:1px solid rgba(255,204,77,.35);display:inline-block}
+  .resume .cta{background:linear-gradient(180deg,#ffe08a,var(--gold));color:#1a1204;
+    box-shadow:0 0 40px rgba(255,204,77,.45)}
+  .resume .hint{margin-top:10px}
+
   /* världsval */
   .worlds{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:6px 0 22px}
   .world{pointer-events:auto;cursor:pointer;width:min(300px,42vw);padding:22px 18px 16px;
@@ -194,13 +225,28 @@
   .world:hover{transform:translateY(-6px)}
   .world.wild:hover{border-color:#4dffa6;box-shadow:0 16px 50px rgba(77,255,166,.25)}
   .world.city:hover{border-color:var(--hot);box-shadow:0 16px 50px rgba(255,61,127,.3)}
-  .world .wIcon{font-size:44px;line-height:1;margin-bottom:10px}
-  .world .wName{font-size:20px;font-weight:900;letter-spacing:.18em;margin-bottom:8px}
+  .world .wIcon,.mode .wIcon{font-size:44px;line-height:1;margin-bottom:10px}
+  .world .wName,.mode .wName{font-size:20px;font-weight:900;letter-spacing:.18em;margin-bottom:8px}
   .world.wild .wName{color:#4dffa6;text-shadow:0 0 18px rgba(77,255,166,.5)}
   .world.city .wName{color:var(--hot);text-shadow:0 0 18px rgba(255,61,127,.55)}
-  .world .wDesc{font-size:12px;line-height:1.55;opacity:.8;min-height:56px}
-  .world .wTag{margin-top:10px;font-size:9px;letter-spacing:.25em;opacity:.55;
+  .world .wDesc,.mode .wDesc{font-size:12px;line-height:1.55;opacity:.8;min-height:56px}
+  .world .wTag,.mode .wTag{margin-top:10px;font-size:9px;letter-spacing:.25em;opacity:.55;
     border-top:1px solid rgba(255,255,255,.12);padding-top:8px}
+
+  /* spelsättsval — samma kortform som världarna, egna färger */
+  .modes{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin:6px 0 22px}
+  .mode{pointer-events:auto;cursor:pointer;width:min(300px,42vw);padding:22px 18px 16px;
+    border-radius:16px;text-align:center;position:relative;border:1px solid var(--line);
+    transition:transform .14s,box-shadow .14s,border-color .14s}
+  .mode.surv{background:linear-gradient(165deg,rgba(14,44,66,.92),rgba(5,12,22,.95))}
+  .mode.adv{background:linear-gradient(165deg,rgba(58,44,12,.92),rgba(18,12,5,.95))}
+  .mode:hover{transform:translateY(-6px)}
+  .mode.surv:hover{border-color:var(--neon);box-shadow:0 16px 50px rgba(77,243,255,.28)}
+  .mode.adv:hover{border-color:var(--gold);box-shadow:0 16px 50px rgba(255,204,77,.28)}
+  .mode.surv .wName{color:var(--neon);text-shadow:0 0 18px rgba(77,243,255,.5)}
+  .mode.adv .wName{color:var(--gold);text-shadow:0 0 18px rgba(255,204,77,.55)}
+  .hint.back{pointer-events:auto;cursor:pointer;margin-top:10px}
+  .hint.back:hover{opacity:.8}
 
   /* level up */
   .lvlTitle{font-size:15px;letter-spacing:.45em;color:var(--gold);
@@ -219,6 +265,32 @@
   .card .num{position:absolute;top:8px;left:10px;font-size:10px;opacity:.4;letter-spacing:.1em}
   .card .lv{position:absolute;top:8px;right:10px;font-size:10px;color:var(--gold);letter-spacing:.1em}
 
+  /* shop */
+  .screen.shop{max-width:940px}
+  .purse{display:inline-block;margin:-14px 0 20px;padding:7px 20px;border-radius:999px;
+    background:rgba(255,204,77,.10);border:1px solid rgba(255,204,77,.35);
+    font-size:12px;letter-spacing:.22em}
+  .purse b{font-size:17px;color:var(--gold);margin-left:8px;font-variant-numeric:tabular-nums}
+  .wares{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin-bottom:26px}
+  .ware{pointer-events:auto;cursor:pointer;width:186px;padding:14px 12px 12px;border-radius:12px;
+    background:linear-gradient(180deg,rgba(20,26,44,.95),rgba(10,13,24,.95));
+    border:1px solid var(--line);text-align:center;position:relative;
+    transition:transform .12s,border-color .12s,box-shadow .12s}
+  .ware:hover{transform:translateY(-4px);border-color:var(--gold);
+    box-shadow:0 12px 34px rgba(255,204,77,.25)}
+  .ware .icon{font-size:28px;line-height:1;margin-bottom:6px}
+  .ware .name{font-size:13px;font-weight:800;letter-spacing:.08em;color:var(--gold);margin-bottom:5px}
+  .ware .desc{font-size:11px;line-height:1.45;opacity:.75;min-height:32px}
+  .ware .price{margin-top:9px;font-size:13px;font-weight:800;letter-spacing:.1em;
+    border-top:1px solid rgba(255,255,255,.12);padding-top:7px}
+  .ware .price i{color:var(--gold);font-style:normal;font-size:11px;margin-left:2px}
+  .ware .own{position:absolute;top:8px;right:10px;font-size:10px;letter-spacing:.1em;opacity:.6}
+  /* har man inte råd syns varan ändå — man ska se vad man sparar till */
+  .ware.poor{opacity:.42;cursor:not-allowed}
+  .ware.poor:hover{transform:none;border-color:var(--line);box-shadow:none}
+  .ware.sold{opacity:.3;cursor:default}
+  .ware.sold:hover{transform:none;border-color:var(--line);box-shadow:none}
+
   /* game over */
   .goTitle{font-size:clamp(44px,9vw,86px);font-weight:900;letter-spacing:.12em;color:var(--hot);
     text-shadow:0 0 40px rgba(255,61,127,.6)}
@@ -234,11 +306,16 @@
 
 <div id="hud" class="hidden">
   <div class="topbar">
-    <div class="stat"><span class="label">VÅG</span><span id="waveNum">1</span></div>
-    <div class="stat"><span class="label">NIVÅ</span><span id="levelNum">1</span></div>
+    <div class="stat"><span class="label" id="waveLbl">VÅG</span><span id="waveNum">1</span></div>
+    <div class="stat"><span class="label" id="levelLbl">NIVÅ</span><span id="levelNum">1</span></div>
+    <div class="stat hidden" id="goldStat"><span class="label">GULD</span><span id="goldNum">0</span></div>
     <div class="stat"><span class="label">KILLS</span><span id="killNum">0</span></div>
     <div class="stat"><span class="label">TID</span><span id="timeNum">0:00</span></div>
     <div class="stat"><span class="label">FPS</span><span id="fpsNum">—</span></div>
+  </div>
+
+  <div id="objective" class="hidden">
+    <span id="objLabel">UPPDRAG</span><span id="objValue">—</span>
   </div>
 
   <div id="bossBar" class="hidden">
@@ -255,7 +332,8 @@
   <canvas id="minimap" width="320" height="320"></canvas>
 
   <div id="bottom">
-    <div class="bar"><div id="hpFill"></div><span id="hpText">100 / 100</span></div>
+    <div class="bar"><div id="hpFill"></div><span id="hpText">100 / 100</span>
+      <span id="armTag" class="hidden">🪖 0</span></div>
     <div class="bar xp"><div id="xpFill"></div></div>
     <div id="dashRow"></div>
     <div id="fireRow" class="hidden"><div id="fireFill"></div><span>C · ELDBOLL</span></div>
@@ -2003,6 +2081,19 @@ class Sound {
     this.noise({ dur: 0.18, vol: 0.12, freq: 500, sweep: 120 });
   }
   pickup() { this.tone({ f: 880, f2: 1320, dur: 0.07, type: 'sine', vol: 0.06 }); }
+  /** Mynt: två klara toner ovanpå varandra — ska inte gå att blanda ihop med XP. */
+  coin() {
+    const v = this.v(0.03);
+    this.tone({ f: 1180 * v, dur: 0.05, type: 'square', vol: 0.045 });
+    this.tone({ f: 1770 * v, dur: 0.10, type: 'square', vol: 0.030, delay: 0.035 });
+  }
+  /** Klirret när något köps i shoppen. */
+  buy() {
+    [660, 990, 1320].forEach((f, i) =>
+      this.tone({ f, dur: 0.16, type: 'triangle', vol: 0.09, delay: i * 0.05 }));
+  }
+  /** Nekat köp: kort, torr och otvetydig. */
+  denied() { this.tone({ f: 180, f2: 120, dur: 0.14, type: 'square', vol: 0.08 }); }
   heal() {
     this.tone({ f: 520, f2: 780, dur: 0.16, type: 'sine', vol: 0.10 });
     this.tone({ f: 780, f2: 1170, dur: 0.18, type: 'sine', vol: 0.07, delay: 0.06 });
@@ -2308,6 +2399,68 @@ function rollChoices(levels, n = 3) {
   return out;
 }
 
+// ═══ shop.js ═══
+// Shoppen mellan äventyrets nivåer.
+//
+// Uppgraderingskorten vid nivå-upp är slumpens gåva; det här är det du
+// själv väljer. Därför är varorna raka och tråkiga med flit — man ska kunna
+// bestämma sig på fem sekunder och komma vidare.
+
+const WARES = [
+  { id: 'dmg', icon: '⚔️', name: 'VAPENSMED', desc: '+15% skada',
+    base: 55, grow: 1.45, max: 12,
+    apply: (st) => { st.damage *= 1.15; } },
+
+  { id: 'hp', icon: '🛡️', name: 'PANSARPLÅT', desc: '+25 max HP · läker 25',
+    base: 45, grow: 1.35, max: 12,
+    apply: (st, p) => { st.maxHp += 25; p.heal(25); } },
+
+  { id: 'speed', icon: '🥾', name: 'SPRINGARSKOR', desc: '+8% rörelsehastighet',
+    base: 50, grow: 1.5, max: 6,
+    apply: (st) => { st.speed *= 1.08; } },
+
+  { id: 'dashCd', icon: '🔋', name: 'KONDENSATOR', desc: '−15% dash-återladdning',
+    base: 55, grow: 1.5, max: 5,
+    apply: (st) => { st.dashRecharge *= 0.85; } },
+
+  { id: 'crit', icon: '🎲', name: 'LYCKOSTEN', desc: '+8% kritchans',
+    base: 60, grow: 1.45, max: 8,
+    apply: (st) => { st.crit += 0.08; } },
+
+  { id: 'regen', icon: '💚', name: 'NANITER', desc: '+1 HP i sekunden',
+    base: 70, grow: 1.5, max: 5,
+    apply: (st) => { st.regen += 1.0; } },
+
+  { id: 'magnet', icon: '🧲', name: 'MAGNETRING', desc: '+50% plockradie',
+    base: 40, grow: 1.6, max: 4,
+    apply: (st) => { st.pickupRadius *= 1.5; } },
+
+  { id: 'xp', icon: '🧠', name: 'SYNAPSLÄNK', desc: '+20% erfarenhet',
+    base: 45, grow: 1.4, max: 6,
+    apply: (st) => { st.xpMult *= 1.2; } },
+
+  // Rustning hittar man i första hand ute på kartan; det här är för den som
+  // hellre betalar än letar. Dyrt med flit, och utan tak precis som fynden.
+  { id: 'armor', icon: '🪖', name: 'RUSTNINGSDEL', desc: '+1 rustningsnivå',
+    base: 90, grow: 1.4, max: 99,
+    apply: (st, p) => { p.armor += 1; } },
+];
+
+/** Fältverkstaden är ingen uppgradering utan en tjänst: den fyller hälsan. */
+const REPAIR = { id: 'repair', icon: '🩹', name: 'FÄLTVERKSTAD', desc: 'fyller hälsan helt' };
+
+/** Priset stiger för varje köpt exemplar, så inget kan spammas billigt. */
+function priceOf(ware, owned) {
+  return Math.round(ware.base * Math.pow(ware.grow, owned));
+}
+
+/** Vad fältverkstaden kostar just nu — gratis vore fel, och full hälsa köps inte. */
+function repairPrice(player) {
+  const missing = player.stats.maxHp - player.hp;
+  if (missing < 1) return 0;
+  return Math.max(10, Math.round(missing * 0.7));
+}
+
 // ═══ player.js ═══
 // Spelarkaraktären: rörelse, hopp, dash, kamerarigg och den ritade figuren.
 
@@ -2356,6 +2509,7 @@ class Player {
     this.pos = { x: 0, y: terrainHeight(0, 0) + 2, z: 0 };
     this.vel = { x: 0, y: 0, z: 0 };
     this.hp = this.stats.maxHp;
+    this.armor = 0;          // rustningsnivå, byggs upp av fynd i äventyret
     this.yaw = 0;
     this.camYaw = 0;
     this.camPitch = -0.24;
@@ -2467,6 +2621,9 @@ class Player {
 
   takeDamage(n) {
     if (this.invuln > 0 || !this.alive) return false;
+    // Rustningen dämpar med avtagande effekt: varje nivå hjälper, men
+    // kurvan når aldrig noll skada hur många delar man än hittar.
+    if (this.armor > 0) n /= 1 + this.armor * 0.06;
     this.hp -= n;
     this.invuln = 0.55;
     this.hitFlash = 1;
@@ -2832,6 +2989,46 @@ class Player {
       put(B.box, P(0.55 * s, 2.13 + bob, 0), 0.3, 0.05, 0.3, gold, 0, 0, -0.15 * s, 0.3);
     }
 
+    // ---- rustningssetet: syns direkt, och byter skepnad vart femte steg
+    const arm = this.armor | 0;
+    if (arm > 0) {
+      const tier = Math.min(4, Math.floor(arm / 5));
+      const raw = city ? [0.60, 0.66, 0.80] : [0.66, 0.60, 0.46];
+      // ju tyngre rustning, desto blankare metall
+      const shine = Math.min(0.35, arm * 0.02);
+      const metal = F([raw[0] + shine, raw[1] + shine, raw[2] + shine]);
+      const edge = city ? trim : gold;
+
+      // förstärkta axelplåtar redan från första delen
+      for (const s of [-1, 1]) {
+        put(B.box, P(0.6 * s, 2.15 + bob, 0), 0.36, 0.11, 0.4, metal, 0, 0, -0.15 * s, 0.1);
+      }
+      if (tier >= 1) {
+        // bröstharnesk med kant
+        put(B.box, P(0, 1.8 + bob, 0.2 + lean * 0.18), 0.66, 0.5, 0.3, metal, lean, 0, 0, 0.08);
+        put(B.box, P(0, 1.56 + bob, 0.3 + lean * 0.18), 0.5, 0.07, 0.1, edge, lean, 0, 0, 0.35);
+      }
+      if (tier >= 2) {
+        // lårsköldar
+        for (const s of [-1, 1]) {
+          put(B.box, P(0.3 * s, 1.0 + bob, 0.12), 0.26, 0.42, 0.2, metal, 0.1, 0, 0.1 * s, 0.08);
+        }
+      }
+      if (tier >= 3) {
+        // ryggplåt och krage
+        put(B.box, P(0, 1.9 + bob, -0.34), 0.62, 0.6, 0.14, metal, 0, 0, 0, 0.08);
+        put(B.cyl, P(0, 2.1 + bob, 0), 0.3, 0.1, 0.3, metal, 0, 0, 0, 0.2);
+      }
+      if (tier >= 4) {
+        // svävande plattor som kretsar kring bäraren
+        for (let i = 0; i < 3; i++) {
+          const a = time * 0.9 + i * (Math.PI * 2 / 3);
+          put(B.box, [x + Math.cos(a) * 1.15, y + 1.7 + bob + Math.sin(time * 1.6 + i) * 0.12,
+            z + Math.sin(a) * 1.15], 0.08, 0.3, 0.18, edge, 0, a, 0, 0.5);
+        }
+      }
+    }
+
     // ---- hals + huvud
     put(B.cyl, P(0, 2.06 + bob, 0), 0.18, 0.14, 0.18, suit, 0, 0, 0, inv);
     if (city) {
@@ -2935,6 +3132,10 @@ const TYPES = {
   drone:  { hp: 14,  speed: 10.5, radius: 0.50, height: 0.9, dmg: 7,  xp: 3,  col: [1.00, 0.85, 0.25], ai: 'drone', turn: 11 },
   sniper: { hp: 34,  speed: 7.6,  radius: 0.70, height: 1.6, dmg: 24, xp: 10, col: [0.35, 1.00, 0.72], ai: 'sniper', turn: 5, cool: 2.6, bullet: 70 },
   hover:  { hp: 155, speed: 3.4,  radius: 1.90, height: 2.0, dmg: 20, xp: 17, col: [0.55, 0.60, 1.00], ai: 'hover', turn: 0.8, cool: 2.4, bullet: 32, shield: true },
+
+  // --- Äventyrets egna bossar: en per värld, med faser vid 2/3 och 1/3 hälsa
+  vildboss: { hp: 760, speed: 3.1, radius: 2.40, height: 5.2, dmg: 30, xp: 120, col: [0.50, 0.53, 0.40], ai: 'vildboss', cool: 1.4, bullet: 22, boss: true, bossName: 'JORDVREDET', bossSub: 'marken reser sig' },
+  cityboss: { hp: 660, speed: 6.2, radius: 2.10, height: 2.6, dmg: 26, xp: 120, col: [0.90, 0.94, 1.00], ai: 'cityboss', cool: 1.3, bullet: 34, boss: true, bossName: 'SANERAREN', bossSub: 'staden städar undan dig', turn: 3 },
 };
 
 // Neotropolis-varianternas neonskal.
@@ -2948,7 +3149,9 @@ class Enemy {
     const t = TYPES[type];
     this.type = type;
     this.def = t;
-    this.boss = type === 'boss';
+    this.boss = type === 'boss' || !!t.boss;
+    this.bossPhase = 1;      // äventyrsbossarna trappar upp vid 2/3 och 1/3
+    this.orbitDir = Math.random() < 0.5 ? -1 : 1;
     this.fly = worldId === 'city';
     const hpMul = 1 + (wave - 1) * 0.23 + (wave > 10 ? (wave - 10) * 0.09 : 0);
     this.maxHp = Math.round(t.hp * hpMul);
@@ -2981,6 +3184,34 @@ class Enemy {
     this.death = 0;          // > 0 medan kroppen faller ihop
     this.deathMax = 0.62;
     this.enrage = false;     // sätts om vågen drar ut på tiden
+    this.guard = false;      // äventyrsläget: står på post tills spelaren närmar sig
+    this.home = null;
+    this.aggroRange = 0;
+  }
+
+  /**
+   * Ställer monstret på post: det stannar kring platsen där det står och
+   * vaknar först när spelaren kommer inom `range`, eller när något skadar det.
+   */
+  postGuard(range = 28) {
+    this.guard = true;
+    this.home = { x: this.pos.x, z: this.pos.z };
+    this.aggroRange = range;
+    this.patrolR = rand(1.5, 4.5);
+    this.patrolSpeed = rand(0.16, 0.34);
+    return this;
+  }
+
+  /** Vaknar ur sin post och börjar bete sig som vanligt. */
+  wake(ctx) {
+    if (!this.guard) return;
+    this.guard = false;
+    this.state = 'idle';
+    ctx.particles.burst(this.pos.x, this.pos.y + this.height * 0.95, this.pos.z, 6, {
+      speed: 4, life: 0.45, size: 0.35, size2: 0.05,
+      col: [1.0, 0.8, 0.35], alpha: 0.9, drag: 0.6, grav: -3,
+    });
+    if (this.boss && ctx.onBossWake) ctx.onBossWake(this);
   }
 
   damage(n, ctx, crit) {
@@ -3039,6 +3270,27 @@ class Enemy {
     }
   }
 
+  /**
+   * Äventyrsbossarnas fastrappa: 1 → 2 vid 2/3 hälsa, 2 → 3 vid 1/3.
+   * Bytet märks — frys, stöt, utrop — så att upptrappningen inte smyger.
+   */
+  updateBossPhase(ctx, msg2, msg3) {
+    const frac = this.hp / this.maxHp;
+    const ph = frac <= 1 / 3 ? 3 : frac <= 2 / 3 ? 2 : 1;
+    if (ph > this.bossPhase) {
+      this.bossPhase = ph;
+      this.stateT = Math.min(this.stateT, 0.4);
+      ctx.freeze(0.09);
+      ctx.toast(ph === 2 ? msg2 : msg3);
+      ctx.sound.tone({ f: 60, f2: 160, dur: 0.8, type: 'sawtooth', vol: 0.16 });
+      ctx.particles.burst(this.pos.x, this.pos.y + this.height * 0.6, this.pos.z, 40, {
+        speed: 14, life: 0.8, size: 0.8, size2: 0.1, col: this.col, alpha: 0.95, drag: 0.6, grav: -4,
+      });
+      ctx.player.shake = Math.min(1.6, ctx.player.shake + 0.7);
+    }
+    return this.bossPhase;
+  }
+
   update(dt, ctx) {
     const p = ctx.player;
     const dx = p.pos.x - this.pos.x, dz = p.pos.z - this.pos.z;
@@ -3053,7 +3305,21 @@ class Enemy {
 
     let wishX = 0, wishZ = 0, speed = this.speed * slowF;
 
-    switch (this.def.ai) {
+    // Vakter (äventyrsläget) driver runt sin lägerplats tills spelaren kommer
+    // nära, tills de blir träffade eller tills nivån hetsar dem.
+    if (this.guard && (dist < this.aggroRange || this.hp < this.maxHp || this.enrage)) this.wake(ctx);
+    const guarding = this.guard;
+    if (guarding) {
+      const a = this.phase * this.patrolSpeed;
+      const tx = this.home.x + Math.cos(a) * this.patrolR - this.pos.x;
+      const tz = this.home.z + Math.sin(a) * this.patrolR - this.pos.z;
+      const tl = Math.hypot(tx, tz) || 1;
+      wishX = tx / tl; wishZ = tz / tl;
+      speed = this.speed * 0.22;
+    }
+
+    // 'vakt' matchar ingen gren: monstret gör inget av sin vanliga AI.
+    switch (guarding ? 'vakt' : this.def.ai) {
       case 'melee':
         wishX = nx; wishZ = nz;
         break;
@@ -3264,6 +3530,102 @@ class Enemy {
         }
         break;
       }
+
+      case 'vildboss': {
+        // Jordvredet: stenjätte. Kastar bumlingar i båge på håll, stampar
+        // marken på nära håll. Varje fas gör den snabbare och kasten fler.
+        const ph = this.updateBossPhase(ctx, 'Jordvredet rämnar', 'Jordvredet rasar');
+        const hurry = 1 + (ph - 1) * 0.25;
+        if (this.state === 'stomp') {
+          speed = 0;
+          if (this.stateT <= 0) {
+            ctx.shockwave(this.pos.x, this.pos.y, this.pos.z, 15, this.dmg);
+            // ring av stenskärvor ut från nedslaget — fler för varje fas
+            const n = 8 + ph * 3;
+            for (let i = 0; i < n; i++) {
+              const a = (i / n) * TAU + this.phase;
+              ctx.spawnEnemyBulletDir(this, Math.sin(a), 0.05, Math.cos(a), 17, this.dmg * 0.4);
+            }
+            this.state = 'idle'; this.stateT = rand(2.0, 3.0) / hurry;
+          }
+        } else if (this.state === 'boulder') {
+          speed = 0;
+          if (this.stateT <= 0) {
+            // en bumling per fas, med kort mellanrum i siktet
+            for (let i = 0; i < ph; i++) {
+              const ghost = { pos: {
+                x: p.pos.x + (i ? rand(-6, 6) : 0), y: p.pos.y,
+                z: p.pos.z + (i ? rand(-6, 6) : 0),
+              } };
+              ctx.spawnEnemyLob(this, ghost, this.def.bullet, this.dmg * 0.8, 1.0);
+            }
+            ctx.sound.tone({ f: 90, f2: 45, dur: 0.4, type: 'sawtooth', vol: 0.12 });
+            this.state = 'idle'; this.stateT = rand(1.7, 2.5) / hurry;
+          }
+        } else {
+          wishX = nx; wishZ = nz;
+          speed = this.speed * hurry;
+          if (this.stateT <= 0) {
+            if (dist < 13) { this.state = 'stomp'; this.stateT = 0.9; }
+            else if (dist < 55) { this.state = 'boulder'; this.stateT = 0.7; }
+            else this.stateT = 0.4;   // för långt bort — fortsätt gå
+          }
+        }
+        break;
+      }
+
+      case 'cityboss': {
+        // Saneraren: svävande ringmaskin. Cirklar runt spelaren, fäller ut
+        // solfjädrar av skott, och blinkar till ny vinkel i senare faser.
+        const ph = this.updateBossPhase(ctx, 'Saneraren eskalerar', 'Saneraren renar');
+        const ring = 15;
+        if (this.state === 'sweep') {
+          speed = this.speed * 0.15;
+          if (this.stateT <= 0) {
+            const n = 3 + ph * 2;
+            const spreadA = 0.55;
+            const base = Math.atan2(nx, nz);
+            for (let i = 0; i < n; i++) {
+              const a = base + (i / (n - 1) - 0.5) * spreadA;
+              ctx.spawnEnemyBulletDir(this, Math.sin(a), (p.pos.y + 1.1 - this.pos.y) * 0.02, Math.cos(a),
+                this.def.bullet, this.dmg * 0.6);
+            }
+            ctx.sound.salvo();
+            this.state = 'idle'; this.stateT = rand(1.4, 2.2) / (1 + (ph - 1) * 0.3);
+          }
+        } else if (this.state === 'blink') {
+          speed = 0;
+          if (this.stateT <= 0) {
+            // hoppar ~120° runt spelaren — flanken byts innan siktet hunnit med
+            const cur = Math.atan2(this.pos.x - p.pos.x, this.pos.z - p.pos.z);
+            const next = cur + this.orbitDir * rand(1.6, 2.4);
+            ctx.particles.burst(this.pos.x, this.pos.y + 1, this.pos.z, 22,
+              { speed: 8, life: 0.5, size: 0.5, col: this.col, alpha: 0.9, drag: 0.5 });
+            this.pos.x = p.pos.x + Math.sin(next) * ring;
+            this.pos.z = p.pos.z + Math.cos(next) * ring;
+            this.vel.x = this.vel.z = 0;
+            ctx.particles.burst(this.pos.x, this.pos.y + 1, this.pos.z, 22,
+              { speed: 8, life: 0.5, size: 0.5, col: this.col, alpha: 0.9, drag: 0.5 });
+            ctx.sound.tone({ f: 900, f2: 300, dur: 0.18, type: 'square', vol: 0.08 });
+            this.state = 'idle'; this.stateT = rand(1.2, 1.8);
+          }
+        } else {
+          // cirkla med radiell korrigering — utan den spiralerar den in
+          // rakt över spelaren, precis som drönarna gjorde (se CLAUDE.md)
+          wishX = -nz * this.orbitDir + nx * (dist - ring) * 0.15;
+          wishZ = nx * this.orbitDir + nz * (dist - ring) * 0.15;
+          if (this.fireCd <= 0) {
+            this.fireCd = this.def.cool * rand(0.8, 1.2);
+            ctx.spawnEnemyBullet(this, p, this.def.bullet, this.dmg * 0.5);
+          }
+          if (this.stateT <= 0) {
+            const roll = Math.random();
+            if (ph >= 2 && roll < 0.3) { this.state = 'blink'; this.stateT = 0.45; }
+            else { this.state = 'sweep'; this.stateT = 0.7; }
+          }
+        }
+        break;
+      }
     }
 
     // separation så de inte staplas på varandra
@@ -3299,6 +3661,10 @@ class Enemy {
       let wantY;
       if (this.def.ai === 'sniper' && this.perch) {
         wantY = this.perch.h + 1.0;
+      } else if (guarding) {
+        // en vakt svävar över sitt eget läger, inte över spelaren
+        wantY = terrainHeight(this.home.x, this.home.z)
+          + (this.def.ai === 'hover' ? 2.6 : 2.2) + Math.sin(this.phase * 1.7) * 0.5;
       } else {
         const off = this.def.ai === 'drone'
           ? (this.state === 'dive' || this.enrage ? 0.5 : 4.5)
@@ -3322,8 +3688,12 @@ class Enemy {
     if (this.pos.y <= gh) { this.pos.y = gh; this.vel.y = 0; this.grounded = true; }
     else this.grounded = false;
 
-    // vänd mot spelaren — hover-plattformen vrider sig trögt, därav flanken
-    this.yaw += angleDelta(this.yaw, Math.atan2(nx, nz)) * Math.min(1, dt * (this.def.turn || 8));
+    // vänd mot spelaren — hover-plattformen vrider sig trögt, därav flanken.
+    // En vakt tittar dit den går i stället, den vet ju inte om dig än.
+    const face = guarding && this.planar > 0.25
+      ? Math.atan2(this.vel.x, this.vel.z)
+      : Math.atan2(nx, nz);
+    this.yaw += angleDelta(this.yaw, face) * Math.min(1, dt * (this.def.turn || 8));
     this.phase += dt;
     this.shieldFlash = Math.max(0, this.shieldFlash - dt * 3);
     this.planar = Math.hypot(this.vel.x, this.vel.z);
@@ -3630,6 +4000,83 @@ class Enemy {
         }
         break;
       }
+
+      case 'vildboss': {
+        // Jordvredet: en jätte av staplade stenblock med glödande sprickor.
+        // Glöden går från bärnsten mot rött allteftersom faserna trappas upp.
+        const ph = this.bossPhase;
+        const stone = c, mossy = dark;
+        const ember = ph === 3 ? [1.0, 0.25, 0.12] : ph === 2 ? [1.0, 0.45, 0.10] : [1.0, 0.65, 0.15];
+        const emberGlow = 0.7 + ph * 0.25 + Math.sin(time * (2 + ph)) * 0.2;
+        const rumble = this.state === 'stomp' ? Math.sin(time * 34) * 0.08 : 0;
+        // ben av två grova block
+        for (const s of [-1, 1]) {
+          const step = Math.sin(this.walk * 1.2 + (s > 0 ? 0 : Math.PI)) * 0.3;
+          put(B.box, P(1.05 * s, 0.9, step * 0.5), 0.95, 1.8, 1.05, mossy, step * 0.3, 0, 0, 0);
+          put(B.box, P(1.05 * s, 0.25, step * 0.7), 1.15, 0.5, 1.3, stone, 0, 0, 0, 0);
+        }
+        // höft, bål och bröst — allt något förskjutet, som staplad sten
+        put(B.box, P(0, 2.1 + rumble, 0), 2.5, 1.0, 1.7, stone, 0, 0.06, 0, 0);
+        put(B.box, P(0.1, 3.15 + rumble, 0.1), 2.9, 1.3, 2.0, mossy, 0, -0.08, 0.03, 0);
+        put(B.box, P(-0.05, 4.3 + rumble, 0), 2.4, 1.1, 1.6, stone, 0, 0.1, -0.02, 0);
+        // glödande sprickor mellan blocken
+        put(B.box, P(0, 2.68 + rumble, 0), 2.2, 0.14, 1.5, ember, 0, 0.02, 0, emberGlow);
+        put(B.box, P(0, 3.85 + rumble, 0), 2.0, 0.12, 1.4, ember, 0, -0.04, 0, emberGlow);
+        // hjärtat i bröstet — själva svagheten, ph gör den argare
+        put(B.octa, P(0, 3.3 + rumble, 1.05), 0.5, 0.7, 0.4, ember, 0, time * (1 + ph), 0, emberGlow + 0.4);
+        // huvud: lågt block med två glödande ögon under panna av sten
+        put(B.box, P(0, 5.15 + rumble, 0.2), 1.2, 0.75, 1.1, stone, 0, 0, 0, 0);
+        put(B.box, P(0, 5.5 + rumble, 0.35), 1.35, 0.3, 0.9, mossy, 0.15, 0, 0, 0);
+        for (const s of [-1, 1]) {
+          put(B.box, P(0.32 * s, 5.1 + rumble, 0.72), 0.2, 0.14 * blink, 0.1, ember, 0, 0, 0, emberGlow + 0.3);
+        }
+        // armar: hängande blockkedjor som lyfts i stampen
+        for (const s of [-1, 1]) {
+          const raise = this.state === 'stomp' ? 1.1 - this.stateT : Math.sin(time * 0.9 + s) * 0.1;
+          put(B.box, P(2.05 * s, 3.9 + raise * 0.8, 0.2), 0.85, 1.5, 0.95, mossy, raise * 0.8, 0, 0.15 * s, 0);
+          put(B.box, P(2.15 * s, 2.4 + raise * 1.4, 0.35), 1.05, 1.4, 1.15, stone, raise * 1.2, 0, 0.1 * s, 0);
+        }
+        // fas 3: lösa stenar kretsar kring jätten
+        if (ph >= 3) {
+          for (let i = 0; i < 4; i++) {
+            const a = time * 1.4 + (i / 4) * TAU;
+            B.box.push(x + Math.cos(a) * 4.1, y + 2.8 + Math.sin(a * 2 + i) * 0.9, z + Math.sin(a) * 4.1,
+              0.5, 0.5, 0.5, mossy, a, a * 1.7, 0, 0.1);
+          }
+        }
+        if (this.state === 'stomp') {
+          B.sphere.push(x, y + 0.2, z, 7 + Math.sin(time * 30) * 1.5, 0.4, 7, ember, 0, 0, 0, 1.2);
+        }
+        break;
+      }
+
+      case 'cityboss': {
+        // Saneraren: ett vitt maskinöga i en roterande ring — sterilt, inte
+        // vilt. Ringen snurrar fortare och trimmen blör rödare per fas.
+        const ph = this.bossPhase;
+        const shell = c;
+        const trim = ph === 3 ? [1.0, 0.2, 0.3] : ph === 2 ? [1.0, 0.3, 0.6] : [0.85, 0.2, 0.45];
+        const spin = time * (0.9 + ph * 0.6);
+        const charge = this.state === 'sweep' ? 1.4 : 0.5;
+        // kärnan: öga med lins som följer spelaren via yaw (put roterar med yaw)
+        put(B.sphere, P(0, 1.3, 0), 1.5 * pop, 1.5 * pop, 1.5 * pop, shell, 0, 0, 0, 0.25 + f);
+        put(B.sphere, P(0, 1.3, 1.15), 0.62, 0.62 * blink, 0.4, trim, 0, 0, 0, charge + 0.4);
+        put(B.sphere, P(0, 1.3, 1.38), 0.24, 0.24 * blink, 0.14, [0.05, 0.02, 0.05], 0, 0, 0, 0.2);
+        // roterande ring av plattor
+        for (let i = 0; i < 8; i++) {
+          const a = spin + (i / 8) * TAU;
+          B.box.push(x + Math.cos(a) * 2.5, y + 1.3 + Math.sin(time * 1.8 + i) * 0.1, z + Math.sin(a) * 2.5,
+            0.22, 0.75, 0.5, i % 2 ? shell : trim, 0, a, 0, i % 2 ? 0.15 : 0.7);
+        }
+        // vingpar bakåt
+        for (const s of [-1, 1]) {
+          put(B.box, P(1.35 * s, 1.75, -0.7), 1.1, 0.14, 0.75, shell, 0.1, 0, 0.35 * s, 0.2);
+          put(B.box, P(1.9 * s, 1.95, -0.85), 0.6, 0.09, 0.5, trim, 0.15, 0, 0.5 * s, 0.8);
+        }
+        // svävfältet under
+        B.cyl.push(x, y + 0.15, z, 1.6, 0.08, 1.6, trim, 0, 0, 0, 0.8 + Math.sin(time * 6) * 0.25);
+        break;
+      }
     }
 
     const air = Math.max(0, this.pos.y - terrainHeight(x, z));
@@ -3750,6 +4197,662 @@ class WaveManager {
       return;
     }
     ctx.spawnEnemy(type, p.x + 30, p.z + 30);
+  }
+}
+
+// ═══ missions.js ═══
+// Uppdragen i äventyret — det som avslutar en nivå.
+//
+// Ett uppdrag äger sina egna föremål i världen, ritar dem, och avgör när
+// nivån är klar (`done`) eller misslyckad (`failed`). Monstren på kartan är
+// hindret, inte målet: bara jakten och bossen kräver att något dör.
+
+
+const GOLD = [1.0, 0.82, 0.28];
+const CYAN = [0.30, 0.95, 1.0];
+const GREEN = [0.35, 1.0, 0.62];
+
+/** Namn åt jaktens byte — sätts ihop av två halvor. */
+const HUNT_FIRST = ['Gorrn', 'Vex', 'Malak', 'Sköldbjörn', 'Kavr', 'Thume', 'Zerrik', 'Ödesgap'];
+const HUNT_LAST = ['Benkross', 'den Svultne', 'Askhjärta', 'Tvillingtand', 'den Blinde',
+  'Järnkäft', 'Nattfäll', 'den Förste'];
+
+class Mission {
+  constructor(level) {
+    this.level = level;
+    this.done = false;
+    this.failed = false;
+    this.title = '';        // banderollen när nivån börjar
+    this.label = '';         // rubriken i HUD:en
+  }
+
+  update() {}
+  draw() {}
+  markers() { return []; }
+  get status() { return ''; }
+}
+
+// --------------------------------------------------------------- samla in
+
+class CollectMission extends Mission {
+  constructor(level, ctx, mgr) {
+    super(level);
+    this.title = 'SAMLA KRAFTKÄRNORNA';
+    this.label = 'KRAFTKÄRNOR';
+    const n = level < 4 ? 3 : 4;
+    this.cores = [];
+    const budget = mgr.plan.budget / n;
+    for (let i = 0; i < n; i++) {
+      const spot = mgr.campSpot(ctx, 48, ARENA_RADIUS - 14);
+      mgr.spawnCamp(ctx, spot, budget);
+      // kärnan ligger mitt i lägret — den är vaktad, inte gömd
+      this.cores.push({ x: spot.x, z: spot.z, y: terrainHeight(spot.x, spot.z), taken: false });
+    }
+    this.taken = 0;
+  }
+
+  get status() { return `${this.taken} / ${this.cores.length}`; }
+
+  update(dt, ctx) {
+    const p = ctx.player.pos;
+    for (const c of this.cores) {
+      if (c.taken) continue;
+      if (Math.hypot(c.x - p.x, c.z - p.z) < 3.6 && Math.abs(c.y + 2.6 - p.y) < 6) {
+        c.taken = true;
+        this.taken++;
+        ctx.sound.pickup();
+        ctx.sound.tone({ f: 520, f2: 1040, dur: 0.22, type: 'sine', vol: 0.1 });
+        ctx.particles.burst(c.x, c.y + 2.6, c.z, 26, {
+          speed: 9, life: 0.8, size: 0.5, size2: 0.05, col: GOLD, alpha: 0.95, drag: 0.6, grav: -4,
+        });
+        const left = this.cores.length - this.taken;
+        ctx.toast(left ? `Kraftkärna tagen — ${left} kvar` : 'Sista kraftkärnan!');
+        if (!left) this.done = true;
+      }
+    }
+  }
+
+  markers() {
+    return this.cores.filter((c) => !c.taken).map((c) => ({ x: c.x, z: c.z, col: '#ffd24d' }));
+  }
+
+  draw(rend, time) {
+    const B = rend.dyn;
+    for (const c of this.cores) {
+      if (c.taken) continue;
+      // Kärnan svävar över vakternas huvuden — står den på marken göms den
+      // bakom lägret och man ser aldrig vad man är där för.
+      const y = c.y + 2.6 + Math.sin(time * 2 + c.x) * 0.22;
+      B.octa.push(c.x, y, c.z, 0.62, 1.05, 0.62, GOLD, 0, time * 1.5, 0, 1.6);
+      B.octa.push(c.x, y, c.z, 1.15, 1.9, 1.15, [1.0, 0.55, 0.12], 0, -time * 0.9, 0, 0.45);
+      B.cyl.push(c.x, c.y + 5, c.z, 0.22, 5, 0.22, [1.0, 0.72, 0.2], 0, 0, 0, 0.55);
+      if (Math.random() < 0.4) {
+        rend.particles.spawn({
+          x: c.x + rand(-0.6, 0.6), y: c.y + rand(0.2, 2.4), z: c.z + rand(-0.6, 0.6),
+          vx: 0, vy: rand(0.6, 1.6), vz: 0, life: rand(0.5, 1.1),
+          size: rand(0.14, 0.3), size2: 0, col: GOLD, alpha: 0.8, drag: 0.2,
+        });
+      }
+    }
+  }
+}
+
+// ------------------------------------------------------------ försvara punkt
+
+class DefendMission extends Mission {
+  constructor(level, ctx, mgr) {
+    super(level);
+    this.title = 'FÖRSVARA REAKTORN';
+    this.label = 'LADDNING';
+    const spot = mgr.campSpot(ctx, 46, ARENA_RADIUS - 24);
+    this.x = spot.x; this.z = spot.z; this.y = terrainHeight(spot.x, spot.z);
+    this.charge = 0;
+    this.dur = Math.min(90, 48 + level * 2.5);
+    this.started = false;
+    this.wave = 0;
+    this.spawnT = 0;
+    // två läger på vägen dit, resten kommer som anfallsvågor mot reaktorn
+    for (let i = 0; i < 2; i++) {
+      mgr.spawnCamp(ctx, mgr.campSpot(ctx, 48, ARENA_RADIUS - 14), mgr.plan.budget * 0.25);
+    }
+  }
+
+  get status() {
+    if (!this.started) return 'GÅ DIT';
+    return `${Math.round(this.charge * 100)} %`;
+  }
+
+  update(dt, ctx) {
+    const p = ctx.player.pos;
+    const d = Math.hypot(this.x - p.x, this.z - p.z);
+
+    if (!this.started) {
+      if (d < 14) {
+        this.started = true;
+        this.spawnT = 3;
+        ctx.hud.showBanner('REAKTORN LADDAR', 'håll dig kvar', 2.4);
+        ctx.sound.waveStart();
+      }
+      return;
+    }
+
+    // Laddar bara medan spelaren håller sig i närheten — det är så uppdraget
+    // blir ett försvar och inte bara en väntan.
+    if (d < 17) this.charge += dt / this.dur;
+    else {
+      this.charge = Math.max(0, this.charge - dt * 0.35 / this.dur);
+      if (!this.warnT || this.warnT <= 0) {
+        this.warnT = 3.5;
+        ctx.toast('Reaktorn tappar laddning — gå tillbaka');
+      }
+    }
+    if (this.warnT > 0) this.warnT -= dt;
+
+    if (this.charge >= 1) {
+      this.charge = 1;
+      this.done = true;
+      return;
+    }
+
+    // Anfallsvågor rakt mot reaktorn, vakna från start. Hinner spelaren inte
+    // med håller vi igen — en hög som växer i all oändlighet är ingen strid.
+    let awake = 0;
+    for (const e of ctx.enemies) if (e.alive && !e.guard) awake++;
+    this.spawnT -= dt;
+    if (this.spawnT <= 0 && awake < 18) {
+      this.wave++;
+      this.spawnT = Math.max(7, 15 - this.level * 0.4);
+      const n = 2 + Math.min(6, Math.floor(this.level * 0.6) + Math.floor(this.wave / 2));
+      const types = ctx.worldId === 'city'
+        ? ['drone', 'drone', 'sniper', 'spitter']
+        : ['grunt', 'grunt', 'spitter', 'charger'];
+      for (let i = 0; i < n; i++) {
+        const a = rand(TAU), r = rand(34, 46);
+        const x = this.x + Math.cos(a) * r, z = this.z + Math.sin(a) * r;
+        const pos = clampToArena({ x, z });
+        ctx.spawnEnemy(types[randInt(0, types.length - 1)], pos.x, pos.z);
+      }
+      ctx.sound.tone({ f: 190, f2: 90, dur: 0.4, type: 'sawtooth', vol: 0.09 });
+    }
+  }
+
+  markers() { return [{ x: this.x, z: this.z, col: '#4df3ff' }]; }
+
+  draw(rend, time) {
+    const B = rend.dyn;
+    const c = this.charge;
+    const col = [0.3 + c * 0.7, 0.85, 1.0];
+    B.cyl.push(this.x, this.y + 0.35, this.z, 2.2, 0.35, 2.2, [0.16, 0.2, 0.3], 0, 0, 0, 0.05);
+    B.cyl.push(this.x, this.y + 1.3, this.z, 0.85, 1.0, 0.85, [0.22, 0.28, 0.4], 0, 0, 0, 0.05);
+    const pulse = this.started ? 1 + Math.sin(time * (4 + c * 8)) * 0.12 : 1;
+    B.octa.push(this.x, this.y + 3.1, this.z, 1.1 * pulse, 1.6 * pulse, 1.1 * pulse, col,
+      0, time * (0.6 + c * 2.5), 0, 0.6 + c * 1.4);
+    // laddningsringen växer runt kärnan
+    B.cyl.push(this.x, this.y + 2.2 + c * 1.8, this.z, 1.7, 0.06, 1.7, CYAN, 0, 0, 0, 1.3);
+    // ljuspelaren gör reaktorn hittbar över trädtopparna
+    B.cyl.push(this.x, this.y + 7, this.z, 0.2, 7, 0.2, CYAN, 0, 0, 0, 0.4 + c * 0.5);
+    if (this.started && Math.random() < 0.55) {
+      const a = rand(TAU);
+      rend.particles.spawn({
+        x: this.x + Math.cos(a) * 2.1, y: this.y + rand(0.3, 1), z: this.z + Math.sin(a) * 2.1,
+        vx: 0, vy: rand(1.5, 3.5), vz: 0, life: rand(0.5, 1.0),
+        size: rand(0.16, 0.34), size2: 0, col: CYAN, alpha: 0.85, drag: 0.15,
+      });
+    }
+  }
+}
+
+// ------------------------------------------------------------------- jakt
+
+class HuntMission extends Mission {
+  constructor(level, ctx, mgr) {
+    super(level);
+    this.name = `${HUNT_FIRST[randInt(0, HUNT_FIRST.length - 1)]} ${HUNT_LAST[randInt(0, HUNT_LAST.length - 1)]}`;
+    this.title = 'SPÅRA UPP MÅLET';
+    this.label = this.name.toUpperCase();
+
+    // ett par vanliga läger, och längst bort lägret där bytet håller till
+    const camps = Math.max(1, mgr.plan.camps - 1);
+    for (let i = 0; i < camps; i++) {
+      mgr.spawnCamp(ctx, mgr.campSpot(ctx, 48, ARENA_RADIUS - 14), mgr.plan.budget / mgr.plan.camps);
+    }
+    const lair = mgr.campSpot(ctx, 62, ARENA_RADIUS - 16);
+    mgr.spawnCamp(ctx, lair, mgr.plan.budget / mgr.plan.camps);   // livvakter
+    const type = ctx.worldId === 'city'
+      ? (level >= 4 ? 'hover' : 'sniper')
+      : (level >= 5 ? 'tank' : 'charger');
+    const e = ctx.spawnEnemy(type, lair.x, lair.z, true);
+    e.postGuard(rand(22, 28));
+    // eliten: tåligare, hårdare och guldskimrande så den känns igen på håll
+    e.maxHp = Math.round(e.maxHp * 3.2);
+    e.hp = e.maxHp;
+    e.dmg *= 1.3;
+    e.elite = true;
+    e.eliteName = this.name;
+    e.col = [1.0, 0.78, 0.25];
+    this.target = e;
+    this.announced = false;
+  }
+
+  get status() {
+    const t = this.target;
+    if (!t.alive) return 'FÄLLD';
+    return `${Math.max(0, Math.round(t.hp / t.maxHp * 100))} %`;
+  }
+
+  update(dt, ctx) {
+    const t = this.target;
+    if (!t.alive) {
+      if (!this.done) {
+        this.done = true;
+        ctx.hud.setBoss(null);
+        ctx.hud.showBanner('MÅLET FÄLLT', this.name, 2.4);
+      }
+      return;
+    }
+    if (!this.announced && !t.guard) {
+      this.announced = true;
+      ctx.hud.setBoss(t, this.name.toUpperCase());
+      ctx.hud.showBanner(this.name.toUpperCase(), 'har fått syn på dig', 2.6);
+      ctx.sound.bossSpawn();
+    }
+  }
+
+  markers() {
+    return this.target.alive ? [{ x: this.target.pos.x, z: this.target.pos.z, col: '#ffd24d' }] : [];
+  }
+
+  draw(rend, time) {
+    const t = this.target;
+    if (!t.alive) return;
+    // en roterande markör ovanför bytet, så man ser vem det är i vimlet
+    rend.dyn.octa.push(t.pos.x, t.pos.y + t.height + 1.5 + Math.sin(time * 3) * 0.16,
+      t.pos.z, 0.34, 0.6, 0.34, GOLD, Math.PI, time * 2.4, 0, 1.6);
+  }
+}
+
+// -------------------------------------------------------------- eskortera
+
+class EscortMission extends Mission {
+  constructor(level, ctx, mgr) {
+    super(level);
+    this.title = 'ESKORTERA LASTAREN';
+    this.label = 'LASTAREN';
+
+    const p = ctx.player.pos;
+    const a = rand(TAU);
+    this.x = p.x + Math.cos(a) * 8;
+    this.z = p.z + Math.sin(a) * 8;
+    this.y = terrainHeight(this.x, this.z);
+
+    // målet ligger tvärs över kartan, med hela vägen innanför arenan
+    const dir = Math.atan2(-this.z, -this.x) + rand(-0.8, 0.8);
+    const len = rand(100, 140);
+    const goal = clampToArena({
+      x: this.x + Math.cos(dir) * len,
+      z: this.z + Math.sin(dir) * len,
+    });
+    this.goal = { x: goal.x, z: goal.z };
+    this.routeLen = Math.hypot(this.goal.x - this.x, this.goal.z - this.z);
+
+    this.maxHp = 240 + level * 30;
+    this.hp = this.maxHp;
+    this.speed = 3.4;
+    this.waiting = true;
+
+    // lägren står längs vägen — resan är gatloppet
+    for (const f of [0.45, 0.7, 0.92]) {
+      const bx = this.x + (this.goal.x - this.x) * f;
+      const bz = this.z + (this.goal.z - this.z) * f;
+      const side = rand(-14, 14);
+      const nx = -(this.goal.z - this.z) / this.routeLen, nz = (this.goal.x - this.x) / this.routeLen;
+      const spot = clampToArena({ x: bx + nx * side, z: bz + nz * side });
+      mgr.spawnCamp(ctx, { x: spot.x, z: spot.z }, mgr.plan.budget / 3);
+    }
+  }
+
+  get status() { return `${Math.max(0, Math.round(this.hp / this.maxHp * 100))} %`; }
+
+  update(dt, ctx) {
+    if (this.done || this.failed) return;
+    const p = ctx.player.pos;
+    const toGoal = Math.hypot(this.goal.x - this.x, this.goal.z - this.z);
+
+    // Lastaren väntar in spelaren i stället för att rulla iväg ensam — en
+    // följeslagare man springer efter är bara irriterande.
+    const near = Math.hypot(this.x - p.x, this.z - p.z) < 26;
+    this.waiting = !near;
+    if (near && toGoal > 5) {
+      const k = this.speed * dt / toGoal;
+      this.x += (this.goal.x - this.x) * k;
+      this.z += (this.goal.z - this.z) * k;
+    }
+    // den svävar, så ingen sten eller backe kan sätta stopp
+    this.y += ((terrainHeight(this.x, this.z) + 1.6) - this.y) * Math.min(1, dt * 3);
+
+    // Skada från monster som står intill, reparation när det är lugnt.
+    // Fler än fyra på en gång räknas inte — annars smälter lastaren bort på
+    // några sekunder så fort ett läger vaknar, och då är uppdraget förlorat
+    // innan man hunnit dit.
+    let threat = 0;
+    for (const e of ctx.enemies) {
+      if (!e.alive || e.guard) continue;
+      if (Math.hypot(e.pos.x - this.x, e.pos.z - this.z) < 4.5) threat++;
+    }
+    threat = Math.min(4, threat);
+    if (threat) {
+      this.hp -= threat * (4 + this.level * 0.4) * dt;
+      if (Math.random() < 0.5) {
+        ctx.particles.spawn({
+          x: this.x + rand(-1, 1), y: this.y + rand(0, 1.4), z: this.z + rand(-1, 1),
+          vx: rand(-1, 1), vy: rand(1, 3), vz: rand(-1, 1), life: rand(0.3, 0.6),
+          size: rand(0.2, 0.45), size2: 0, col: [1.0, 0.45, 0.2], alpha: 0.9, drag: 0.5,
+        });
+      }
+      if (!this.hurtT || this.hurtT <= 0) { this.hurtT = 4; ctx.toast('Lastaren är under attack!'); }
+    } else if (this.hp < this.maxHp) {
+      this.hp = Math.min(this.maxHp, this.hp + 12 * dt);
+    }
+    if (this.hurtT > 0) this.hurtT -= dt;
+
+    if (this.hp <= 0) { this.hp = 0; this.failed = true; return; }
+    if (toGoal <= 5) {
+      this.done = true;
+      ctx.particles.burst(this.x, this.y + 1, this.z, 30, {
+        speed: 10, life: 0.9, size: 0.6, size2: 0.05, col: GREEN, alpha: 0.95, drag: 0.6, grav: -4,
+      });
+    }
+  }
+
+  markers() {
+    return [{ x: this.x, z: this.z, col: '#5cffa0' }, { x: this.goal.x, z: this.goal.z, col: '#4df3ff' }];
+  }
+
+  draw(rend, time) {
+    const B = rend.dyn;
+    const hurt = this.hp / this.maxHp;
+    // Mässing och blinkande ljus, inte grått — annars ser lastaren ut som
+    // ännu ett stenblock i landskapet och man tappar bort den.
+    const body = [0.68, 0.52, 0.26];
+    const bob = Math.sin(time * 2.2) * 0.14;
+    const y = this.y + bob;
+    B.box.push(this.x, y + 1.0, this.z, 1.9, 1.15, 1.4, body, 0, time * 0.25, 0, 0.1);
+    B.box.push(this.x, y + 2.2, this.z, 1.1, 0.35, 0.85, [0.35, 0.3, 0.2], 0, time * 0.25, 0, 0.05);
+    // ljuset ovanpå skiftar mot rött när den är illa däran
+    B.sphere.push(this.x, y + 2.85, this.z, 0.42, 0.42, 0.42,
+      [1.0, 0.25 + hurt * 0.7, 0.2 + hurt * 0.4], 0, 0, 0, 1.6);
+    B.cyl.push(this.x, y + 0.15, this.z, 1.7, 0.12, 1.7, CYAN, 0, 0, 0, 1.0);
+    for (let i = 0; i < 4; i++) {
+      const a = time * 1.1 + i * (TAU / 4);
+      B.sphere.push(this.x + Math.cos(a) * 1.9, y + 0.55, this.z + Math.sin(a) * 1.9,
+        0.2, 0.2, 0.2, CYAN, 0, 0, 0, 1.3);
+    }
+    if (Math.random() < 0.5) {
+      rend.particles.spawn({
+        x: this.x + rand(-0.8, 0.8), y: y - 0.2, z: this.z + rand(-0.8, 0.8),
+        vx: 0, vy: rand(-1.6, -0.6), vz: 0, life: rand(0.3, 0.6),
+        size: rand(0.12, 0.26), size2: 0, col: CYAN, alpha: 0.5, drag: 0.3,
+      });
+    }
+    // målpelaren syns på långt håll
+    const gy = terrainHeight(this.goal.x, this.goal.z);
+    B.cyl.push(this.goal.x, gy + 6, this.goal.z, 0.16, 6, 0.16, CYAN, 0, 0, 0, 1.1);
+    B.octa.push(this.goal.x, gy + 12.5 + Math.sin(time * 2) * 0.4, this.goal.z,
+      0.7, 1.1, 0.7, CYAN, 0, time * 1.2, 0, 1.4);
+  }
+}
+
+// ------------------------------------------------------------------- boss
+
+class BossMission extends Mission {
+  constructor(level, ctx, mgr) {
+    super(level);
+    this.title = 'NÅGOT VÄNTAR DÄR UTE';
+    this.label = 'BOSSEN';
+    for (let i = 0; i < mgr.plan.camps; i++) {
+      mgr.spawnCamp(ctx, mgr.campSpot(ctx, 48, ARENA_RADIUS - 14), mgr.plan.budget / mgr.plan.camps);
+    }
+    const spot = mgr.campSpot(ctx, 62, ARENA_RADIUS - 18);
+    // äventyret har egna bossar — vågläget behåller sina
+    const type = ctx.worldId === 'city' ? 'cityboss' : 'vildboss';
+    const e = ctx.spawnEnemy(type, spot.x, spot.z, true);
+    e.postGuard(38);
+    this.target = e;
+  }
+
+  get status() {
+    const t = this.target;
+    if (!t.alive) return 'FÄLLD';
+    return t.guard ? 'HITTA DEN' : `${Math.max(0, Math.round(t.hp / t.maxHp * 100))} %`;
+  }
+
+  update(dt, ctx) {
+    if (!this.target.alive && !this.done) this.done = true;
+  }
+
+  markers() {
+    return this.target.alive ? [{ x: this.target.pos.x, z: this.target.pos.z, col: '#ff3d7f' }] : [];
+  }
+}
+
+// ---------------------------------------------------------------- val av typ
+
+// Namnet måste vara eget: bundlern slår ihop alla moduler till en enda
+// namnrymd, och `TYPES` är redan fiendetyperna i enemies.js.
+const MISSION_TYPES = ['collect', 'hunt', 'defend', 'escort'];
+
+/** Väljer uppdragstyp: nivå 1 lär ut kartan, sedan varieras det. */
+function pickMissionType(level, last) {
+  if (level === 1) return 'collect';
+  if (level === 2) return 'hunt';
+  const pool = MISSION_TYPES.filter((t) => t !== last && (t !== 'escort' || level >= 4));
+  return pool[randInt(0, pool.length - 1)];
+}
+
+function createMission(type, level, ctx, mgr) {
+  switch (type) {
+    case 'boss': return new BossMission(level, ctx, mgr);
+    case 'defend': return new DefendMission(level, ctx, mgr);
+    case 'hunt': return new HuntMission(level, ctx, mgr);
+    case 'escort': return new EscortMission(level, ctx, mgr);
+    default: return new CollectMission(level, ctx, mgr);
+  }
+}
+
+// ═══ adventure.js ═══
+// Äventyrsläget: nivåer med utplacerade monster i stället för vågor mot arenan.
+//
+// Skillnaden mot vågläget är var monstren finns. Här står de i läger utspridda
+// över kartan och rör sig inte förrän spelaren kommer nära — annars vore en
+// "karta" bara en våg som råkar ha startat längre bort.
+
+
+
+const CHECKPOINT_EVERY = 10;   // var tionde nivå sparas som utgångspunkt
+
+class AdventureManager {
+  constructor() { this.reset(); }
+
+  reset() {
+    this.level = 0;
+    this.state = 'idle';     // idle → running → cleared
+    this.timer = 1.0;
+    this.total = 0;          // monster nivån började med
+    this.sinceKill = 0;
+    this.levelTime = 0;
+    this.hunted = false;
+    this.plan = null;
+    this.mission = null;
+    this.lastType = null;
+    this.forceType = null;
+    this.missionType = null;
+  }
+
+  isBossLevel(level) { return level % 3 === 0; }
+
+  /**
+   * Nivåns omfång varierar med flit: en kort utrensning, en vanlig runda eller
+   * en lång vandring. Enformig längd gör att alla nivåer smälter ihop.
+   * Försvar och eskort skapar eget motstånd och får därför färre läger.
+   */
+  makePlan(level, type) {
+    if (type === 'boss') return { size: 'boss', camps: 2, budget: 5 + level * 1.5 };
+    if (type === 'defend') return { size: 'kort', camps: 2, budget: 6 + level * 1.4 };
+    if (type === 'escort') return { size: 'lång', camps: 3, budget: 9 + level * 2.2 };
+    const r = Math.random();
+    if (r < 0.30) return { size: 'kort', camps: 2, budget: 5 + level * 1.7 };
+    if (r < 0.75) return { size: 'vanlig', camps: 4, budget: 8 + level * 2.3 };
+    return { size: 'lång', camps: 6, budget: 11 + level * 3.0 };
+  }
+
+  /** Monsterlista för ett läger, prisad så svårare typer blir färre. */
+  compose(budget, level, worldId) {
+    const list = [];
+    const options = [];
+    if (worldId === 'city') {
+      options.push(['drone', 0.7]);
+      if (level >= 2) options.push(['sniper', 2.5]);
+      if (level >= 3) options.push(['spitter', 1.6]);
+      if (level >= 4) options.push(['hover', 4.2]);
+    } else {
+      options.push(['grunt', 1]);
+      if (level >= 2) options.push(['spitter', 1.6]);
+      if (level >= 3) options.push(['charger', 2.2]);
+      if (level >= 5) options.push(['tank', 3.4]);
+    }
+    let spent = 0;
+    while (spent < budget) {
+      const [type, cost] = options[randInt(0, options.length - 1)];
+      if (type === 'drone') {
+        const n = randInt(2, 4);
+        for (let i = 0; i < n; i++) list.push('drone');
+        spent += cost * n;
+      } else {
+        list.push(type);
+        spent += cost;
+      }
+    }
+    return list;
+  }
+
+  /**
+   * En plats för ett läger: inte ovanpå spelaren, inte i vattnet.
+   *
+   * Avståndet till spelaren måste vara större än vakternas syn (max 28 m),
+   * annars vaknar hela lägret i samma stund som nivån börjar och rusar mot
+   * en — då är det ingen karta att utforska, bara en våg som startade långt
+   * bort. Marginalen är tilltagen för att lägret sprider sig några meter.
+   */
+  campSpot(ctx, minR, maxR) {
+    for (let tries = 0; tries < 40; tries++) {
+      const a = rand(TAU);
+      const d = rand(minR, maxR);
+      const x = Math.cos(a) * d, z = Math.sin(a) * d;
+      if (Math.hypot(x - ctx.player.pos.x, z - ctx.player.pos.z) < 45) continue;
+      if (ctx.worldId !== 'city' && terrainHeight(x, z) < WATER_LEVEL + 0.6) continue;
+      return { x, z };
+    }
+    const a = rand(TAU);
+    return { x: Math.cos(a) * maxR * 0.8, z: Math.sin(a) * maxR * 0.8 };
+  }
+
+  /**
+   * Ett läger: några monster kring en plats, alla på post.
+   * Uppdragen ropar själva på den här när de bestämt var motståndet ska stå.
+   */
+  spawnCamp(ctx, spot, budget) {
+    const list = this.compose(Math.max(2, budget), this.level, ctx.worldId);
+    const out = [];
+    for (const type of list) {
+      const a = rand(TAU), d = rand(0, 7);
+      const e = ctx.spawnEnemy(type, spot.x + Math.cos(a) * d, spot.z + Math.sin(a) * d, true);
+      // Vaknar när spelaren kommer inom ett kvarters avstånd — nära nog att
+      // lägret hinner ses innan det rör sig, långt nog att man inte
+      // överraskas bakifrån.
+      e.postGuard(rand(22, 28));
+      out.push(e);
+    }
+    return out;
+  }
+
+  startLevel(ctx) {
+    ctx.clearScene();
+    this.level++;
+    const boss = this.isBossLevel(this.level);
+    const type = boss ? 'boss' : (this.forceType || pickMissionType(this.level, this.lastType));
+    this.forceType = null;
+    if (!boss) this.lastType = type;
+    this.plan = this.makePlan(this.level, type);
+    // uppdraget placerar ut både sina egna föremål och lägren
+    this.mission = createMission(type, this.level, ctx, this);
+    this.missionType = type;
+
+    this.total = ctx.enemies.length;
+    this.sinceKill = 0;
+    this.levelTime = 0;
+    this.hunted = false;
+    this.state = 'running';
+    ctx.onLevelStart(this.level, boss, this.plan, this.mission);
+  }
+
+  onKill() { this.sinceKill = 0; }
+
+  /** Efter en avklarad nivå — anropas när spelaren lämnat mellanskärmen. */
+  nextLevel() {
+    this.mission = null;
+    this.state = 'idle';
+    this.timer = 0.5;
+  }
+
+  /** Misslyckat uppdrag: samma nivå och samma uppgift görs om från början. */
+  retryLevel() {
+    this.forceType = this.missionType;
+    this.level--;
+    this.nextLevel();
+  }
+
+  draw(rend, time) {
+    if (this.mission) this.mission.draw(rend, time);
+  }
+
+  update(dt, ctx) {
+    if (this.state === 'idle') {
+      this.timer -= dt;
+      if (this.timer <= 0) this.startLevel(ctx);
+      return;
+    }
+    if (this.state !== 'running') return;
+
+    this.levelTime += dt;
+    this.sinceKill += dt;
+
+    const m = this.mission;
+    if (m) {
+      m.update(dt, ctx);
+      if (m.failed) {
+        this.state = 'failed';
+        ctx.onLevelFailed(this.level, m);
+        return;
+      }
+      if (m.done) {
+        this.state = 'cleared';
+        ctx.onLevelClear(this.level);
+        return;
+      }
+    }
+
+    // Skyddsnätet, samma tanke som i vågläget: en nivå får aldrig kunna låsa
+    // sig för att det som ska dödas står oåtkomligt någonstans. Efter fyra
+    // minuter kommer allt som lever i stället till spelaren.
+    if (!this.hunted && this.levelTime > 240) {
+      this.hunted = true;
+      for (const e of ctx.enemies) {
+        if (!e.alive) continue;
+        e.wake(ctx);
+        e.enrage = true;
+      }
+      ctx.toast('Allt som lever söker upp dig');
+    }
   }
 }
 
@@ -3991,6 +5094,28 @@ class Combat {
     });
   }
 
+  /**
+   * Kastad projektil i båge — Jordvredets stenbumlingar. Kastvinkeln räknas
+   * ut ur skottens gravitation (3.2 i update), så stenen landar där spelaren
+   * stod när den kastades. Flytta dig, eller ta smällen.
+   */
+  enemyLob(e, target, hSpeed, dmg, size = 1.0) {
+    const dx = target.pos.x - e.pos.x, dz = target.pos.z - e.pos.z;
+    const d = Math.hypot(dx, dz) || 1;
+    const t = d / hSpeed;
+    const dy = target.pos.y - (e.pos.y + e.height * 0.8);
+    this.bullets.push({
+      x: e.pos.x + (dx / d) * (e.radius + 0.6),
+      y: e.pos.y + e.height * 0.8,
+      z: e.pos.z + (dz / d) * (e.radius + 0.6),
+      vx: (dx / d) * hSpeed,
+      vy: dy / t + 0.5 * 3.2 * t,
+      vz: (dz / d) * hSpeed,
+      life: t + 2, dmg, radius: size, boom: true,
+      col: [0.62, 0.58, 0.48],
+    });
+  }
+
   // -------------------------------------------------------------- explosion
 
   explode(ctx, x, y, z, radius, dmg, source) {
@@ -4047,6 +5172,25 @@ class Combat {
         z: e.pos.z + Math.sin(a) * rand(0, 1.2),
         vx: Math.cos(a) * rand(2, 6), vy: rand(4, 8), vz: Math.sin(a) * rand(2, 6),
         life: 26, phase: rand(TAU), col: [0.4, 1.0, 0.75],
+      });
+    }
+    // Guld faller bara i äventyret — det är där det finns något att handla för.
+    if (ctx.mode === 'adventure') {
+      const a = rand(TAU);
+      this.pickups.push({
+        kind: 'gold', value: Math.max(1, Math.round(e.xp * 1.6 * (1 + ctx.adventure.level * 0.06))),
+        x: e.pos.x, y: e.pos.y + e.height * 0.5, z: e.pos.z,
+        vx: Math.cos(a) * rand(2, 5), vy: rand(4, 7), vz: Math.sin(a) * rand(2, 5),
+        life: 30, phase: rand(TAU), col: [1.0, 0.82, 0.25],
+      });
+    }
+    // Rustningsdelar: säkra från bossar och eliter, annars ett fynd bland många.
+    if (ctx.mode === 'adventure' && (e.boss || e.elite || Math.random() < 0.06)) {
+      this.pickups.push({
+        kind: 'armor', value: e.boss ? 2 : 1,
+        x: e.pos.x, y: e.pos.y + e.height * 0.6, z: e.pos.z,
+        vx: rand(-2, 2), vy: rand(5, 8), vz: rand(-2, 2),
+        life: 40, phase: rand(TAU), col: [0.72, 0.80, 0.95],
       });
     }
     if (e.boss || Math.random() < 0.07) {
@@ -4131,8 +5275,10 @@ class Combat {
         continue;
       }
       if (b.life <= 0 || b.y < terrainHeight(b.x, b.z) - 0.3) {
-        ctx.particles.burst(b.x, b.y, b.z, 5,
-          { speed: 3, life: 0.25, size: 0.35, col: b.col, alpha: 0.7, drag: 0.8 });
+        // stenbumlingen slår ner med en markstöt — även en miss är farlig nära
+        if (b.boom) this.shockwave(ctx, b.x, b.y, b.z, 4.5, b.dmg * 0.7);
+        ctx.particles.burst(b.x, b.y, b.z, b.boom ? 14 : 5,
+          { speed: b.boom ? 7 : 3, life: 0.25, size: b.boom ? 0.6 : 0.35, col: b.col, alpha: 0.7, drag: 0.8 });
         this.bullets.splice(i, 1);
         continue;
       }
@@ -4164,6 +5310,8 @@ class Combat {
 
       if (d < 1.5) {
         if (q.kind === 'xp') { ctx.addXP(q.value); ctx.sound.pickup(); }
+        else if (q.kind === 'gold') { ctx.addGold(q.value); ctx.sound.coin(); }
+        else if (q.kind === 'armor') { ctx.addArmor(q.value); }
         else { p.heal(q.value); ctx.sound.heal(); ctx.toast(`+${q.value} HP`); }
         ctx.particles.burst(q.x, q.y, q.z, 6,
           { speed: 3, life: 0.3, size: 0.35, col: q.col, alpha: 0.9, drag: 0.7 });
@@ -4205,12 +5353,19 @@ class Combat {
       }
     }
     for (const b of this.bullets) {
-      B.sphere.push(b.x, b.y, b.z, 0.75, 0.75, 0.75, b.col, 0, 0, 0, 1.2);
+      // hitboxen styr storleken, så en stenbumling ser ut som en
+      const bs = (b.radius || 0.45) * 1.65;
+      B.sphere.push(b.x, b.y, b.z, bs, bs, bs, b.col, 0, 0, 0, b.boom ? 0.35 : 1.2);
     }
     for (const q of this.pickups) {
-      const s = q.kind === 'xp' ? 0.55 : 0.9;
+      const s = q.kind === 'xp' ? 0.55 : q.kind === 'gold' ? 0.5 : 0.9;
       const lift = Math.sin(q.phase) * 0.12;
-      B.octa.push(q.x, q.y + lift, q.z, s, s * 1.5, s, q.col, 0, q.phase, 0, 1.1);
+      // rustningsdelen är en plåt, inte ett klot — den ska synas för vad den är
+      if (q.kind === 'armor') {
+        B.box.push(q.x, q.y + lift, q.z, 0.42, 0.5, 0.14, q.col, 0.2, q.phase * 0.6, 0, 0.9);
+      } else {
+        B.octa.push(q.x, q.y + lift, q.z, s, s * 1.5, s, q.col, 0, q.phase, 0, 1.1);
+      }
       rend.particles.spawn({
         x: q.x, y: q.y + lift, z: q.z, life: 0.2, size: s * 1.6, size2: 0,
         col: q.col, alpha: 0.35, drag: 0.1,
@@ -4223,6 +5378,7 @@ class Combat {
 // All DOM-baserad UI: HUD-siffror, banderoller, radar, menyer.
 
 
+
 const $ = (id) => document.getElementById(id);
 
 const VERSION = 'BETA 0.9';
@@ -4231,6 +5387,7 @@ const DOT_COL = {
   grunt: '#ff5b5b', spitter: '#c07bff', charger: '#ffab3d',
   tank: '#4ce0a8', boss: '#ff3d7f',
   drone: '#ffd93d', sniper: '#4dffc3', hover: '#8f9bff',
+  vildboss: '#ff3d7f', cityboss: '#ff3d7f',
 };
 
 class HUD {
@@ -4239,6 +5396,7 @@ class HUD {
     this.overlay = $('overlay');
     this.hpFill = $('hpFill');
     this.hpText = $('hpText');
+    this.armTag = $('armTag');
     this.xpFill = $('xpFill');
     this.dashRow = $('dashRow');
     this.banner = $('banner');
@@ -4256,6 +5414,9 @@ class HUD {
     this.stick = $('stick');
     this.knob = $('knob');
     this.tFire = $('tFire');
+    this.objective = $('objective');
+    this.objLabel = $('objLabel');
+    this.objValue = $('objValue');
     this.map = $('minimap');
     this.mapCtx = this.map.getContext('2d');
     this.bannerT = 0;
@@ -4264,6 +5425,14 @@ class HUD {
   }
 
   showHUD(on) { this.hud.classList.toggle('hidden', !on); }
+
+  /** Toppraden heter olika saker i de två spelsätten. */
+  setMode(mode) {
+    const adv = mode === 'adventure';
+    $('waveLbl').textContent = adv ? 'NIVÅ' : 'VÅG';
+    $('levelLbl').textContent = adv ? 'RANG' : 'NIVÅ';
+    $('goldStat').classList.toggle('hidden', !adv);   // guld finns bara i äventyret
+  }
 
   // ------------------------------------------------------- skadesiffror
 
@@ -4371,6 +5540,18 @@ class HUD {
     this.bossBar.classList.toggle('hidden', !e);
   }
 
+  /** Uppdragsraden: vad nivån kräver och hur långt det gått. */
+  setObjective(mission) {
+    const on = !!mission;
+    this.objective.classList.toggle('hidden', !on);
+    this.hud.classList.toggle('obj', on);
+    if (!on) return;
+    if (this.objLabel.textContent !== mission.label) this.objLabel.textContent = mission.label;
+    const v = mission.status;
+    if (this.objValue.textContent !== v) this.objValue.textContent = v;
+    this.objective.classList.toggle('done', mission.done);
+  }
+
   /** Uppdaterar allt som ändras varje bildruta. */
   update(g, dt) {
     const p = g.player;
@@ -4398,6 +5579,13 @@ class HUD {
     // bara ett sikte på skärmen: göm systempekaren under spelets gång
     const want = g.state === 'playing' && free ? 'none' : 'crosshair';
     if (this._cursor !== want) { this._cursor = want; g.canvas.style.cursor = want; }
+    const arm = p.armor | 0;
+    this.armTag.classList.toggle('hidden', arm <= 0);
+    if (arm > 0) {
+      const cut = Math.round((1 - 1 / (1 + arm * 0.06)) * 100);
+      this.armTag.textContent = `🪖 ${arm} · −${cut}%`;
+    }
+
     const hpFrac = clamp(p.hp / p.stats.maxHp, 0, 1);
     this.hpFill.style.transform = `scaleX(${hpFrac})`;
     this.hpText.textContent = `${Math.ceil(p.hp)} / ${Math.round(p.stats.maxHp)}`;
@@ -4436,8 +5624,13 @@ class HUD {
       this.comboRow.classList.add('hidden');
     }
 
-    $('waveNum').textContent = g.waves.wave || '—';
+    this.setObjective(g.mode === 'adventure' ? g.adventure.mission : null);
+
+    $('waveNum').textContent = g.mode === 'adventure'
+      ? (g.adventure.level || '—')
+      : (g.waves.wave || '—');
     $('levelNum').textContent = g.level;
+    if (g.mode === 'adventure') $('goldNum').textContent = g.gold;
     $('killNum').textContent = g.kills;
     const t = Math.floor(g.elapsed);
     $('timeNum').textContent = `${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}`;
@@ -4500,15 +5693,50 @@ class HUD {
       c.fillStyle = q.kind === 'xp' ? '#4dffa6' : '#ff5b7f';
       c.fillRect(x - 2, y - 2, 4, 4);
     }
+    const adv = g.mode === 'adventure';
     for (const e of g.enemies) {
       if (!e.alive) continue;
-      const [x, y] = plot(e.pos.x, e.pos.z);
+      let [x, y] = plot(e.pos.x, e.pos.z);
+      let r = e.boss ? 9 : e.type === 'tank' ? 6 : 4.5;
+      const off = Math.hypot(x - R, y - R);
+      if (off > R - 6) {
+        // I äventyret måste man kunna hitta monstren: det som ligger utanför
+        // radarns räckvidd fästs som en liten prick vid kanten i rätt riktning.
+        if (!adv) continue;
+        const s = (R - 7) / off;
+        x = R + (x - R) * s; y = R + (y - R) * s;
+        r = e.boss ? 5 : 2.6;
+      }
       c.fillStyle = DOT_COL[e.type] || '#fff';
+      // vakter som ännu inte upptäckt dig ligger blekare på radarn
+      c.globalAlpha = e.guard ? 0.4 : 0.85;
       c.beginPath();
-      c.arc(x, y, e.boss ? 9 : e.type === 'tank' ? 6 : 4.5, 0, Math.PI * 2);
+      c.arc(x, y, r, 0, Math.PI * 2);
       c.fill();
     }
     c.globalAlpha = 1;
+
+    // Uppdragsmålen: romber som alltid syns, även utanför radarns räckvidd.
+    // Utan dem blir "hitta tre kraftkärnor" bara irrande.
+    const marks = adv && g.adventure.mission ? g.adventure.mission.markers() : [];
+    for (const m of marks) {
+      let [x, y] = plot(m.x, m.z);
+      const off = Math.hypot(x - R, y - R);
+      let s = 5;
+      if (off > R - 8) {
+        const k = (R - 9) / off;
+        x = R + (x - R) * k; y = R + (y - R) * k;
+        s = 3.5;
+      }
+      c.save();
+      c.translate(x, y);
+      c.rotate(Math.PI / 4);
+      c.fillStyle = m.col;
+      c.shadowColor = m.col;
+      c.shadowBlur = 6;
+      c.fillRect(-s, -s, s * 2, s * 2);
+      c.restore();
+    }
 
     // spelaren + blickriktning
     c.fillStyle = '#eaf6ff';
@@ -4524,7 +5752,38 @@ class HUD {
 
   // ------------------------------------------------------------- menyskärmar
 
-  showStart(onPick, touch) {
+  /** Första skärmen: vilket spelsätt? */
+  showModes(onPick) {
+    this._cursor = null;
+    this.showOverlay(`
+      <div class="screen">
+        <div class="title">DASHH</div>
+        <div class="subtitle">VOIDFALL<span class="betaTag">${VERSION}</span></div>
+        <div class="betaNote">tidig version — buggar och konstigheter förekommer, säg gärna till</div>
+        <div class="modes">
+          <div class="mode surv" data-m="survival">
+            <div class="wIcon">🌊</div>
+            <div class="wName">ÖVERLEVNAD</div>
+            <div class="wDesc">En arena, våg efter våg, boss var femte.
+              Det slutar bara på ett sätt — frågan är hur långt du kom.</div>
+            <div class="wTag">ETT ENDA LÅNGT ANDETAG</div>
+          </div>
+          <div class="mode adv" data-m="adventure">
+            <div class="wIcon">🗺️</div>
+            <div class="wName">ÄVENTYR</div>
+            <div class="wDesc">Nivå efter nivå på egna kartor. Monstren står utplacerade
+              och väntar — leta upp dem. Boss var tredje nivå.</div>
+            <div class="wTag">NYTT · BYGGS UT</div>
+          </div>
+        </div>
+        <div class="hint">välj spelsätt</div>
+      </div>`);
+    this.overlay.querySelectorAll('.mode').forEach((el) => {
+      el.addEventListener('click', () => onPick(el.dataset.m));
+    });
+  }
+
+  showStart(onPick, touch, mode = 'survival', onBack = null, checkpoint = null, onResume = null) {
     this._cursor = null;
     const keys = touch ? `
           <div class="key"><b>VÄNSTER HALVA</b> Spak — rör dig</div>
@@ -4540,11 +5799,19 @@ class HUD {
           <div class="key"><b>SHIFT</b> Dash</div>
           <div class="key"><b>MELLANSLAG</b> Hoppa / flyg</div>
           <div class="key"><b>ESC</b> Paus</div>`;
+    const adv = mode === 'adventure';
     this.showOverlay(`
       <div class="screen">
         <div class="title">DASHH</div>
-        <div class="subtitle">VOIDFALL<span class="betaTag">${VERSION}</span></div>
+        <div class="subtitle">${adv ? 'ÄVENTYR' : 'ÖVERLEVNAD'}<span class="betaTag">${VERSION}</span></div>
         <div class="betaNote">tidig version — buggar och konstigheter förekommer, säg gärna till</div>
+        ${checkpoint ? `
+        <div class="resume">
+          <button class="cta" id="btnResume">FORTSÄTT — NIVÅ ${checkpoint.level + 1}</button>
+          <div class="hint">${checkpoint.world === 'city' ? 'Neotropolis' : 'Vildheim'} ·
+            checkpoint på nivå ${checkpoint.level} · ${checkpoint.gold} guld ·
+            rustning ${checkpoint.armor || 0}</div>
+        </div>` : ''}
         <div class="worlds">
           <div class="world wild" data-w="wild">
             <div class="wIcon">🌲</div>
@@ -4562,11 +5829,78 @@ class HUD {
           </div>
         </div>
         <div class="keys">${keys}</div>
-        <div class="hint">välj din värld — överlev vågorna</div>
+        <div class="hint">${checkpoint
+          ? 'väljer du en värld börjar ett nytt äventyr — checkpointen ligger kvar tills du når en ny'
+          : `välj din värld — ${adv ? 'du stannar i den hela äventyret' : 'överlev vågorna'}`}</div>
+        ${onBack ? '<div class="hint back" id="btnBack">← tillbaka till spelsätt</div>' : ''}
       </div>`);
     this.overlay.querySelectorAll('.world').forEach((el) => {
       el.addEventListener('click', () => onPick(el.dataset.w));
     });
+    if (onBack) $('btnBack').addEventListener('click', onBack);
+    if (checkpoint && onResume) $('btnResume').addEventListener('click', onResume);
+  }
+
+  /** Uppdraget gick förlorat — samma nivå görs om. */
+  showFailed(g, mission, onRetry) {
+    this.showOverlay(`
+      <div class="screen">
+        <div class="goTitle" style="font-size:clamp(34px,7vw,64px)">UPPDRAGET MISSLYCKADES</div>
+        <div class="hint" style="margin:10px 0 0">${mission ? mission.title : ''}</div>
+        <div class="results">
+          <div class="result"><div class="rl">NIVÅ</div><div class="rv">${g.adventure.level}</div></div>
+          <div class="result"><div class="rl">KILLS</div><div class="rv">${g.kills}</div></div>
+        </div>
+        <button class="cta" id="btnRetry">FÖRSÖK IGEN</button>
+        <div class="hint">nivån börjar om — du behåller allt du skaffat</div>
+      </div>`);
+    $('btnRetry').addEventListener('click', onRetry);
+  }
+
+  /**
+   * Shoppen mellan två nivåer. Varorna man inte har råd med syns ändå —
+   * man ska kunna se vad man sparar till.
+   */
+  showShop(g, onBuy, onContinue) {
+    const next = g.adventure.level + 1;
+    const boss = g.adventure.isBossLevel(next);
+    const p = g.player;
+
+    const rep = repairPrice(p);
+    const cards = WARES.map((w) => {
+      const owned = g.shopLevels.get(w.id) || 0;
+      const sold = owned >= w.max;
+      const cost = priceOf(w, owned);
+      const afford = !sold && cost <= g.gold;
+      return `
+        <div class="ware ${sold ? 'sold' : afford ? '' : 'poor'}" data-id="${w.id}">
+          <div class="icon">${w.icon}</div>
+          <div class="name">${w.name}</div>
+          <div class="desc">${w.desc}</div>
+          ${owned ? `<div class="own">×${owned}</div>` : ''}
+          <div class="price">${sold ? 'SLUT' : `${cost} <i>⬤</i>`}</div>
+        </div>`;
+    }).join('') + `
+        <div class="ware ${rep && rep <= g.gold ? '' : 'poor'}" data-id="${REPAIR.id}">
+          <div class="icon">${REPAIR.icon}</div>
+          <div class="name">${REPAIR.name}</div>
+          <div class="desc">${REPAIR.desc}</div>
+          <div class="price">${rep ? `${rep} <i>⬤</i>` : 'HELT'}</div>
+        </div>`;
+
+    this.showOverlay(`
+      <div class="screen shop">
+        <div class="lvlTitle">NIVÅ ${g.adventure.level} KLARAD${g.levelReward ? ` · +${g.levelReward} GULD` : ''}</div>
+        <div class="lvlSub">SHOP</div>
+        <div class="purse">GULD <b>${g.gold}</b></div>
+        <div class="wares">${cards}</div>
+        <button class="cta" id="btnNext">${boss ? `VIDARE — NIVÅ ${next}: BOSS` : `VIDARE — NIVÅ ${next}`}</button>
+        <div class="hint">klicka för att köpa · priset stiger för varje exemplar</div>
+      </div>`);
+    this.overlay.querySelectorAll('.ware').forEach((el) => {
+      el.addEventListener('click', () => onBuy(el.dataset.id));
+    });
+    $('btnNext').addEventListener('click', onContinue);
   }
 
   showLevelUp(level, choices, onPick) {
@@ -4599,22 +5933,32 @@ class HUD {
     $('btnResume').addEventListener('click', onResume);
   }
 
-  showGameOver(g, onRestart, onMenu) {
+  showGameOver(g, onRestart, onMenu, checkpoint = null) {
     const t = Math.floor(g.elapsed);
+    const adv = g.mode === 'adventure';
+    const best = adv
+      ? `bäst hittills: nivå ${g.best.stage} · ${g.best.kills} kills`
+      : `bäst hittills: våg ${g.best.wave} · ${g.best.kills} kills`;
     this.showOverlay(`
       <div class="screen">
         <div class="goTitle">DU FÖLL</div>
-        <div class="hint" style="margin:4px 0 0">${g.worldId === 'city' ? 'NEOTROPOLIS' : 'VILDHEIM'}</div>
+        <div class="hint" style="margin:4px 0 0">${g.worldId === 'city' ? 'NEOTROPOLIS' : 'VILDHEIM'}
+          · ${adv ? 'ÄVENTYR' : 'ÖVERLEVNAD'}</div>
         <div class="results">
-          <div class="result"><div class="rl">VÅG</div><div class="rv">${g.waves.wave}</div></div>
-          <div class="result"><div class="rl">NIVÅ</div><div class="rv">${g.level}</div></div>
+          <div class="result"><div class="rl">${adv ? 'NIVÅ' : 'VÅG'}</div>
+            <div class="rv">${adv ? g.adventure.level : g.waves.wave}</div></div>
+          <div class="result"><div class="rl">${adv ? 'RANG' : 'NIVÅ'}</div><div class="rv">${g.level}</div></div>
           <div class="result"><div class="rl">KILLS</div><div class="rv">${g.kills}</div></div>
+          ${adv ? `<div class="result"><div class="rl">GULD</div><div class="rv">${g.goldEarned}</div></div>` : ''}
           <div class="result"><div class="rl">TID</div><div class="rv">${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}</div></div>
           <div class="result"><div class="rl">SKADA</div><div class="rv">${Math.round(g.damageDealt)}</div></div>
         </div>
-        <button class="cta" id="btnRestart">SPELA IGEN</button>
-        <button class="cta alt" id="btnMenu">BYT VÄRLD</button>
-        <div class="hint">bäst hittills: våg ${g.best.wave} · ${g.best.kills} kills</div>
+        <button class="cta" id="btnRestart">${checkpoint
+          ? `FORTSÄTT — NIVÅ ${checkpoint.level + 1}` : 'SPELA IGEN'}</button>
+        <button class="cta alt" id="btnMenu">TILL MENYN</button>
+        <div class="hint">${checkpoint
+          ? `du återvänder till checkpointen på nivå ${checkpoint.level}, med allt du hade där`
+          : best}</div>
       </div>`);
     $('btnRestart').addEventListener('click', onRestart);
     $('btnMenu').addEventListener('click', onMenu);
@@ -4623,6 +5967,8 @@ class HUD {
 
 // ═══ game.js ═══
 // Spelets nav: tillstånd, huvudloop och limmet mellan alla system.
+
+
 
 
 
@@ -4646,12 +5992,15 @@ class Game {
     this.hud = new HUD();
     this.combat = new Combat();
     this.waves = new WaveManager();
+    this.adventure = new AdventureManager();
     this.player = new Player(this);
     this.enemies = [];
     this.state = 'menu';
     this.worldId = 'wild';
+    this.mode = 'survival';   // 'survival' = vågor, 'adventure' = nivåer
     this.usedLock = false;
     this.best = this.loadBest();
+    this.checkpoint = this.loadCheckpoint();
     this.fps = 60;
     this.frameCount = 0;
     this.resetRun();
@@ -4669,15 +6018,22 @@ class Game {
   // ---------------------------------------------------------------- tillstånd
 
   loadBest() {
+    const empty = { wave: 0, kills: 0, stage: 0 };
     try {
-      return JSON.parse(localStorage.getItem('dashh.best')) || { wave: 0, kills: 0 };
-    } catch (e) { return { wave: 0, kills: 0 }; }
+      return Object.assign(empty, JSON.parse(localStorage.getItem('dashh.best')));
+    } catch (e) { return empty; }
   }
 
   saveBest() {
     this.best.wave = Math.max(this.best.wave, this.waves.wave);
+    this.best.stage = Math.max(this.best.stage, this.adventure.level);
     this.best.kills = Math.max(this.best.kills, this.kills);
     try { localStorage.setItem('dashh.best', JSON.stringify(this.best)); } catch (e) { /* ignoreras */ }
+  }
+
+  /** Svårighetstrappan: vågnummer i överlevnad, nivånummer i äventyret. */
+  get tier() {
+    return this.mode === 'adventure' ? Math.max(1, this.adventure.level) : this.waves.wave;
   }
 
   resetRun() {
@@ -4685,8 +6041,12 @@ class Game {
     this.enemies.length = 0;
     this.combat.reset();
     this.waves.reset();
+    this.adventure.reset();
     this.particles.list.length = 0;
     this.upgradeLevels = new Map();
+    this.shopLevels = new Map();
+    this.gold = 0;
+    this.goldEarned = 0;
     this.level = 1;
     this.xp = 0;
     this.xpNeeded = 12;
@@ -4698,23 +6058,34 @@ class Game {
     this.pendingLevelUps = 0;
     this.ambientTimer = 0;
     this.hitstop = 0;
+    this.interludeT = 0;
     this.hud.clearFloaters();
     this.hud.setBoss(null);
   }
 
-  start(worldId) {
+  start(worldId, mode, checkpoint = null) {
     if (worldId) this.worldId = worldId;
+    if (mode) this.mode = mode;
+    if (checkpoint) this.worldId = checkpoint.world;
     this.renderer.buildWorld(this.worldId);
     this.colliders = this.renderer.props.grid;
     this.buildings = this.renderer.props.buildings || null;   // taksnipern behöver dem
     this.sound.init();
     this.sound.resume();
     this.resetRun();
+    if (checkpoint) this.applyCheckpoint(checkpoint);
     this.state = 'playing';
     this.hud.hideOverlay();
+    this.hud.setMode(this.mode);
     this.hud.showHUD(true);
-    if (this.worldId === 'city') this.hud.showBanner('NEOTROPOLIS', 'håll mellanslag — flyg', 3);
-    else this.hud.showBanner('VILDHEIM', 'vågorna kommer');
+    const adv = this.mode === 'adventure';
+    if (checkpoint) {
+      this.hud.showBanner(`NIVÅ ${checkpoint.level + 1}`, 'du fortsätter från checkpointen', 3);
+    } else if (this.worldId === 'city') {
+      this.hud.showBanner('NEOTROPOLIS', adv ? 'ge dig ut i staden' : 'håll mellanslag — flyg', 3);
+    } else {
+      this.hud.showBanner('VILDHEIM', adv ? 'ge dig ut på kartan' : 'vågorna kommer');
+    }
     this.input.enabled = true;
     if (!this.input.touch) this.input.requestLock();
   }
@@ -4724,7 +6095,15 @@ class Game {
     this.input.enabled = false;
     this.input.releaseLock();
     this.hud.showHUD(false);
-    this.hud.showStart((w) => this.start(w), this.input.touch);
+    this.hud.showModes((m) => this.chooseMode(m));
+  }
+
+  /** Spelsättet är valt — nu väljer man värld, eller fortsätter där man var. */
+  chooseMode(mode) {
+    this.mode = mode;
+    const cp = mode === 'adventure' ? this.checkpoint : null;
+    this.hud.showStart((w) => this.start(w, mode), this.input.touch, mode,
+      () => this.showMenu(), cp, () => this.start(cp.world, mode, cp));
   }
 
   pause() {
@@ -4755,9 +6134,16 @@ class Game {
     });
     this.saveBest();
     setTimeout(() => {
-      if (this.state === 'dead') {
-        this.hud.showGameOver(this, () => this.start(), () => this.showMenu());
-      }
+      if (this.state !== 'dead') return;
+      // I äventyret börjar man om från senast klarade checkpoint, med exakt
+      // den utrustning man hade där. Finns ingen checkpoint börjar man om.
+      // …men bara om checkpointen hör till just den här körningen. En gammal
+      // sparning från ett tidigare äventyr ska inte katapultera en framåt.
+      const c = this.checkpoint;
+      const cp = this.mode === 'adventure' && c && c.world === this.worldId
+        && c.level < this.adventure.level ? c : null;
+      this.hud.showGameOver(this, () => this.start(this.worldId, this.mode, cp),
+        () => this.showMenu(), cp);
     }, 900);
   }
 
@@ -4771,29 +6157,55 @@ class Game {
   /** Skadesiffra som flyger upp ur fienden. */
   floater(x, y, z, amount, crit, key) { this.hud.floater(x, y, z, amount, crit, key); }
 
-  spawnEnemy(type, x, z) {
-    const e = new Enemy(type, x, z, this.waves.wave, this.worldId);
+  /**
+   * `quiet` används av äventyret: monstren står redan på kartan när nivån
+   * börjar, så de ska varken ryka in ur tomma intet eller basunera ut sig.
+   */
+  spawnEnemy(type, x, z, quiet = false) {
+    const e = new Enemy(type, x, z, this.tier, this.worldId);
     this.enemies.push(e);
-    this.particles.burst(x, terrainHeight(x, z) + 1, z, e.boss ? 40 : 12, {
-      speed: e.boss ? 14 : 6, life: 0.6, size: e.boss ? 1.4 : 0.6,
-      col: e.col, alpha: 0.9, drag: 0.7, grav: -4,
-    });
-    if (e.boss) {
-      const city = this.worldId === 'city';
-      this.hud.setBoss(e, city ? 'OVERSEER' : 'VOIDLORD');
-      this.hud.showBanner('BOSS', city ? 'overseer aktiveras' : 'voidlord stiger upp', 3);
-      this.sound.bossSpawn();
-      this.player.shake = 1.2;
+    if (!quiet) {
+      this.particles.burst(x, terrainHeight(x, z) + 1, z, e.boss ? 40 : 12, {
+        speed: e.boss ? 14 : 6, life: 0.6, size: e.boss ? 1.4 : 0.6,
+        col: e.col, alpha: 0.9, drag: 0.7, grav: -4,
+      });
+      if (e.boss) this.announceBoss(e);
     }
     return e;
   }
 
+  /**
+   * En ny äventyrsnivå är en ny karta: det som var kvar av den förra —
+   * monster man gick förbi, skott i luften, orbs på marken — försvinner.
+   * Utan det staplas monstren på varandra nivå för nivå.
+   */
+  clearScene() {
+    this.enemies.length = 0;
+    this.combat.reset();
+    this.hud.setBoss(null);
+  }
+
+  /** Bosshälsan och fanfaren — i äventyret först när man stöter på den. */
+  announceBoss(e) {
+    const city = this.worldId === 'city';
+    const name = e.def.bossName || (city ? 'OVERSEER' : 'VOIDLORD');
+    const sub = e.def.bossSub || (city ? 'overseer aktiveras' : 'voidlord stiger upp');
+    this.hud.setBoss(e, name);
+    this.hud.showBanner('BOSS', sub, 3);
+    this.sound.bossSpawn();
+    this.player.shake = 1.2;
+  }
+
+  onBossWake(e) { this.announceBoss(e); }
+
   spawnEnemyBullet(e, target, speed, dmg) { this.combat.enemyBullet(e, target, speed, dmg); }
   spawnEnemyBulletDir(e, dx, dy, dz, speed, dmg) { this.combat.enemyBulletDir(e, dx, dy, dz, speed, dmg); }
+  spawnEnemyLob(e, target, hSpeed, dmg, size) { this.combat.enemyLob(e, target, hSpeed, dmg, size); }
   shockwave(x, y, z, r, dmg) { this.combat.shockwave(this, x, y, z, r, dmg); }
 
   onEnemyKilled(e) {
     this.kills++;
+    this.adventure.onKill();
     this.sound.kill();
     this.particles.burst(e.pos.x, e.pos.y + e.height * 0.5, e.pos.z, e.boss ? 60 : 16, {
       speed: e.boss ? 16 : 8, life: e.boss ? 1.2 : 0.55, size: e.boss ? 1.5 : 0.6, size2: 0.1,
@@ -4817,6 +6229,108 @@ class Game {
       this.pendingLevelUps++;
     }
     if (this.pendingLevelUps > 0 && this.state === 'playing') this.openLevelUp();
+  }
+
+  addGold(n) {
+    this.gold += n;
+    this.goldEarned += n;
+  }
+
+  addArmor(n) {
+    const p = this.player;
+    p.armor += n;
+    this.sound.tone({ f: 300, f2: 520, dur: 0.16, type: 'triangle', vol: 0.10 });
+    this.sound.tone({ f: 600, f2: 900, dur: 0.12, type: 'sine', vol: 0.06, delay: 0.05 });
+    this.toast(`🪖 Rustning ${p.armor}`);
+    this.particles.burst(p.pos.x, p.pos.y + 1.4, p.pos.z, 14, {
+      speed: 6, life: 0.5, size: 0.4, size2: 0.05,
+      col: [0.72, 0.82, 1.0], alpha: 0.9, drag: 0.6, grav: -3,
+    });
+  }
+
+  // ------------------------------------------------------------ checkpoints
+
+  /**
+   * Var tionde nivå sparas hela utrustningen — och den sparas när man
+   * lämnar shoppen, inte när nivån tog slut, så det man hann köpa följer med.
+   */
+  saveCheckpoint() {
+    const p = this.player;
+    this.checkpoint = {
+      world: this.worldId,
+      level: this.adventure.level,
+      stats: Object.assign({}, p.stats),
+      hp: p.hp,
+      armor: p.armor,
+      gold: this.gold,
+      goldEarned: this.goldEarned,
+      kills: this.kills,
+      damageDealt: this.damageDealt,
+      elapsed: this.elapsed,
+      xpLevel: this.level,
+      xp: this.xp,
+      xpNeeded: this.xpNeeded,
+      upgrades: [...this.upgradeLevels],
+      shop: [...this.shopLevels],
+    };
+    try { localStorage.setItem('dashh.checkpoint', JSON.stringify(this.checkpoint)); } catch (e) { /* ignoreras */ }
+    this.hud.showBanner('CHECKPOINT', `nivå ${this.adventure.level} sparad`, 2.6);
+    this.toast(`Checkpoint: nivå ${this.adventure.level}`);
+  }
+
+  loadCheckpoint() {
+    try {
+      const cp = JSON.parse(localStorage.getItem('dashh.checkpoint'));
+      return cp && cp.level ? cp : null;
+    } catch (e) { return null; }
+  }
+
+  clearCheckpoint() {
+    this.checkpoint = null;
+    try { localStorage.removeItem('dashh.checkpoint'); } catch (e) { /* ignoreras */ }
+  }
+
+  /** Plockar tillbaka spelaren till hur hen såg ut vid checkpointen. */
+  applyCheckpoint(cp) {
+    const p = this.player;
+    Object.assign(p.stats, cp.stats);
+    p.hp = Math.min(cp.hp, p.stats.maxHp);
+    p.armor = cp.armor || 0;
+    p.dashCharges = p.stats.dashMax;
+    this.gold = cp.gold;
+    this.goldEarned = cp.goldEarned || cp.gold;
+    this.kills = cp.kills || 0;
+    this.damageDealt = cp.damageDealt || 0;
+    this.elapsed = cp.elapsed || 0;
+    this.level = cp.xpLevel || 1;
+    this.xp = cp.xp || 0;
+    this.xpNeeded = cp.xpNeeded || 12;
+    this.upgradeLevels = new Map(cp.upgrades || []);
+    this.shopLevels = new Map(cp.shop || []);
+    this.adventure.level = cp.level;      // nästa nivå blir den efter checkpointen
+  }
+
+  /** Ett köp i shoppen. Priset stiger för varje exemplar man redan har. */
+  buy(id) {
+    const p = this.player;
+    if (id === REPAIR.id) {
+      const cost = repairPrice(p);
+      if (!cost || cost > this.gold) { this.sound.denied(); return false; }
+      this.gold -= cost;
+      p.heal(p.stats.maxHp);
+      this.sound.buy();
+      return true;
+    }
+    const w = WARES.find((q) => q.id === id);
+    if (!w) return false;
+    const owned = this.shopLevels.get(id) || 0;
+    const cost = priceOf(w, owned);
+    if (owned >= w.max || cost > this.gold) { this.sound.denied(); return false; }
+    this.gold -= cost;
+    w.apply(p.stats, p);
+    this.shopLevels.set(id, owned + 1);
+    this.sound.buy();
+    return true;
   }
 
   openLevelUp() {
@@ -4852,6 +6366,73 @@ class Game {
     this.hud.showBanner('VÅGEN RENSAD', 'nästa startar snart', 2.0);
     this.toast(`Våg ${wave} klarad`);
     this.player.heal(this.player.stats.maxHp * 0.08);
+  }
+
+  // ------------------------------------------------------------- äventyret
+
+  onLevelStart(level, isBoss, plan, mission) {
+    this.hud.showBanner(`NIVÅ ${level}`, mission ? mission.title.toLowerCase() : '', 2.6);
+    this.sound.waveStart();
+    if (level === 1) this.toast('Radarn visar uppdragsmålen — gula och blå prickar');
+    else if (plan.size === 'lång') this.toast('Stor karta den här gången');
+  }
+
+  onLevelClear(level) {
+    const reward = 60 + level * 25;
+    this.addGold(reward);
+    this.levelReward = reward;
+    this.hud.showBanner('NIVÅ KLARAD', `+${reward} guld`, 2.4);
+    this.sound.levelUp();
+    this.player.heal(this.player.stats.maxHp * 0.15);
+    this.interludeT = 2.0;      // en andhämtning innan shoppen
+  }
+
+  /** Uppdraget gick om intet — nivån görs om från början. */
+  onLevelFailed(level, mission) {
+    this.hud.showBanner('UPPDRAGET MISSLYCKADES', '', 2.4);
+    this.sound.gameOver();
+    this.state = 'failed';
+    this.input.enabled = false;
+    this.input.releaseLock();
+    this.hud.setBoss(null);
+    setTimeout(() => {
+      if (this.state !== 'failed') return;
+      this.hud.showFailed(this, mission, () => {
+        this.enemies.length = 0;
+        this.combat.reset();
+        this.adventure.retryLevel();
+        this.continueRun();
+      });
+    }, 1200);
+  }
+
+  openInterlude() {
+    this.state = 'interlude';
+    this.input.enabled = false;
+    this.input.releaseLock();
+    this.showShop();
+  }
+
+  /** Shoppen ritas om efter varje köp, så guld och priser alltid stämmer. */
+  showShop() {
+    this.hud.showShop(this, (id) => {
+      if (this.buy(id)) this.showShop();
+    }, () => this.continueRun());
+  }
+
+  /** Vidare från mellanskärmen till nästa nivå. */
+  continueRun() {
+    this.hud.hideOverlay();
+    // Checkpointen tas när man lämnar shoppen, så köpen räknas med.
+    if (this.adventure.state === 'cleared' && this.adventure.level % CHECKPOINT_EVERY === 0) {
+      this.saveCheckpoint();
+    }
+    this.adventure.nextLevel();
+    if (this.pendingLevelUps > 0) { this.openLevelUp(); return; }
+    this.state = 'playing';
+    this.input.enabled = true;
+    if (!this.input.touch) this.input.requestLock();
+    this.sound.resume();
   }
 
   // ------------------------------------------------------------------ update
@@ -4893,7 +6474,13 @@ class Game {
       } else p.droneTimer = 0.3;
     }
 
-    this.waves.update(dt, this);
+    if (this.mode === 'adventure') {
+      this.adventure.update(dt, this);
+      if (this.interludeT > 0) {
+        this.interludeT -= dt;
+        if (this.interludeT <= 0) this.openInterlude();
+      }
+    } else this.waves.update(dt, this);
 
     for (const e of this.enemies) {
       if (e.alive) e.update(dt, this);
@@ -4937,6 +6524,7 @@ class Game {
     if (p.alive) p.draw(r, this.time);
     for (const e of this.enemies) e.draw(r, this.time);
     this.combat.draw(r, this.time);
+    if (this.mode === 'adventure') this.adventure.draw(r, this.time);
     r.render(p.camera(this.time), this.env, this.time, p.pos);
   }
 
@@ -4954,6 +6542,9 @@ class Game {
       else this.update(dt);
     } else if (this.state === 'paused') {
       if (this.input.pressed('Escape') || this.input.pressed('KeyP')) this.resume();
+    } else if (this.state === 'interlude') {
+      if (this.input.pressed('Space') || this.input.pressed('Enter')) this.continueRun();
+      this.particles.update(dt * 0.25);
     } else if (this.state === 'levelup') {
       for (let i = 0; i < 3; i++) {
         if (this.input.pressed(`Digit${i + 1}`) || this.input.pressed(`Numpad${i + 1}`)) {
@@ -4967,7 +6558,7 @@ class Game {
       this.time += dt;
       this.dayTime = (this.dayTime + dt / DAY_LENGTH) % 1;
       this.particles.update(dt);
-      if (this.state !== 'dead') {
+      if (this.state !== 'dead' && this.state !== 'failed') {
         this.player.camYaw += dt * 0.06;
         this.player.updateCamera(dt, 0);
       }
