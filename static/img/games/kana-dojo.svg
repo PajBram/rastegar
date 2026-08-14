@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="The hiragana character shi drawn large inside a practice square, with three answer cards beside it and the right one picked out in red">
+  <defs>
+    <linearGradient id="kana" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f2ea"/><stop offset="100%" stop-color="#e2d6c6"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#kana)"/>
+
+  <!-- screentone, the same dot grid the other covers use -->
+  <g fill="#16120f" opacity=".07">
+    <circle cx="24" cy="24" r="2"/><circle cx="60" cy="24" r="2"/><circle cx="96" cy="24" r="2"/>
+    <circle cx="24" cy="60" r="2"/><circle cx="60" cy="60" r="2"/>
+    <circle cx="340" cy="264" r="2"/><circle cx="376" cy="264" r="2"/><circle cx="376" cy="228" r="2"/>
+  </g>
+
+  <!-- the practice square every Japanese exercise book is ruled with -->
+  <rect x="40" y="48" width="204" height="204" fill="none" stroke="#c9a582" stroke-width="2"/>
+  <g stroke="#c9a582" stroke-width="1.5" stroke-dasharray="7 7" opacity=".85">
+    <line x1="142" y1="48" x2="142" y2="252"/>
+    <line x1="40" y1="150" x2="244" y2="150"/>
+  </g>
+
+  <!-- し, one of the first characters anyone learns, and one stroke exactly:
+       down, round the bottom, and away to the upper right. -->
+  <path d="M 112 72
+           C 108 110, 106 154, 113 183
+           C 122 214, 148 226, 175 212
+           C 191 203, 202 188, 208 170"
+        fill="none" stroke="#16120f" stroke-width="10"
+        stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- the three answers it offers, and the one that is right -->
+  <g fill="none" stroke="#16120f" stroke-width="2.5">
+    <rect x="276" y="60" width="88" height="46" rx="4"/>
+    <rect x="276" y="188" width="88" height="46" rx="4"/>
+  </g>
+  <rect x="276" y="124" width="88" height="46" rx="4" fill="#ff2d55"/>
+
+  <!-- the romaji on the cards: ink for the guesses, paper for the answer -->
+  <g fill="#16120f" opacity=".28">
+    <rect x="298" y="79" width="30" height="8" rx="4"/>
+    <rect x="334" y="79" width="12" height="8" rx="4"/>
+    <rect x="298" y="207" width="20" height="8" rx="4"/>
+    <rect x="324" y="207" width="22" height="8" rx="4"/>
+  </g>
+  <g fill="#fffdf8">
+    <rect x="300" y="143" width="24" height="8" rx="4"/>
+    <rect x="330" y="143" width="16" height="8" rx="4"/>
+  </g>
+</svg>
