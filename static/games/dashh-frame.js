@@ -28,6 +28,67 @@
     load();
   }
 
+  /* Highscores.
+   *
+   * The game is inside a frame and cannot reach window.Scores itself, so it
+   * shouts two things over postMessage and this end does the paperwork: fetch
+   * a run token when a survival run starts, and offer the submit form when it
+   * ends. Adventure runs say nothing — they resume from checkpoints, so they
+   * are not one attempt and not comparable.
+   */
+  var token = null;
+  var panel = null;
+
+  function clearPanel() {
+    if (panel && panel.parentNode) panel.parentNode.removeChild(panel);
+    panel = null;
+  }
+
+  function showResult(run) {
+    clearPanel();
+    if (!window.Scores) return;
+    panel = document.createElement('div');
+    panel.className = 'dashh__result';
+
+    var head = document.createElement('p');
+    head.className = 'dashh__result-line';
+    head.textContent = 'Wave ' + run.wave + ' · ' + run.kills + ' kills';
+    panel.appendChild(head);
+
+    var big = document.createElement('p');
+    big.className = 'big';
+    big.textContent = String(run.score);
+    panel.appendChild(big);
+
+    panel.appendChild(window.Scores.submitForm({
+      game: 'dashh',
+      score: run.score,
+      // Read late: a run that ends before the token lands would otherwise be
+      // told it cannot be scored a moment before it can.
+      token: function () { return token; }
+    }));
+    wrap.appendChild(panel);
+    panel.scrollIntoView({ block: 'nearest' });
+  }
+
+  window.addEventListener('message', function (event) {
+    // Only our own frame, on our own origin, gets to say anything.
+    if (event.origin !== window.location.origin) return;
+    if (event.source !== frame.contentWindow) return;
+    var msg = event.data;
+    if (!msg || typeof msg !== 'object') return;
+
+    if (msg.dashh === 'run-start') {
+      token = null;
+      clearPanel();
+      if (window.Scores) {
+        window.Scores.startRun('dashh').then(function (t) { token = t; });
+      }
+    } else if (msg.dashh === 'run-over' && typeof msg.score === 'number') {
+      showResult(msg);
+    }
+  });
+
   // Hovering or clicking the frame focuses it, otherwise the page keeps the
   // key presses and the game never sees WASD.
   function focusGame() {

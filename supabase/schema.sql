@@ -36,7 +36,11 @@ insert into public.games (slug, title, max_score, max_rate, min_seconds) values
   ('duel',              'Duel',             150000,   900,  3),
   ('ink-bomb',          'Ink Bomb',         400000,  2000,  3),
   ('shuriken',          'Shuriken',         200000,   900,  3),
-  ('panel-dash',        'Panel Dash',       200000,   900,  3)
+  ('panel-dash',        'Panel Dash',       200000,   900,  3),
+  -- Dashh scores wave squared x 50 + kills x 25, survival only. Wave 40
+  -- with 2000 kills comes to 130k, so the ceiling leaves room for a
+  -- monster run: refusing an honest record is worse than a loose cap.
+  ('dashh',             'Dashh: Voidfall',  250000,   300, 30)
 on conflict (slug) do update
   set title = excluded.title,
       max_score = excluded.max_score,

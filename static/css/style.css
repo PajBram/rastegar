@@ -625,6 +625,16 @@ kbd { font-family: var(--mono); font-size: .82em; background: var(--sand); paddi
 }
 
 /* ------------------------------------------------------------ scoreboard */
+/* The run summary the game hands out when you die, below the frame. Dashh
+   draws its own world, so this is the one part of it the site styles. */
+.dashh__result { background: var(--sand); padding: 1.5rem 1.75rem; margin-top: .8rem; text-align: center; }
+.dashh__result-line {
+  font-size: .72rem; font-weight: 600; letter-spacing: .2em; text-transform: uppercase;
+  color: var(--ink-soft); margin: 0 0 .3rem;
+}
+.dashh__result .big { font-family: var(--serif); font-size: 2.6rem; line-height: 1; margin: 0 0 1rem; }
+.dashh__result .score-submit { max-width: 22rem; margin: 0 auto; }
+
 .panel--scores { background: var(--sand); border: 0; padding: 1.75rem; }
 .panel--scores h2 { font-size: 1.2rem; }
 .scoreboard ol { list-style: none; padding: 0; margin: 0; counter-reset: rank; }
