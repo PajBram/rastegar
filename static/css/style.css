@@ -209,6 +209,9 @@ main { display: block; }
 .band h2 { font-size: clamp(1.6rem, 4vw, 2.4rem); color: #fff; }
 .band p { color: rgba(255,255,255,.9); }
 .band .kicker { color: rgba(255,255,255,.75); }
+/* The practical line under the pitch: quieter than the pitch, still readable
+   against the scene behind it. */
+.band__note { font-size: .92rem; color: rgba(255,255,255,.72); max-width: 46ch; margin: 0 auto 1.6rem; }
 
 /* ---------------------------------------------------------------- buttons */
 .btn {
@@ -224,6 +227,12 @@ main { display: block; }
 .btn--small { padding: .6rem 1.1rem; font-size: .7rem; }
 .btn[disabled] { opacity: .45; cursor: not-allowed; }
 .linkrow { display: flex; flex-wrap: wrap; gap: .8rem; margin-top: 1.6rem; justify-content: center; }
+/* Stacked, buttons of different word lengths leave a ragged edge down the
+   middle. Give them one width, the same as the hero's pair. */
+@media (max-width: 520px) {
+  .linkrow { flex-direction: column; align-items: center; }
+  .linkrow .btn { width: min(260px, 100%); text-align: center; }
+}
 
 .more {
   display: inline-flex; align-items: center; gap: .5rem; text-decoration: none;
