@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="sv">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
@@ -306,16 +306,16 @@
 
 <div id="hud" class="hidden">
   <div class="topbar">
-    <div class="stat"><span class="label" id="waveLbl">VÅG</span><span id="waveNum">1</span></div>
-    <div class="stat"><span class="label" id="levelLbl">NIVÅ</span><span id="levelNum">1</span></div>
-    <div class="stat hidden" id="goldStat"><span class="label">GULD</span><span id="goldNum">0</span></div>
+    <div class="stat"><span class="label" id="waveLbl">WAVE</span><span id="waveNum">1</span></div>
+    <div class="stat"><span class="label" id="levelLbl">LEVEL</span><span id="levelNum">1</span></div>
+    <div class="stat hidden" id="goldStat"><span class="label">GOLD</span><span id="goldNum">0</span></div>
     <div class="stat"><span class="label">KILLS</span><span id="killNum">0</span></div>
-    <div class="stat"><span class="label">TID</span><span id="timeNum">0:00</span></div>
+    <div class="stat"><span class="label">TIME</span><span id="timeNum">0:00</span></div>
     <div class="stat"><span class="label">FPS</span><span id="fpsNum">—</span></div>
   </div>
 
   <div id="objective" class="hidden">
-    <span id="objLabel">UPPDRAG</span><span id="objValue">—</span>
+    <span id="objLabel">OBJECTIVE</span><span id="objValue">—</span>
   </div>
 
   <div id="bossBar" class="hidden">
@@ -336,7 +336,7 @@
       <span id="armTag" class="hidden">🪖 0</span></div>
     <div class="bar xp"><div id="xpFill"></div></div>
     <div id="dashRow"></div>
-    <div id="fireRow" class="hidden"><div id="fireFill"></div><span>C · ELDBOLL</span></div>
+    <div id="fireRow" class="hidden"><div id="fireFill"></div><span>C · FIREBALL</span></div>
     <div id="comboRow" class="hidden"><i></i><i></i><i></i></div>
   </div>
 
@@ -525,6 +525,46 @@ const WORLD_SIZE = 300;     // terrängmeshens sida
 
 let WORLD_ID = 'wild';      // 'wild' = Vildheim, 'city' = Neotropolis
 function setWorld(id) { WORLD_ID = id; }
+
+// ------------------------------------------------------------- årstiden
+//
+// Vildheim har fyra årstider som slumpas när en körning börjar. Årstiden
+// styr både markens färg (terrängmeshen) och växtligheten (utplaceringen),
+// så den måste bo här där båda kommer åt den. Byter man årstid måste
+// världen byggas om — se `Renderer.buildWorld`.
+
+const SEASONS = {
+  spring: {
+    name: 'Spring', grass: [0.24, 0.46, 0.20], grass2: [0.35, 0.56, 0.26],
+    leaf: [1.05, 1.08, 0.95], flowers: 1.7, snow: 0, bare: 0,
+    // ljusa, nyutslagna löv och marken full av blom
+  },
+  summer: {
+    name: 'Summer', grass: [0.20, 0.40, 0.20], grass2: [0.28, 0.47, 0.24],
+    leaf: [0.95, 1.0, 0.9], flowers: 1.0, snow: 0, bare: 0,
+  },
+  autumn: {
+    name: 'Autumn', grass: [0.38, 0.36, 0.18], grass2: [0.46, 0.41, 0.21],
+    leaf: [1.5, 0.85, 0.45], flowers: 0.45, snow: 0, bare: 0.25,
+    // lövverket går i rost och en fjärdedel av träden har fällt bladen
+  },
+  winter: {
+    name: 'Winter', grass: [0.62, 0.68, 0.72], grass2: [0.72, 0.77, 0.82],
+    leaf: [0.7, 0.78, 0.85], flowers: 0.05, snow: 1, bare: 0.6,
+  },
+};
+
+let SEASON = SEASONS.summer;
+let SEASON_ID = 'summer';
+function setSeason(id) {
+  if (!SEASONS[id]) return;
+  SEASON_ID = id;
+  SEASON = SEASONS[id];
+}
+function randomSeasonId() {
+  const keys = Object.keys(SEASONS);
+  return keys[Math.floor(Math.random() * keys.length)];
+}
 
 // ------------------------------------------------------- Neotropolis (stad)
 
@@ -806,7 +846,7 @@ function initGL(canvas) {
     antialias: true, alpha: false, depth: true, stencil: false,
     powerPreference: 'high-performance',
   });
-  if (!gl) throw new Error('WebGL2 stöds inte av den här webbläsaren.');
+  if (!gl) throw new Error('This browser does not support WebGL2.');
   gl.enable(gl.DEPTH_TEST);
   gl.enable(gl.CULL_FACE);
   gl.cullFace(gl.BACK);
@@ -887,7 +927,7 @@ function uploadMesh(gl, m) {
 }
 
 // Per instans: pos(3) skala(3) färg(3) rotation(3) glöd(1) = 13 flyttal.
-const INST_FLOATS = 13;
+const INST_FLOATS = 14;   // 14:e = vindkänslighet, se INST_VS
 
 class InstancedBatch {
   constructor(gl, m, capacity = 256) {
@@ -921,6 +961,7 @@ class InstancedBatch {
     attrib(gl, 4, 3, st, 24, 1);
     attrib(gl, 5, 3, st, 36, 1);
     attrib(gl, 6, 1, st, 48, 1);
+    attrib(gl, 7, 1, st, 52, 1);
     gl.bindVertexArray(null);
   }
 
@@ -936,8 +977,11 @@ class InstancedBatch {
     gl.bufferData(gl.ARRAY_BUFFER, next.byteLength, gl.DYNAMIC_DRAW);
   }
 
-  /** rot är [x,y,z] i radianer; glow 0..1 lägger till egenljus. */
-  push(x, y, z, sx, sy, sz, col, rx = 0, ry = 0, rz = 0, glow = 0) {
+  /**
+   * rot är [x,y,z] i radianer; glow 0..1 lägger till egenljus.
+   * sway > 0 låter vinden böja objektet — 0 för allt som ska stå stilla.
+   */
+  push(x, y, z, sx, sy, sz, col, rx = 0, ry = 0, rz = 0, glow = 0, sway = 0) {
     if (this.count >= this.capacity) this.grow();
     const d = this.data;
     let o = this.count * INST_FLOATS;
@@ -946,6 +990,7 @@ class InstancedBatch {
     d[o + 6] = col[0]; d[o + 7] = col[1]; d[o + 8] = col[2];
     d[o + 9] = rx; d[o + 10] = ry; d[o + 11] = rz;
     d[o + 12] = glow;
+    d[o + 13] = sway;
     this.count++;
     this.dirty = true;
   }
@@ -1036,19 +1081,45 @@ class BillboardBatch {
 const FOG = /* glsl */`
 uniform vec3 uFogCol;
 uniform vec2 uFog;            // x = startavstånd, y = slutavstånd
+uniform float uFogHeight;     // hur snabbt diset tunnas ut uppåt
 vec3 applyFog(vec3 col, float dist){
   return mix(col, uFogCol, smoothstep(uFog.x, uFog.y, dist));
+}
+/* Höjdberoende dis: tätt nere i dalarna och på gatunivå, tunnare högt upp.
+   Det är den som ger djup åt landskapet.
+
+   Tunningen räknas på MEDELHÖJDEN mellan ögat och punkten, inte på punktens
+   egen höjd. Ljuset från en bergstopp har ju färdats hela vägen ner genom
+   det låga diset för att nå en spelare som står på marken. Med bara punktens
+   höjd slutade bergsranden döljas och lade sig som en mörk mur runt hela
+   världen — det såg ut som att himlen blivit grå. */
+vec3 applyFogH(vec3 col, float dist, float worldY){
+  float f = smoothstep(uFog.x, uFog.y, dist);
+  float avgY = max((worldY + uEye.y) * 0.5, 0.0);
+  f *= exp(-avgY * uFogHeight);
+  return mix(col, uFogCol, clamp(f, 0.0, 1.0));
 }`;
 
 const LIGHT = /* glsl */`
 uniform vec3 uSunDir;         // enhetsvektor mot ljuset
 uniform vec3 uSunCol;
 uniform vec3 uAmb;
+uniform vec3 uSkyTint;        // himlens färg ovanifrån
+uniform vec3 uGroundTint;     // markens återkast underifrån
+/* Halvsfärsljus: ytor som vetter uppåt får himlens färg, nedåtvända får
+   markens återkast. Tinterna ligger kring 1,0 så helhetsljusstyrkan är
+   densamma som förut — det här flyttar kulör, inte exponering. */
 vec3 shade(vec3 n, vec3 albedo){
   float d = max(dot(n, uSunDir), 0.0);
   float wrap = dot(n, uSunDir) * 0.5 + 0.5;       // mjukt halvljus
   float sky = n.y * 0.5 + 0.5;                    // himmelsbidrag uppifrån
-  return albedo * (uAmb * (0.55 + 0.45 * sky) + uSunCol * (d * 0.9 + wrap * 0.22));
+  vec3 ambient = uAmb * (0.55 + 0.45 * sky) * mix(uGroundTint, uSkyTint, sky);
+  return albedo * (ambient + uSunCol * (d * 0.9 + wrap * 0.22));
+}
+/* Smal glansdager — får metall, neon och våta ytor att fånga ljuset. */
+vec3 specular(vec3 n, vec3 view, float strength){
+  vec3 hv = normalize(uSunDir + view);
+  return uSunCol * pow(max(dot(n, hv), 0.0), 46.0) * strength;
 }`;
 
 // ------------------------------------------------------------------ terräng
@@ -1094,7 +1165,7 @@ void main(){
   float ring = smoothstep(3.2, 2.2, abs(d - 2.6)) * 0.10;
   col += vec3(0.25, 0.85, 1.0) * ring * lamp;
   col += vec3(0.05, 0.22, 0.30) * max(0.0, 1.0 - d * 0.06) * 0.25 * uNight;
-  frag = vec4(applyFog(col, distance(vW, uEye)), 1.0);
+  frag = vec4(applyFogH(col, distance(vW, uEye), vW.y), 1.0);
 }`;
 
 // -------------------------------------------------------------- instansierat
@@ -1116,12 +1187,31 @@ layout(location=3) in vec3 iScale;
 layout(location=4) in vec3 iCol;
 layout(location=5) in vec3 iRot;
 layout(location=6) in float iGlow;
+layout(location=7) in float iSway;
 uniform mat4 uVP;
+uniform float uTime;
+uniform vec2 uWind;           // riktning × styrka
 ${ROT}
 out vec3 vN; out vec3 vC; out vec3 vW; out float vGlow;
 void main(){
   mat3 R = rotMat(iRot);
   vec3 world = R * (aPos * iScale) + iPos;
+
+  /* Vind: böjningen växer med höjden över objektets fot, så stammen står
+     stilla medan kronan vaggar. Fasen kommer ur objektets världsläge, så
+     varje träd och grässtrå rör sig i sin egen takt i stället för att hela
+     skogen svaja som en enda kropp. Byar rullar genom landskapet via en
+     långsam våg i samma led som vinden blåser. */
+  if (iSway > 0.0) {
+    // t: 0 vid objektets fot, 1 vid dess topp — foten står stilla
+    float t = clamp((world.y - iPos.y) / max(iScale.y, 0.001) + 0.5, 0.0, 1.0);
+    float phase = iPos.x * 0.35 + iPos.z * 0.27;
+    float gust = 0.65 + 0.35 * sin(uTime * 0.5 + (iPos.x + iPos.z) * 0.04);
+    float bend = sin(uTime * 1.7 + phase) * 0.5 + sin(uTime * 2.9 + phase * 1.7) * 0.22;
+    // iSway är utslaget i meter vid full vind
+    world.xz += uWind * (iSway * t * gust * (0.55 + bend));
+  }
+
   vN = normalize(R * (aNrm / max(abs(iScale), vec3(0.0005))));
   vC = iCol; vW = world; vGlow = iGlow;
   gl_Position = uVP * vec4(world, 1.0);
@@ -1141,8 +1231,10 @@ void main(){
   float rim = pow(1.0 - max(dot(n, view), 0.0), 2.5);
   col += vC * rim * (0.35 + vGlow * 1.2);
   col += vC * vGlow * 1.35;
+  // självlysande ytor behöver ingen dager — de lyser redan
+  col += specular(n, view, 0.22 * (1.0 - min(vGlow, 1.0)));
   float dist = distance(vW, uEye);
-  col = applyFog(col, dist);
+  col = applyFogH(col, dist, vW.y);
   frag = vec4(col, 1.0);
 }`;
 
@@ -1159,7 +1251,10 @@ layout(location=6) in float iGlow;
 uniform mat4 uVP;
 out float vAlpha; out vec2 vLocal;
 void main(){
-  vec3 world = aPos * iScale + iPos;
+  // bara vridning kring Y — skuggan ligger platt på marken ändå
+  float c = cos(iRot.y), s = sin(iRot.y);
+  vec3 p = aPos * iScale;
+  vec3 world = vec3(c * p.x + s * p.z, p.y, -s * p.x + c * p.z) + iPos;
   vAlpha = iGlow;
   vLocal = aPos.xz * 2.0;
   gl_Position = uVP * vec4(world, 1.0);
@@ -1222,6 +1317,8 @@ uniform vec3 uSunCol;
 uniform vec3 uSkyTop;
 uniform vec3 uSkyHorizon;
 uniform float uNight;
+uniform float uTime;
+uniform float uClouds;   // 0 = klart, 1 = molnigt
 out vec4 frag;
 
 float hash13(vec3 p){
@@ -1230,12 +1327,56 @@ float hash13(vec3 p){
   return fract(p.x * p.y * p.z * (p.x + p.y + p.z));
 }
 
+float hash12(vec2 p){
+  vec3 q = fract(vec3(p.xyx) * 0.1031);
+  q += dot(q, q.yzx + 33.33);
+  return fract((q.x + q.y) * q.z);
+}
+
+float vnoise(vec2 p){
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash12(i), hash12(i + vec2(1,0)), u.x),
+             mix(hash12(i + vec2(0,1)), hash12(i + vec2(1,1)), u.x), u.y);
+}
+
+/* Fyra oktaver räcker för moln som håller ihop både nära zenit och nere
+   vid horisonten, där projektionen tänjs ut som mest. */
+float fbm2(vec2 p){
+  float sum = 0.0, amp = 0.5;
+  for (int i = 0; i < 4; i++) { sum += vnoise(p) * amp; p = p * 2.03 + 11.7; amp *= 0.5; }
+  return sum;
+}
+
 void main(){
   vec4 far = uInvVP * vec4(vNdc, 1.0, 1.0);
   vec3 dir = normalize(far.xyz / far.w - uEye);
 
   float h = clamp(dir.y * 0.5 + 0.5, 0.0, 1.0);
   vec3 col = mix(uSkyHorizon, uSkyTop, pow(h, 0.85));
+
+  /* Moln: blickriktningen projiceras ner på ett plan högt över spelaren och
+     bruset samplas där, så täcket ligger stilla i världen i stället för att
+     följa med kameran. De driver sakta med tiden. */
+  if (uClouds > 0.01 && dir.y > 0.10) {
+    // Nämnaren MÅSTE klampas: nära horisonten går dir.xz/dir.y mot
+    // oändligheten, bruset samplas i grus och himlen blir grå sörja i
+    // stället för moln. Det såg ut som mulet väder över hela kartan.
+    vec2 cp = dir.xz / max(dir.y, 0.22) * 0.30 + vec2(uTime * 0.0035, uTime * 0.0022);
+    float c = fbm2(cp);
+    // tunnare mot horisonten, där lagret ses nästan från sidan
+    // Molnen håller sig till den övre himlen. Närmare horisonten tänjs
+    // projektionen ut till stora suddiga fält som läser som mulet väder i
+    // stället för som moln — där gör de mer skada än nytta.
+    float band = smoothstep(0.12, 0.45, dir.y);
+    // Tröskeln är högt satt med flit: bara brusets toppar blir moln, så
+    // himlen förblir mest öppen och molnen läser som moln, inte som mulet.
+    float cover = smoothstep(0.56, 0.85, c) * band * uClouds;
+    // solsidan av molnen lyser upp, undersidan är grå
+    float lit = smoothstep(0.0, 0.6, dot(normalize(vec3(dir.x, 0.35, dir.z)), uSunDir));
+    vec3 cloudCol = mix(mix(uSkyHorizon * 1.3, vec3(1.0), 0.68), uSunCol * 0.85 + 0.3, lit * 0.5);
+    col = mix(col, cloudCol, clamp(cover, 0.0, 0.82));
+  }
 
   // stjärnor på natten
   if (uNight > 0.01) {
@@ -1267,12 +1408,19 @@ uniform float uLevel;
 out vec3 vW; out vec3 vN;
 void main(){
   vec3 p = vec3(aPos.x * uSize, uLevel, aPos.z * uSize);
+  // tre långa dyningar plus två korta krusningar tvärs över dem
   float a = sin(p.x * 0.25 + uTime * 1.3) * 0.10;
   float b = sin(p.z * 0.31 - uTime * 1.1) * 0.09;
   float c = sin((p.x + p.z) * 0.13 + uTime * 0.7) * 0.07;
-  p.y += a + b + c;
-  float dx = cos(p.x * 0.25 + uTime * 1.3) * 0.025 + cos((p.x + p.z) * 0.13 + uTime * 0.7) * 0.009;
-  float dz = cos(p.z * 0.31 - uTime * 1.1) * 0.028 + cos((p.x + p.z) * 0.13 + uTime * 0.7) * 0.009;
+  float d = sin(p.x * 0.85 - p.z * 0.62 + uTime * 2.1) * 0.030;
+  float e = sin(p.x * 1.31 + p.z * 1.05 - uTime * 2.7) * 0.022;
+  p.y += a + b + c + d + e;
+  float dx = cos(p.x * 0.25 + uTime * 1.3) * 0.025 + cos((p.x + p.z) * 0.13 + uTime * 0.7) * 0.009
+           + cos(p.x * 0.85 - p.z * 0.62 + uTime * 2.1) * 0.026
+           + cos(p.x * 1.31 + p.z * 1.05 - uTime * 2.7) * 0.029;
+  float dz = cos(p.z * 0.31 - uTime * 1.1) * 0.028 + cos((p.x + p.z) * 0.13 + uTime * 0.7) * 0.009
+           - cos(p.x * 0.85 - p.z * 0.62 + uTime * 2.1) * 0.019
+           + cos(p.x * 1.31 + p.z * 1.05 - uTime * 2.7) * 0.023;
   vN = normalize(vec3(-dx, 1.0, -dz));
   vW = p;
   gl_Position = uVP * vec4(p, 1.0);
@@ -1285,21 +1433,33 @@ uniform vec3 uEye;
 uniform vec3 uSunDir;
 uniform vec3 uSunCol;
 uniform vec3 uAmb;
+uniform vec3 uSkyTop;
+uniform vec3 uSkyHor;
 ${FOG}
 out vec4 frag;
 void main(){
   vec3 n = normalize(vN);
   vec3 view = normalize(uEye - vW);
   float fres = pow(1.0 - max(dot(n, view), 0.0), 3.0);
+
+  // Vattnet färgas av himlen det speglar i stället för av fasta blåtoner:
+  // grått under mulet, brandgult i solnedgång, blått mitt på dagen. Det är
+  // det som får sjöarna att höra ihop med tiden på dygnet.
+  vec3 refl = mix(uSkyHor, uSkyTop, clamp(0.35 + n.y * 0.4, 0.0, 1.0));
   vec3 deep = vec3(0.02, 0.10, 0.20);
-  vec3 shallow = vec3(0.06, 0.34, 0.46);
-  vec3 col = mix(deep, shallow, fres * 0.8 + 0.2) * (uAmb + 0.6);
+  vec3 body = mix(deep, vec3(0.06, 0.34, 0.46), 0.35) * (uAmb + 0.6);
+  vec3 col = mix(body, refl, clamp(fres * 0.85 + 0.06, 0.0, 0.9));
+
+  // en smal spegelbild av solen, plus glitter från de korta krusningarna
   vec3 hv = normalize(uSunDir + view);
-  col += uSunCol * pow(max(dot(n, hv), 0.0), 190.0) * 1.6;
-  col += uSunCol * fres * 0.16;
+  float spec = max(dot(n, hv), 0.0);
+  col += uSunCol * pow(spec, 220.0) * 2.0;
+  col += uSunCol * pow(spec, 26.0) * 0.10;
+  col += uSunCol * fres * 0.14;
+
   float dist = distance(vW, uEye);
   col = applyFog(col, dist);
-  frag = vec4(col, 0.80 + fres * 0.18);
+  frag = vec4(col, 0.78 + fres * 0.20);
 }`;
 
 // ═══ terrain.js ═══
@@ -1308,6 +1468,7 @@ void main(){
 
 
 const SAND = [0.62, 0.55, 0.36];
+// Gräsets färg kommer från årstiden (noise.js) — de här är sommarens.
 const GRASS = [0.20, 0.40, 0.20];
 const GRASS2 = [0.28, 0.47, 0.24];
 const ROCK = [0.34, 0.33, 0.37];
@@ -1375,7 +1536,7 @@ function buildTerrainMesh(res = 200) {
 
       const slope = clamp(1 - nrm.y, 0, 1);
       const variation = fbm(x * 0.09, z * 0.09, 2) * 0.5 + 0.5;
-      mix3(GRASS, GRASS2, variation, tmp);
+      mix3(SEASON.grass, SEASON.grass2, variation, tmp);
       // sten på branta sidor
       mix3(tmp, ROCK, smoothstep(0.22, 0.55, slope), tmp);
       // strand vid vattenlinjen
@@ -1383,7 +1544,8 @@ function buildTerrainMesh(res = 200) {
       // sjöbotten
       mix3(tmp, MUD, smoothstep(0.0, -2.5, h - WATER_LEVEL), tmp);
       // snö på topparna
-      mix3(tmp, SNOW, smoothstep(30, 46, h) * (1 - smoothstep(0.55, 0.8, slope)), tmp);
+      const snowLine = SEASON.snow > 0 ? 1.5 : 30;
+      mix3(tmp, SNOW, smoothstep(snowLine, snowLine + 16, h) * (1 - smoothstep(0.55, 0.8, slope)), tmp);
       // lite kornighet
       const g = 0.94 + variation * 0.12;
       colors[idx] = tmp[0] * g; colors[idx + 1] = tmp[1] * g; colors[idx + 2] = tmp[2] * g;
@@ -1466,6 +1628,7 @@ class ColliderGrid {
  */
 function scatterProps() {
   const trees = [], rocks = [], crystals = [], grassTufts = [];
+  const flowers = [], bushes = [], logs = [], mushrooms = [], reeds = [];
   const grid = new ColliderGrid(8);
   const R = 104;
 
@@ -1480,20 +1643,55 @@ function scatterProps() {
     }
   };
 
-  place(520, (x, z, h, slope) => {
+  // Skogen har fyra arter, fördelade efter höjd: lövträd och björk nere vid
+  // vattnet, gran längre upp, och döda stammar högst där det är kargt. En
+  // skog av ett enda träd sett tusen gånger är det som får en värld att
+  // kännas gjord i stället för växt.
+  place(760, (x, z, h, slope) => {
     if (h < WATER_LEVEL + 0.8 || h > 34 || slope > 0.34) return;
     if (Math.random() > 0.72) return;
-    const scale = rand(0.8, 1.5);
+    const alt = clamp((h - WATER_LEVEL) / 32, 0, 1);
+    const r = Math.random();
+    let kind;
+    if (alt < 0.32) kind = r < 0.5 ? 'broadleaf' : r < 0.74 ? 'birch' : 'pine';
+    else if (alt < 0.68) kind = r < 0.62 ? 'pine' : r < 0.88 ? 'broadleaf' : 'birch';
+    else kind = r < 0.78 ? 'pine' : 'dead';
+
+    // Höst och vinter fäller löven på lövträden — granen står grön året om.
+    if (kind !== 'pine' && kind !== 'dead' && Math.random() < SEASON.bare) kind = 'dead';
+    const scale = rand(0.8, 1.5) * (kind === 'broadleaf' ? 1.1 : 1);
     const hue = rand(0.6, 1.0);
+    const trunk = kind === 'birch'
+      ? [0.78, 0.76, 0.70]
+      : kind === 'dead'
+        ? [0.34, 0.31, 0.28]
+        : [0.24 * hue, 0.16 * hue, 0.11 * hue];
+    // lövverket skiftar mot gult och rost på höjden, som en höstsida
+    const warm = alt * 0.5 + rand(0, 0.3);
+    const seasonLeaf = (c) => [c[0] * SEASON.leaf[0], c[1] * SEASON.leaf[1], c[2] * SEASON.leaf[2]];
     trees.push({
-      x, y: h, z,
-      scale,
-      rot: rand(TAU),
-      trunk: [0.24 * hue, 0.16 * hue, 0.11 * hue],
-      leaf: [lerp(0.10, 0.24, Math.random()), lerp(0.34, 0.55, hue), lerp(0.14, 0.26, Math.random())],
+      x, y: h, z, kind, scale, rot: rand(TAU), trunk,
+      leaf: seasonLeaf(kind === 'broadleaf'
+        ? [lerp(0.18, 0.52, warm), lerp(0.42, 0.50, hue), lerp(0.12, 0.16, Math.random())]
+        : kind === 'birch'
+          ? [lerp(0.35, 0.62, warm), lerp(0.60, 0.68, hue), 0.22]
+          : [lerp(0.10, 0.24, Math.random()), lerp(0.30, 0.52, hue), lerp(0.14, 0.26, Math.random())]),
       tiers: randInt(2, 3),
+      lean: rand(-0.09, 0.09),
     });
     grid.add({ x, z, r: 0.6 * scale });
+
+    // svampar och nedfallna stammar hör hemma vid trädens fötter
+    if (Math.random() < 0.16) {
+      const a = rand(TAU), d = rand(1.2, 2.6);
+      const mx = x + Math.cos(a) * d, mz = z + Math.sin(a) * d;
+      mushrooms.push({ x: mx, y: terrainHeight(mx, mz), z: mz, scale: rand(0.5, 1.0),
+        col: Math.random() < 0.55 ? [0.78, 0.20, 0.18] : [0.85, 0.72, 0.45] });
+    }
+    if (Math.random() < 0.05) {
+      logs.push({ x, y: h, z, rot: rand(TAU), len: rand(2.4, 4.4), r: rand(0.28, 0.45),
+        col: [0.26 * hue, 0.19 * hue, 0.13 * hue] });
+    }
   });
 
   place(420, (x, z, h, slope) => {
@@ -1524,10 +1722,44 @@ function scatterProps() {
 
   place(900, (x, z, h, slope) => {
     if (h < WATER_LEVEL + 0.6 || h > 30 || slope > 0.3) return;
-    grassTufts.push({ x, y: h, z, scale: rand(0.35, 0.85), rot: rand(TAU) });
+    grassTufts.push({ x, y: h, z, scale: rand(0.35, 0.85) * (SEASON.snow ? 0.6 : 1), rot: rand(TAU) });
   });
 
-  return { trees, rocks, crystals, grassTufts, grid };
+  // Blommor växer i ängar, inte jämnt utspridda: ett lågfrekvent brus
+  // avgör var marken blommar, så man går genom fält i stället för prickar.
+  const MEADOW = [
+    [1.0, 0.85, 0.25], [0.95, 0.35, 0.45], [0.70, 0.55, 1.0],
+    [1.0, 1.0, 0.95], [1.0, 0.55, 0.20],
+  ];
+  place(1400, (x, z, h, slope) => {
+    if (h < WATER_LEVEL + 0.7 || h > 26 || slope > 0.24) return;
+    if (Math.random() > SEASON.flowers) return;   // vår blommar över, vinter knappt alls
+    const meadow = fbm(x * 0.035 + 8.1, z * 0.035 - 3.7, 2);
+    if (meadow < 0.12) return;
+    flowers.push({
+      x, y: h, z, scale: rand(0.5, 1.0), rot: rand(TAU),
+      col: MEADOW[randInt(0, MEADOW.length - 1)],
+    });
+  });
+
+  place(420, (x, z, h, slope) => {
+    if (h < WATER_LEVEL + 0.8 || h > 30 || slope > 0.32) return;
+    if (Math.random() > 0.4) return;
+    const s = rand(0.7, 1.5);
+    bushes.push({ x, y: h, z, scale: s, rot: rand(TAU),
+      col: [lerp(0.10, 0.20, Math.random()), lerp(0.26, 0.42, Math.random()), 0.14],
+      berries: Math.random() < 0.3 });
+  });
+
+  // vass står i strandkanten, precis ovanför vattenlinjen
+  place(700, (x, z, h) => {
+    const d = h - WATER_LEVEL;
+    if (d < -0.4 || d > 0.9) return;
+    if (Math.random() > 0.45) return;
+    reeds.push({ x, y: h, z, scale: rand(0.8, 1.6), rot: rand(TAU) });
+  });
+
+  return { trees, rocks, crystals, grassTufts, flowers, bushes, logs, mushrooms, reeds, grid };
 }
 
 /** Neotropolis: husens kollisionslådor plus gatljus och takantenner. */
@@ -1655,6 +1887,14 @@ function computeEnv(dayTime, worldId = 'wild') {
       night: 1,
       fogNear: 42,
       fogFar: 200,
+      // Staden: kall magenta från skyltarna ovanifrån, gatans neon underifrån.
+      skyTint: [0.92, 0.80, 1.15],
+      groundTint: [1.10, 0.86, 1.05],
+      // Diset ligger på gatunivå och tunnas ut mot tornens toppar.
+      fogHeight: 0.013,
+      clouds: 0,
+      // stadens vind kanaliseras mellan husen och är svag på gatunivå
+      wind: [0.35, 0.15],
     };
   }
   const a = (dayTime - 0.25) * TAU;
@@ -1679,6 +1919,13 @@ function computeEnv(dayTime, worldId = 'wild') {
   const dir = moon ? { x: -sx, y: -sy, z: -sz } : { x: sx, y: sy, z: sz };
   const strength = moon ? 0.32 : lerp(0.45, 1.0, dayT);
 
+  // Halvsfärstinter: himlens kulör uppifrån, en varm markreflex underifrån.
+  // Normaliserade kring 1,0 så ljusstyrkan är oförändrad — bara kulören rör sig.
+  const norm = (c, amount) => {
+    const avg = (c[0] + c[1] + c[2]) / 3 || 1;
+    return [lerp(1, c[0] / avg, amount), lerp(1, c[1] / avg, amount), lerp(1, c[2] / avg, amount)];
+  };
+
   return {
     sunDir: dir,
     sunCol: [pal.sun[0] * strength, pal.sun[1] * strength, pal.sun[2] * strength],
@@ -1686,9 +1933,18 @@ function computeEnv(dayTime, worldId = 'wild') {
     fogCol: pal.fog,
     skyTop: pal.top,
     skyHor: pal.hor,
+    skyTint: norm(pal.top, 0.55),
+    groundTint: norm([0.42, 0.38, 0.26], 0.35),   // mossa och jord kastar tillbaka varmt
     night,
     fogNear: 44,
     fogFar: 178,
+    // Dalarna behåller sitt dis medan bergstopparna sticker upp ur det.
+    fogHeight: 0.009,
+    // Molnen tunnas ut på natten, då man ändå bara ser stjärnor genom dem.
+    clouds: lerp(0.35, 1.0, dayT),
+    // Vinden vrider sig långsamt över dygnet och friskar i på eftermiddagen.
+    wind: [Math.cos(dayTime * TAU * 0.6) * (0.75 + dayT * 0.5),
+           Math.sin(dayTime * TAU * 0.6) * (0.75 + dayT * 0.5)],
   };
 }
 
@@ -1740,13 +1996,19 @@ class Renderer {
     this.resize();
   }
 
-  /** Väljer aktiv värld; geometrin byggs första gången och cachas sedan. */
-  buildWorld(id) {
+  /**
+   * Väljer aktiv värld och årstid; geometrin byggs första gången och cachas.
+   * Cachenyckeln innehåller årstiden — samma karta i höstfärger är en annan
+   * mesh, och utan det i nyckeln får man förra körningens sommar tillbaka.
+   */
+  buildWorld(id, season) {
     setWorld(id);
-    if (!this.worldCache[id]) {
-      this.worldCache[id] = id === 'city' ? this.buildCityWorld() : this.buildWildWorld();
+    if (season) setSeason(season);
+    const key = id === 'city' ? 'city' : `wild:${SEASON_ID}`;
+    if (!this.worldCache[key]) {
+      this.worldCache[key] = id === 'city' ? this.buildCityWorld() : this.buildWildWorld();
     }
-    const w = this.worldCache[id];
+    const w = this.worldCache[key];
     this.terrain = w.terrain;
     this.static = w.static;
     this.props = w.props;
@@ -1925,20 +2187,96 @@ class Renderer {
   buildWildWorld() {
     const gl = this.gl, m = this.mesh;
     const props = scatterProps();
-    const trunks = new InstancedBatch(gl, m.cylTaper, 512);
-    const leaves = new InstancedBatch(gl, m.cone, 1024);
-    const rocks = new InstancedBatch(gl, m.box, 512);
+    const trunks = new InstancedBatch(gl, m.cylTaper, 2048);
+    const leaves = new InstancedBatch(gl, m.cone, 2048);
+    const rocks = new InstancedBatch(gl, m.box, 2048);
     const crystals = new InstancedBatch(gl, m.octa, 256);
-    const tufts = new InstancedBatch(gl, m.cone, 1024);
+    const tufts = new InstancedBatch(gl, m.cone, 6144);
+    const canopy = new InstancedBatch(gl, m.sphere, 2048);   // lövkronor och buskar
+    const petals = new InstancedBatch(gl, m.sphere, 4096);   // blomhuvuden, bär, svamphattar
+    const logsB = new InstancedBatch(gl, m.cyl, 1024);       // nedfallna stammar, svampfötter
 
     for (const t of props.trees) {
-      const h = 3.2 * t.scale;
-      trunks.push(t.x, t.y + h * 0.5, t.z, 0.5 * t.scale, h, 0.5 * t.scale, t.trunk, 0, t.rot, 0, 0);
-      for (let i = 0; i < t.tiers; i++) {
-        const f = i / t.tiers;
-        const r = (3.4 - f * 1.5) * t.scale;
-        leaves.push(t.x, t.y + h * (0.75 + f * 0.72), t.z, r, 3.0 * t.scale, r,
-          [t.leaf[0] * (1 - f * 0.12), t.leaf[1] * (1 - f * 0.1), t.leaf[2]], 0, t.rot + f, 0, 0);
+      const s = t.scale;
+      const lean = t.lean || 0;
+      if (t.kind === 'broadleaf') {
+        // lövträd: kort grov stam och ett klot av löv i tre klumpar
+        const h = 2.6 * s;
+        trunks.push(t.x, t.y + h * 0.5, t.z, 0.62 * s, h, 0.62 * s, t.trunk, lean, t.rot, 0, 0);
+        const cy = t.y + h + 1.5 * s;
+        canopy.push(t.x, cy, t.z, 3.2 * s, 2.6 * s, 3.2 * s, t.leaf, 0, t.rot, 0, 0, 0.42 * s);
+        for (let i = 0; i < 2; i++) {
+          const a = t.rot + i * 2.4;
+          canopy.push(t.x + Math.cos(a) * 1.5 * s, cy - 0.5 * s, t.z + Math.sin(a) * 1.5 * s,
+            2.1 * s, 1.8 * s, 2.1 * s,
+            [t.leaf[0] * 0.88, t.leaf[1] * 0.92, t.leaf[2]], 0, a, 0, 0, 0.38 * s);
+        }
+      } else if (t.kind === 'birch') {
+        // björk: smal ljus stam, gles krona, mörka streck på nävern
+        const h = 4.6 * s;
+        trunks.push(t.x, t.y + h * 0.5, t.z, 0.30 * s, h, 0.30 * s, t.trunk, lean, t.rot, 0, 0);
+        for (let i = 0; i < 3; i++) {
+          rocks.push(t.x, t.y + h * (0.3 + i * 0.22), t.z, 0.34 * s, 0.09 * s, 0.34 * s,
+            [0.20, 0.19, 0.18], 0, t.rot + i, 0, 0);
+        }
+        canopy.push(t.x, t.y + h + 0.9 * s, t.z, 2.3 * s, 2.0 * s, 2.3 * s, t.leaf, 0, t.rot, 0, 0, 0.5 * s);
+        canopy.push(t.x, t.y + h + 1.9 * s, t.z, 1.5 * s, 1.4 * s, 1.5 * s,
+          [t.leaf[0] * 1.05, t.leaf[1] * 1.02, t.leaf[2]], 0, -t.rot, 0, 0, 0.55 * s);
+      } else if (t.kind === 'dead') {
+        // dött träd: bar stam med ett par knotiga grenar
+        const h = 3.8 * s;
+        trunks.push(t.x, t.y + h * 0.5, t.z, 0.42 * s, h, 0.42 * s, t.trunk, lean, t.rot, 0, 0);
+        for (let i = 0; i < 3; i++) {
+          const a = t.rot + i * 2.1;
+          const by = t.y + h * (0.55 + i * 0.16);
+          trunks.push(t.x + Math.cos(a) * 0.8 * s, by, t.z + Math.sin(a) * 0.8 * s,
+            0.16 * s, 1.5 * s, 0.16 * s, t.trunk, 0.9, a, 0, 0);
+        }
+      } else {
+        const h = 3.2 * s;
+        trunks.push(t.x, t.y + h * 0.5, t.z, 0.5 * s, h, 0.5 * s, t.trunk, lean, t.rot, 0, 0);
+        for (let i = 0; i < t.tiers; i++) {
+          const f = i / t.tiers;
+          const r = (3.4 - f * 1.5) * s;
+          leaves.push(t.x, t.y + h * (0.75 + f * 0.72), t.z, r, 3.0 * s, r,
+            [t.leaf[0] * (1 - f * 0.12), t.leaf[1] * (1 - f * 0.1), t.leaf[2]], 0, t.rot + f, 0, 0,
+            0.28 * s * (0.5 + f));
+        }
+      }
+    }
+    for (const b of props.bushes) {
+      const s = b.scale;
+      canopy.push(b.x, b.y + 0.5 * s, b.z, 1.5 * s, 1.1 * s, 1.5 * s, b.col, 0, b.rot, 0, 0, 0.2 * s);
+      canopy.push(b.x + 0.5 * s, b.y + 0.35 * s, b.z - 0.4 * s, 1.0 * s, 0.8 * s, 1.0 * s,
+        [b.col[0] * 0.85, b.col[1] * 0.9, b.col[2]], 0, -b.rot, 0, 0, 0.2 * s);
+      if (b.berries) {
+        for (let i = 0; i < 3; i++) {
+          const a = b.rot + i * 2.1;
+          petals.push(b.x + Math.cos(a) * 0.8 * s, b.y + 0.9 * s, b.z + Math.sin(a) * 0.8 * s,
+            0.15, 0.15, 0.15, [0.85, 0.15, 0.25], 0, 0, 0, 0.15);
+        }
+      }
+    }
+    for (const l of props.logs) {
+      // liggande stam: cylindern reses på sidan med en kvarts varv
+      logsB.push(l.x, l.y + l.r, l.z, l.r * 2, l.len, l.r * 2, l.col, Math.PI / 2, l.rot, 0, 0);
+    }
+    for (const m of props.mushrooms) {
+      const s = m.scale;
+      logsB.push(m.x, m.y + 0.16 * s, m.z, 0.10 * s, 0.32 * s, 0.10 * s, [0.88, 0.85, 0.76], 0, 0, 0, 0);
+      petals.push(m.x, m.y + 0.34 * s, m.z, 0.34 * s, 0.22 * s, 0.34 * s, m.col, 0, 0, 0, 0.05);
+    }
+    for (const f of props.flowers) {
+      const s = f.scale;
+      tufts.push(f.x, f.y + 0.22 * s, f.z, 0.10 * s, 0.5 * s, 0.10 * s, [0.22, 0.40, 0.16], 0, f.rot, 0, 0, 0.2 * s);
+      petals.push(f.x, f.y + 0.50 * s, f.z, 0.32 * s, 0.24 * s, 0.32 * s, f.col, 0, f.rot, 0, 0.28, 0.24 * s);
+    }
+    for (const r of props.reeds) {
+      const s = r.scale;
+      for (let i = 0; i < 3; i++) {
+        const a = r.rot + i * 2.1;
+        tufts.push(r.x + Math.cos(a) * 0.18, r.y + 0.7 * s, r.z + Math.sin(a) * 0.18,
+          0.07, 1.5 * s, 0.07, [0.35, 0.42, 0.20], 0.08, a, 0, 0, 0.5 * s);
       }
     }
     for (const r of props.rocks) {
@@ -1950,11 +2288,11 @@ class Renderer {
     }
     for (const g of props.grassTufts) {
       tufts.push(g.x, g.y + 0.22 * g.scale, g.z, 0.5 * g.scale, 0.9 * g.scale, 0.5 * g.scale,
-        [0.20, 0.36, 0.16], 0, g.rot, 0, 0);
+        [0.20, 0.36, 0.16], 0, g.rot, 0, 0, 0.22 * g.scale);
     }
     return {
       terrain: uploadMesh(gl, buildTerrainMesh(200)),
-      static: [trunks, leaves, rocks, crystals, tufts],
+      static: [trunks, leaves, rocks, crystals, tufts, canopy, petals, logsB],
       props,
     };
   }
@@ -1974,23 +2312,48 @@ class Renderer {
     this.shadows.clear();
   }
 
-  /** Skuggfläck på marken. */
+  /**
+   * Skuggfläck på marken, kastad bort från ljuset.
+   *
+   * Solen står stilla i sin bana under dygnet, och skuggan följer med: mitt
+   * på dagen ligger den som en liten fläck under fötterna, mot kvällen dras
+   * den ut och lägger sig långt åt sidan. Höjden över marken sträcker den
+   * ytterligare, så ett hopp syns på marken innan man landar.
+   */
   shadow(x, y, z, radius, alpha) {
-    this.shadows.push(x, y + 0.06, z, radius * 2, 1, radius * 2, [0, 0, 0], 0, 0, 0, alpha);
+    const s = this.sun || { x: 0, y: 1, z: 0 };
+    // hur lågt ljuset står: 0 = rakt uppifrån, 1 = vid horisonten
+    const low = clamp(1 - Math.max(s.y, 0.05), 0, 1);
+    const lateral = Math.hypot(s.x, s.z) || 1e-4;
+    // skuggan skjuts undan i ljusets riktning
+    const reach = radius * 0.9 * low / Math.max(s.y, 0.18);
+    const ox = -(s.x / lateral) * Math.min(reach, radius * 6);
+    const oz = -(s.z / lateral) * Math.min(reach, radius * 6);
+    // och tänjs ut längs samma riktning i stället för att förbli en cirkel
+    const stretch = 1 + low * 1.6;
+    const yaw = Math.atan2(-s.x, -s.z);
+    this.shadows.push(x + ox, y + 0.06, z + oz,
+      radius * 2, 1, radius * 2 * stretch, [0, 0, 0], 0, yaw, 0,
+      // låg sol ger längre men blekare skugga, som i verkligheten
+      alpha * (1 - low * 0.45));
   }
 
   applyEnv(p, env, eye) {
     p.v3('uSunDir', env.sunDir.x, env.sunDir.y, env.sunDir.z);
     p.v3('uSunCol', env.sunCol);
     p.v3('uAmb', env.amb);
+    p.v3('uSkyTint', env.skyTint);
+    p.v3('uGroundTint', env.groundTint);
     p.v3('uFogCol', env.fogCol);
     p.v2('uFog', env.fogNear, env.fogFar);
+    p.f('uFogHeight', env.fogHeight);
     p.v3('uEye', eye.x, eye.y, eye.z);
     p.m4('uVP', this.vp);
   }
 
   render(cam, env, time, player) {
     const gl = this.gl;
+    this.sun = env.sunDir;   // skuggorna kastas bort från den
     this.resize();
     gl.viewport(0, 0, this.width, this.height);
 
@@ -2019,7 +2382,9 @@ class Renderer {
       .v3('uSunCol', env.sunCol)
       .v3('uSkyTop', env.skyTop)
       .v3('uSkyHorizon', env.skyHor)
-      .f('uNight', env.night);
+      .f('uNight', env.night)
+      .f('uTime', time)
+      .f('uClouds', env.clouds);
     gl.bindVertexArray(null);
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     gl.enable(gl.DEPTH_TEST); gl.depthMask(true);
@@ -2036,6 +2401,7 @@ class Renderer {
     this.drawTaxis(time);
     this.pInst.use();
     this.applyEnv(this.pInst, env, cam.pos);
+    this.pInst.f('uTime', time).v2('uWind', env.wind[0], env.wind[1]);
     for (const b of this.static) b.draw();
     for (const k in this.dyn) this.dyn[k].draw();
 
@@ -2059,6 +2425,8 @@ class Renderer {
         .v3('uFogCol', env.fogCol)
         .v2('uFog', env.fogNear, env.fogFar)
         .f('uTime', time)
+        .v3('uSkyTop', env.skyTop)
+        .v3('uSkyHor', env.skyHor)
         .f('uSize', WORLD_SIZE)
         .f('uLevel', WATER_LEVEL);
       this.waterMesh.draw();
@@ -2269,6 +2637,18 @@ class Sound {
     this.tone({ f: 105, f2: 60, dur: 1.6, type: 'square', vol: 0.10, delay: 0.1 });
     this.noise({ dur: 1.4, vol: 0.12, freq: 260, sweep: 60, q: 0.4 });
   }
+  /** Åska. far 0 = strax intill och skarpt, 1 = långt bort och dovt. */
+  thunder(far = 0.5) {
+    const delay = far * 2.6;            // ljudet hinner ifatt ljuset
+    const vol = 0.26 * (1 - far * 0.6);
+    this.noise({ dur: 0.9 + far * 1.4, vol, freq: 190 - far * 110, q: 0.35,
+      sweep: 55, delay });
+    this.noise({ dur: 1.6 + far * 1.8, vol: vol * 0.7, freq: 95 - far * 45, q: 0.3,
+      delay: delay + 0.18 });
+    this.tone({ f: 44, f2: 26, dur: 1.5 + far, type: 'sine', vol: vol * 0.5, delay: delay + 0.05 });
+    if (far < 0.5) this.noise({ dur: 0.12, vol: vol * 0.9, freq: 2600, q: 0.9, delay });
+  }
+
   gameOver() {
     [392, 330, 262, 196].forEach((f, i) =>
       this.tone({ f, f2: f * 0.5, dur: 0.7, type: 'triangle', vol: 0.14, delay: i * 0.22 }));
@@ -2477,77 +2857,141 @@ class Input {
 }
 
 // ═══ upgrades.js ═══
-// Uppgraderingskorten som erbjuds vid varje nivå.
+// Uppgraderingskorten som erbjuds vid varje nivå-upp.
+//
+// TVÅ SAKER ATT VETA INNAN DU ÄNDRAR HÄR:
+//
+// 1. Korten är ADDITIVA, inte multiplikativa. Ett skadekort lägger till
+//    `damageBonus`, och den effektiva skadan räknas som bas × (1 + bonus).
+//    Tidigare gjorde varje kort `damage *= 1.25`, och åtta staplade kort blev
+//    då ×6 — gånger eldhastighet gånger splitterskott blev spelaren 200 gånger
+//    starkare medan fienderna växte 13. Additivt blir samma åtta kort ×2,6,
+//    och kurvorna kan följas åt. Skriv aldrig `st.damage *= n` igen.
+//
+// 2. Korten är delade i en gemensam grund och en gren per värld. Grunden
+//    (hälsa, fart, skada) passar båda; grenen speglar hur man slåss —
+//    fé och eldmagi i Vildheim, drönare och laser i Neotropolis. Ett kort
+//    med `world` erbjuds bara i den världen.
 
-const UPGRADES = [
-  { id: 'dmg', name: 'ÖVERLADDNING', icon: '⚡', max: 8,
-    desc: '+25% skada per skott',
-    apply: (st) => { st.damage *= 1.25; } },
+/** Räknar om effektiva värden ur bas + bonus. Anropa efter varje ändring. */
+function recalc(st) {
+  st.damage = st.damageBase * (1 + st.damageBonus);
+  st.fireRate = st.fireRateBase * (1 + st.fireRateBonus);
+  st.speed = st.speedBase * (1 + st.speedBonus);
+}
 
-  { id: 'rate', name: 'SNABBELD', icon: '🔥', max: 6,
-    desc: '+20% eldhastighet',
-    apply: (st) => { st.fireRate *= 1.2; } },
+const CORE = [
+  { id: 'dmg', name: 'OVERCHARGE', icon: '⚡', max: 8,
+    desc: '+20% damage',
+    apply: (st) => { st.damageBonus += 0.20; } },
 
-  { id: 'multi', name: 'SPLITTERSKOTT', icon: '🎯', max: 4,
-    desc: '+1 laser/eldboll · bredare svärdssving',
-    apply: (st) => { st.multishot += 1; st.spread += 0.012; } },
+  { id: 'rate', name: 'RAPID FIRE', icon: '🔥', max: 6,
+    desc: '+15% attack speed',
+    apply: (st) => { st.fireRateBonus += 0.15; } },
 
-  { id: 'hp', name: 'PANSARPLÅT', icon: '🛡️', max: 6,
-    desc: '+30 max HP och läker 30',
+  { id: 'hp', name: 'PLATING', icon: '🛡️', max: 6,
+    desc: '+30 max HP, heals 30',
     apply: (st, p) => { st.maxHp += 30; p.heal(30); } },
 
-  { id: 'speed', name: 'SERVOBEN', icon: '🥾', max: 5,
-    desc: '+12% rörelsehastighet',
-    apply: (st) => { st.speed *= 1.12; } },
+  { id: 'speed', name: 'SERVO LEGS', icon: '🥾', max: 5,
+    desc: '+10% movement speed',
+    apply: (st) => { st.speedBonus += 0.10; } },
 
-  { id: 'dashCharge', name: 'FASSKIFTE', icon: '💨', max: 3,
-    desc: '+1 dash-laddning',
+  { id: 'dashCharge', name: 'PHASE SHIFT', icon: '💨', max: 3,
+    desc: '+1 dash charge',
     apply: (st, p) => { st.dashMax += 1; p.dashCharges += 1; } },
 
-  { id: 'dashCd', name: 'KONDENSATOR', icon: '🔋', max: 4,
-    desc: '−25% dash-återladdning',
-    apply: (st) => { st.dashRecharge *= 0.75; } },
+  { id: 'dashCd', name: 'CAPACITOR', icon: '🔋', max: 4,
+    desc: '−20% dash cooldown',
+    apply: (st) => { st.dashRecharge *= 0.8; } },
 
-  { id: 'regen', name: 'NANITER', icon: '💚', max: 5,
-    desc: '+1.2 HP i sekunden',
+  { id: 'regen', name: 'MENDING', icon: '💚', max: 5,
+    desc: '+1.2 HP per second',
     apply: (st) => { st.regen += 1.2; } },
 
-  { id: 'magnet', name: 'MAGNETFÄLT', icon: '🧲', max: 4,
-    desc: '+70% plockradie för orbs',
+  { id: 'magnet', name: 'MAGNET FIELD', icon: '🧲', max: 4,
+    desc: '+70% pickup radius',
     apply: (st) => { st.pickupRadius *= 1.7; } },
 
-  { id: 'crit', name: 'PRICKSKYTT', icon: '🎲', max: 5,
-    desc: '+12% kritchans, +0.25 kritskada',
-    apply: (st) => { st.crit += 0.12; st.critMult += 0.25; } },
+  // Kritchansen kläms till 60 % i player.js — utan tak blir varje träff en
+  // krit, och kritmultiplikatorn blir en ren skadeökning på allt du gör.
+  { id: 'crit', name: 'KEEN EYE', icon: '🎲', max: 5,
+    desc: '+10% crit chance, +0.2 crit damage',
+    apply: (st) => { st.crit += 0.10; st.critMult += 0.2; } },
 
-  { id: 'pierce', name: 'GENOMSLAG', icon: '🏹', max: 4,
-    desc: '+1 genomträngning, +15% skotthastighet',
-    apply: (st) => { st.pierce += 1; st.projSpeed *= 1.15; } },
+  { id: 'vamp', name: 'LIFE LEECH', icon: '🩸', max: 4,
+    desc: '+5% of damage heals you',
+    apply: (st) => { st.lifesteal += 0.05; } },
 
-  { id: 'boom', name: 'SPRÄNGLADDNING', icon: '💥', max: 3,
-    desc: 'Skotten exploderar vid träff',
-    apply: (st) => { st.explosive = st.explosive ? st.explosive + 1.4 : 3.8; } },
-
-  { id: 'vamp', name: 'VAMPYRKRETS', icon: '🩸', max: 4,
-    desc: '+6% av skadan läker dig',
-    apply: (st) => { st.lifesteal += 0.06; } },
-
-  { id: 'drone', name: 'STÖDDRÖNARE', icon: '🛸', max: 3,
-    desc: 'En drönare cirklar och skjuter åt dig',
-    apply: (st) => { st.drones += 1; } },
-
-  { id: 'xp', name: 'SYNAPSLÄNK', icon: '🧠', max: 4,
-    desc: '+25% erfarenhet från orbs',
+  { id: 'xp', name: 'QUICK STUDY', icon: '🧠', max: 4,
+    desc: '+25% experience from orbs',
     apply: (st) => { st.xpMult *= 1.25; } },
 
-  { id: 'jump', name: 'SVÄVSULOR', icon: '🕊️', max: 2,
-    desc: '+1 hopp i luften',
+  { id: 'jump', name: 'LIGHT STEP', icon: '🕊️', max: 2,
+    desc: '+1 mid-air jump',
     apply: (st) => { st.jumps += 1; } },
 ];
 
-/** Slumpar n unika kort som spelaren inte redan maxat. */
-function rollChoices(levels, n = 3) {
-  const pool = UPGRADES.filter((u) => (levels.get(u.id) || 0) < u.max);
+const WILD = [
+  { id: 'fairy', name: 'WISP', icon: '🧚', max: 3, world: 'wild',
+    desc: 'A fairy circles you and looses magic at your enemies',
+    apply: (st) => { st.drones += 1; } },
+
+  { id: 'multi', name: 'SWEEPING BLADE', icon: '🗡️', max: 3, world: 'wild',
+    desc: 'Wider, longer sword arc · +1 fireball',
+    apply: (st) => { st.multishot += 1; st.spread += 0.012; } },
+
+  { id: 'fireball', name: 'EMBER HEART', icon: '🔥', max: 4, world: 'wild',
+    desc: '−2s fireball cooldown, bigger blast',
+    apply: (st) => { st.fireballCool = Math.max(2.5, st.fireballCool - 2); st.explosive += 0.9; } },
+
+  { id: 'thorns', name: 'BRIAR HIDE', icon: '🌿', max: 4, world: 'wild',
+    desc: 'Attackers take 8 damage back',
+    apply: (st) => { st.thorns += 8; } },
+
+  { id: 'bleed', name: 'RENDING CUT', icon: '🗡', max: 3, world: 'wild',
+    desc: 'Your hits leave a wound worth 6 more damage',
+    apply: (st) => { st.burn += 6; } },
+
+  { id: 'stone', name: 'STONE SKIN', icon: '🪨', max: 4, world: 'wild',
+    desc: '+2 armour',
+    apply: (st, p) => { p.armor += 2; } },
+];
+
+const CITY = [
+  { id: 'drone', name: 'SUPPORT DRONE', icon: '🛸', max: 3, world: 'city',
+    desc: 'A drone circles you and fires on its own',
+    apply: (st) => { st.drones += 1; } },
+
+  // Extra skott gör 75 % skada (se combat.playerShoot) — annars fördubblar
+  // det första kortet skadan rakt av, och det var den värsta hävstången.
+  { id: 'multi', name: 'SPLIT SHOT', icon: '🎯', max: 3, world: 'city',
+    desc: '+1 laser · extra shots hit for 75%',
+    apply: (st) => { st.multishot += 1; st.spread += 0.012; } },
+
+  { id: 'pierce', name: 'PIERCING BEAM', icon: '🏹', max: 4, world: 'city',
+    desc: '+1 pierce, +15% projectile speed',
+    apply: (st) => { st.pierce += 1; st.projSpeed *= 1.15; } },
+
+  { id: 'boom', name: 'DEMOLITION', icon: '💥', max: 3, world: 'city',
+    desc: 'Your shots explode on impact',
+    apply: (st) => { st.explosive = st.explosive ? st.explosive + 1.2 : 3.4; } },
+
+  { id: 'shock', name: 'STATIC FIELD', icon: '⚡', max: 4, world: 'city',
+    desc: 'Attackers take 8 damage back',
+    apply: (st) => { st.thorns += 8; } },
+
+  { id: 'plate', name: 'HULL PLATING', icon: '🪖', max: 4, world: 'city',
+    desc: '+2 armour',
+    apply: (st, p) => { p.armor += 2; } },
+];
+
+const UPGRADES = [...CORE, ...WILD, ...CITY];
+
+/** Slumpar n unika kort som passar världen och som spelaren inte maxat. */
+function rollChoices(levels, n = 3, worldId = 'wild') {
+  const pool = UPGRADES.filter((u) =>
+    (!u.world || u.world === worldId) && (levels.get(u.id) || 0) < u.max);
   const out = [];
   while (out.length < n && pool.length) {
     const i = (Math.random() * pool.length) | 0;
@@ -2565,47 +3009,47 @@ function rollChoices(levels, n = 3) {
 // bestämma sig på fem sekunder och komma vidare.
 
 const WARES = [
-  { id: 'dmg', icon: '⚔️', name: 'VAPENSMED', desc: '+15% skada',
+  { id: 'dmg', icon: '⚔️', name: 'WEAPONSMITH', desc: '+10% damage',
     base: 55, grow: 1.45, max: 12,
-    apply: (st) => { st.damage *= 1.15; } },
+    apply: (st) => { st.damageBonus += 0.10; } },
 
-  { id: 'hp', icon: '🛡️', name: 'PANSARPLÅT', desc: '+25 max HP · läker 25',
+  { id: 'hp', icon: '🛡️', name: 'PLATING', desc: '+25 max HP · heals 25',
     base: 45, grow: 1.35, max: 12,
     apply: (st, p) => { st.maxHp += 25; p.heal(25); } },
 
-  { id: 'speed', icon: '🥾', name: 'SPRINGARSKOR', desc: '+8% rörelsehastighet',
+  { id: 'speed', icon: '🥾', name: 'RUNNER BOOTS', desc: '+6% movement speed',
     base: 50, grow: 1.5, max: 6,
-    apply: (st) => { st.speed *= 1.08; } },
+    apply: (st) => { st.speedBonus += 0.06; } },
 
-  { id: 'dashCd', icon: '🔋', name: 'KONDENSATOR', desc: '−15% dash-återladdning',
+  { id: 'dashCd', icon: '🔋', name: 'CAPACITOR', desc: '−15% dash cooldown',
     base: 55, grow: 1.5, max: 5,
     apply: (st) => { st.dashRecharge *= 0.85; } },
 
-  { id: 'crit', icon: '🎲', name: 'LYCKOSTEN', desc: '+8% kritchans',
+  { id: 'crit', icon: '🎲', name: 'LUCKSTONE', desc: '+5% crit chance',
     base: 60, grow: 1.45, max: 8,
-    apply: (st) => { st.crit += 0.08; } },
+    apply: (st) => { st.crit += 0.05; } },
 
-  { id: 'regen', icon: '💚', name: 'NANITER', desc: '+1 HP i sekunden',
+  { id: 'regen', icon: '💚', name: 'NANITES', desc: '+1 HP per second',
     base: 70, grow: 1.5, max: 5,
     apply: (st) => { st.regen += 1.0; } },
 
-  { id: 'magnet', icon: '🧲', name: 'MAGNETRING', desc: '+50% plockradie',
+  { id: 'magnet', icon: '🧲', name: 'MAGNET RING', desc: '+50% pickup radius',
     base: 40, grow: 1.6, max: 4,
     apply: (st) => { st.pickupRadius *= 1.5; } },
 
-  { id: 'xp', icon: '🧠', name: 'SYNAPSLÄNK', desc: '+20% erfarenhet',
+  { id: 'xp', icon: '🧠', name: 'SYNAPSE LINK', desc: '+20% experience',
     base: 45, grow: 1.4, max: 6,
     apply: (st) => { st.xpMult *= 1.2; } },
 
   // Rustning hittar man i första hand ute på kartan; det här är för den som
   // hellre betalar än letar. Dyrt med flit, och utan tak precis som fynden.
-  { id: 'armor', icon: '🪖', name: 'RUSTNINGSDEL', desc: '+1 rustningsnivå',
+  { id: 'armor', icon: '🪖', name: 'ARMOUR PIECE', desc: '+1 armour level',
     base: 90, grow: 1.4, max: 99,
     apply: (st, p) => { p.armor += 1; } },
 ];
 
 /** Fältverkstaden är ingen uppgradering utan en tjänst: den fyller hälsan. */
-const REPAIR = { id: 'repair', icon: '🩹', name: 'FÄLTVERKSTAD', desc: 'fyller hälsan helt' };
+const REPAIR = { id: 'repair', icon: '🩹', name: 'FIELD REPAIR', desc: 'restores all health' };
 
 /** Priset stiger för varje köpt exemplar, så inget kan spammas billigt. */
 function priceOf(ware, owned) {
@@ -2634,9 +3078,12 @@ function rotY(x, z, a) {
 function defaultStats() {
   return {
     maxHp: 100,
-    speed: 9.4,
-    damage: 13,
-    fireRate: 4.2,        // skott per sekund
+    // Bas + bonus: korten lägger till bonus, `recalc` räknar ut det effektiva
+    // värdet som bas × (1 + bonus). Multiplicera aldrig de effektiva direkt —
+    // det var så spelaren blev 200 gånger starkare än fienderna.
+    speedBase: 9.4, speedBonus: 0, speed: 9.4,
+    damageBase: 13, damageBonus: 0, damage: 13,
+    fireRateBase: 4.2, fireRateBonus: 0, fireRate: 4.2,   // attacker per sekund
     projSpeed: 66,
     projSize: 0.34,
     multishot: 1,
@@ -2653,8 +3100,14 @@ function defaultStats() {
     jumps: 1,
     xpMult: 1,
     drones: 0,
+    thorns: 0,            // skada tillbaka på den som slår dig
+    burn: 0,              // extra skada som ligger kvar efter en träff
+    fireballCool: 10,     // eldbollens nedkylning i sekunder
   };
 }
+
+/** Kritchansen får inte nå 100 % — då blir kritmultiplikatorn en gratisbonus. */
+const CRIT_CAP = 0.6;
 
 class Player {
   constructor(world) {
@@ -2702,7 +3155,7 @@ class Player {
     this.swingFinisher = false;
     this.combo = -1;         // 0,1,2 — det tredje hugget är en finisher
     this.comboTimer = 0;
-    this.fireballCdMax = 10;
+    this.fireballCdMax = this.stats.fireballCool;
     this.fireballCd = 0;
   }
 
@@ -2777,8 +3230,12 @@ class Player {
     return { x: dx / l, y: dy / l, z: dz / l };
   }
 
-  takeDamage(n) {
+  takeDamage(n, source, ctx) {
     if (this.invuln > 0 || !this.alive) return false;
+    // Taggar/statiskt fält: den som slår dig får smaka på det själv
+    if (this.stats.thorns > 0 && source && source.alive && ctx) {
+      source.damage(this.stats.thorns, ctx, false);
+    }
     // Rustningen dämpar med avtagande effekt: varje nivå hjälper, men
     // kurvan når aldrig noll skada hur många delar man än hittar.
     if (this.armor > 0) n /= 1 + this.armor * 0.06;
@@ -2858,6 +3315,29 @@ class Player {
         life: rand(0.25, 0.5), size: rand(0.35, 0.75), size2: 0,
         col: [0.35, 0.95, 1.0], alpha: 0.9, drag: 0.5,
       });
+      /*
+       * Spåret: en rad efterbilder längs sträckan man just tillryggalagt,
+       * inte bara ett moln kring kroppen. De läggs ut bakåt från nuvarande
+       * läge så bandet blir obrutet även när dashen går fort — vid 40 m/s
+       * hinner man annars flera meter mellan bildrutorna och spåret blir
+       * en rad prickar.
+       */
+      const back = Math.hypot(this.vel.x, this.vel.z) * dt;
+      const steps = Math.min(5, 1 + Math.floor(back / 0.6));
+      for (let i = 0; i < steps; i++) {
+        const f = i / steps;
+        for (let k = 0; k < 2; k++) {
+          w.particles.spawn({
+            x: this.pos.x - this.dashDir.x * back * f + rand(-0.25, 0.25),
+            y: this.pos.y + 0.35 + k * 0.85 + rand(-0.15, 0.15),
+            z: this.pos.z - this.dashDir.z * back * f + rand(-0.25, 0.25),
+            vx: 0, vy: rand(0.1, 0.5), vz: 0,
+            life: rand(0.28, 0.46), size: rand(0.55, 0.95), size2: 0.05,
+            col: w.worldId === 'city' ? [1.0, 0.35, 0.62] : [0.55, 0.95, 1.0],
+            alpha: 0.55, drag: 1.4,
+          });
+        }
+      }
     }
 
     // ---- hopp / flygning / dash
@@ -3262,12 +3742,31 @@ class Player {
         0.1, 0.13, 0.1, gold, 0, time * 2, 0, 0.15);
     }
 
-    // dronare från uppgraderingen
+    // Följeslagarna från uppgraderingen: maskindrönare i staden, féer i
+    // Vildheim. Samma tjänst, helt olika varelse.
     for (let i = 0; i < this.stats.drones; i++) {
       const a = this.droneAngle + (i / this.stats.drones) * TAU;
       const dx = Math.cos(a) * 2.1, dz = Math.sin(a) * 2.1;
       const dy = y + 2.4 + Math.sin(time * 2 + i) * 0.18;
-      B.octa.push(x + dx, dy, z + dz, 0.42, 0.55, 0.42, [1.0, 0.75, 0.25], 0, a * 2, 0, 0.85);
+      if (city) {
+        B.octa.push(x + dx, dy, z + dz, 0.42, 0.55, 0.42, [1.0, 0.75, 0.25], 0, a * 2, 0, 0.85);
+      } else {
+        // fé: en glödande kärna med två fladdrande vingar och ett stoftspår
+        const flap = Math.sin(time * 18 + i * 2) * 0.5;
+        B.sphere.push(x + dx, dy, z + dz, 0.22, 0.26, 0.22, [1.0, 0.88, 0.45], 0, 0, 0, 1.0);
+        for (const s of [-1, 1]) {
+          B.octa.push(x + dx, dy + 0.22, z + dz, 0.07, 0.34, 0.20,
+            [0.55, 1.0, 0.85], 0, a * 2, s * (0.7 + flap), 0.6);
+        }
+        if (Math.random() < 0.5) {
+          rend.particles.spawn({
+            x: x + dx, y: dy - 0.1, z: z + dz,
+            vx: rand(-0.3, 0.3), vy: rand(-0.8, -0.2), vz: rand(-0.3, 0.3),
+            life: rand(0.3, 0.7), size: rand(0.08, 0.18), size2: 0,
+            col: [0.75, 1.0, 0.8], alpha: 0.8, drag: 0.3,
+          });
+        }
+      }
     }
 
     rend.shadow(x, terrainHeight(x, z), z, 1.0 + (this.pos.y - terrainHeight(x, z)) * 0.05,
@@ -3292,8 +3791,8 @@ const TYPES = {
   hover:  { hp: 155, speed: 3.4,  radius: 1.90, height: 2.0, dmg: 20, xp: 17, col: [0.55, 0.60, 1.00], ai: 'hover', turn: 0.8, cool: 2.4, bullet: 32, shield: true },
 
   // --- Äventyrets egna bossar: en per värld, med faser vid 2/3 och 1/3 hälsa
-  vildboss: { hp: 760, speed: 3.1, radius: 2.40, height: 5.2, dmg: 30, xp: 120, col: [0.50, 0.53, 0.40], ai: 'vildboss', cool: 1.4, bullet: 22, boss: true, bossName: 'JORDVREDET', bossSub: 'marken reser sig' },
-  cityboss: { hp: 660, speed: 6.2, radius: 2.10, height: 2.6, dmg: 26, xp: 120, col: [0.90, 0.94, 1.00], ai: 'cityboss', cool: 1.3, bullet: 34, boss: true, bossName: 'SANERAREN', bossSub: 'staden städar undan dig', turn: 3 },
+  vildboss: { hp: 760, speed: 3.1, radius: 2.40, height: 5.2, dmg: 30, xp: 120, col: [0.50, 0.53, 0.40], ai: 'vildboss', cool: 1.4, bullet: 22, boss: true, bossName: 'THE EARTHWRATH', bossSub: 'the ground rises' },
+  cityboss: { hp: 660, speed: 6.2, radius: 2.10, height: 2.6, dmg: 26, xp: 120, col: [0.90, 0.94, 1.00], ai: 'cityboss', cool: 1.3, bullet: 34, boss: true, bossName: 'THE SANITISER', bossSub: 'the city clears you away', turn: 3 },
 };
 
 // Neotropolis-varianternas neonskal.
@@ -3311,11 +3810,16 @@ class Enemy {
     this.bossPhase = 1;      // äventyrsbossarna trappar upp vid 2/3 och 1/3
     this.orbitDir = Math.random() < 0.5 ? -1 : 1;
     this.fly = worldId === 'city';
-    const hpMul = 1 + (wave - 1) * 0.23 + (wave > 10 ? (wave - 10) * 0.09 : 0);
+    // Fiendekurvan måste vara brantare än den var. Spelarens kort är additiva
+    // numera, men de multipliceras fortfarande med varandra (skada × takt ×
+    // extra skott), så en rak linje här halkar efter. Mätt: spelaren blir
+    // ~50× starkare över en lång körning, fienderna ~18× — spelaren behåller
+    // övertaget, men får det aldrig gratis.
+    const hpMul = 1 + (wave - 1) * 0.25 + (wave > 10 ? (wave - 10) * 0.10 : 0);
     this.maxHp = Math.round(t.hp * hpMul);
     this.hp = this.maxHp;
-    this.dmg = t.dmg * (1 + (wave - 1) * 0.07);
-    this.speed = t.speed * (1 + Math.min(0.35, (wave - 1) * 0.018));
+    this.dmg = t.dmg * (1 + (wave - 1) * 0.09);
+    this.speed = t.speed * (1 + Math.min(0.45, (wave - 1) * 0.022));
     // Neotropolis maskiner är byggda större än Vildheims djur. Skalan sitter
     // här så att träffytan, höjden och modellen växer i takt — skalar man
     // bara ritningen träffar man luft, och skalar man bara radien blir det
@@ -3697,7 +4201,7 @@ class Enemy {
       case 'vildboss': {
         // Jordvredet: stenjätte. Kastar bumlingar i båge på håll, stampar
         // marken på nära håll. Varje fas gör den snabbare och kasten fler.
-        const ph = this.updateBossPhase(ctx, 'Jordvredet rämnar', 'Jordvredet rasar');
+        const ph = this.updateBossPhase(ctx, 'The Earthwrath splits open', 'The Earthwrath rages');
         const hurry = 1 + (ph - 1) * 0.25;
         if (this.state === 'stomp') {
           speed = 0;
@@ -3740,7 +4244,7 @@ class Enemy {
       case 'cityboss': {
         // Saneraren: svävande ringmaskin. Cirklar runt spelaren, fäller ut
         // solfjädrar av skott, och blinkar till ny vinkel i senare faser.
-        const ph = this.updateBossPhase(ctx, 'Saneraren eskalerar', 'Saneraren renar');
+        const ph = this.updateBossPhase(ctx, 'The Sanitiser escalates', 'The Sanitiser purges');
         const ring = 15;
         if (this.state === 'sweep') {
           speed = this.speed * 0.15;
@@ -3876,7 +4380,7 @@ class Enemy {
     const contact = this.radius + p.radius + 0.35;
     if (dist < contact && Math.abs(this.pos.y - p.pos.y) < this.height + 1.2 && this.hitCd <= 0) {
       const boost = this.state === 'charging' ? 1.5 : 1;
-      if (ctx.player.takeDamage(this.dmg * boost)) {
+      if (ctx.player.takeDamage(this.dmg * boost, this, ctx)) {
         this.hitCd = 0.75;
         ctx.sound.hurt();
         ctx.particles.burst(p.pos.x, p.pos.y + 1.2, p.pos.z, 12,
@@ -4350,7 +4854,7 @@ class WaveManager {
       if (this.clearT > 12 && !this.enraged) {
         this.enraged = true;
         for (const e of ctx.enemies) if (e.alive) e.enrage = true;
-        ctx.toast('Eftersläntrare jagar dig');
+        ctx.toast('The stragglers are hunting you');
       }
       if (this.clearT > 26) {
         this.state = 'idle';
@@ -4389,9 +4893,9 @@ const CYAN = [0.30, 0.95, 1.0];
 const GREEN = [0.35, 1.0, 0.62];
 
 /** Namn åt jaktens byte — sätts ihop av två halvor. */
-const HUNT_FIRST = ['Gorrn', 'Vex', 'Malak', 'Sköldbjörn', 'Kavr', 'Thume', 'Zerrik', 'Ödesgap'];
-const HUNT_LAST = ['Benkross', 'den Svultne', 'Askhjärta', 'Tvillingtand', 'den Blinde',
-  'Järnkäft', 'Nattfäll', 'den Förste'];
+const HUNT_FIRST = ['Gorrn', 'Vex', 'Malak', 'Shieldbear', 'Kavr', 'Thume', 'Zerrik', 'Doomjaw'];
+const HUNT_LAST = ['Bonebreaker', 'the Starved', 'Ashheart', 'Twintooth', 'the Blind',
+  'Ironmaw', 'Nightfall', 'the First'];
 
 class Mission {
   constructor(level) {
@@ -4413,8 +4917,8 @@ class Mission {
 class CollectMission extends Mission {
   constructor(level, ctx, mgr) {
     super(level);
-    this.title = 'SAMLA KRAFTKÄRNORNA';
-    this.label = 'KRAFTKÄRNOR';
+    this.title = 'COLLECT THE POWER CORES';
+    this.label = 'POWER CORES';
     const n = level < 4 ? 3 : 4;
     this.cores = [];
     const budget = mgr.plan.budget / n;
@@ -4442,7 +4946,7 @@ class CollectMission extends Mission {
           speed: 9, life: 0.8, size: 0.5, size2: 0.05, col: GOLD, alpha: 0.95, drag: 0.6, grav: -4,
         });
         const left = this.cores.length - this.taken;
-        ctx.toast(left ? `Kraftkärna tagen — ${left} kvar` : 'Sista kraftkärnan!');
+        ctx.toast(left ? `Core taken — ${left} to go` : 'The last core!');
         if (!left) this.done = true;
       }
     }
@@ -4478,8 +4982,8 @@ class CollectMission extends Mission {
 class DefendMission extends Mission {
   constructor(level, ctx, mgr) {
     super(level);
-    this.title = 'FÖRSVARA REAKTORN';
-    this.label = 'LADDNING';
+    this.title = 'DEFEND THE REACTOR';
+    this.label = 'CHARGE';
     const spot = mgr.campSpot(ctx, 46, ARENA_RADIUS - 24);
     this.x = spot.x; this.z = spot.z; this.y = terrainHeight(spot.x, spot.z);
     this.charge = 0;
@@ -4494,7 +4998,7 @@ class DefendMission extends Mission {
   }
 
   get status() {
-    if (!this.started) return 'GÅ DIT';
+    if (!this.started) return 'GET THERE';
     return `${Math.round(this.charge * 100)} %`;
   }
 
@@ -4506,7 +5010,7 @@ class DefendMission extends Mission {
       if (d < 14) {
         this.started = true;
         this.spawnT = 3;
-        ctx.hud.showBanner('REAKTORN LADDAR', 'håll dig kvar', 2.4);
+        ctx.hud.showBanner('REACTOR CHARGING', 'stay close', 2.4);
         ctx.sound.waveStart();
       }
       return;
@@ -4519,7 +5023,7 @@ class DefendMission extends Mission {
       this.charge = Math.max(0, this.charge - dt * 0.35 / this.dur);
       if (!this.warnT || this.warnT <= 0) {
         this.warnT = 3.5;
-        ctx.toast('Reaktorn tappar laddning — gå tillbaka');
+        ctx.toast('The reactor is losing charge — get back');
       }
     }
     if (this.warnT > 0) this.warnT -= dt;
@@ -4584,7 +5088,7 @@ class HuntMission extends Mission {
   constructor(level, ctx, mgr) {
     super(level);
     this.name = `${HUNT_FIRST[randInt(0, HUNT_FIRST.length - 1)]} ${HUNT_LAST[randInt(0, HUNT_LAST.length - 1)]}`;
-    this.title = 'SPÅRA UPP MÅLET';
+    this.title = 'HUNT THE TARGET';
     this.label = this.name.toUpperCase();
 
     // ett par vanliga läger, och längst bort lägret där bytet håller till
@@ -4612,7 +5116,7 @@ class HuntMission extends Mission {
 
   get status() {
     const t = this.target;
-    if (!t.alive) return 'FÄLLD';
+    if (!t.alive) return 'DOWN';
     return `${Math.max(0, Math.round(t.hp / t.maxHp * 100))} %`;
   }
 
@@ -4622,14 +5126,14 @@ class HuntMission extends Mission {
       if (!this.done) {
         this.done = true;
         ctx.hud.setBoss(null);
-        ctx.hud.showBanner('MÅLET FÄLLT', this.name, 2.4);
+        ctx.hud.showBanner('TARGET DOWN', this.name, 2.4);
       }
       return;
     }
     if (!this.announced && !t.guard) {
       this.announced = true;
       ctx.hud.setBoss(t, this.name.toUpperCase());
-      ctx.hud.showBanner(this.name.toUpperCase(), 'har fått syn på dig', 2.6);
+      ctx.hud.showBanner(this.name.toUpperCase(), 'has spotted you', 2.6);
       ctx.sound.bossSpawn();
     }
   }
@@ -4652,8 +5156,8 @@ class HuntMission extends Mission {
 class EscortMission extends Mission {
   constructor(level, ctx, mgr) {
     super(level);
-    this.title = 'ESKORTERA LASTAREN';
-    this.label = 'LASTAREN';
+    this.title = 'ESCORT THE HAULER';
+    this.label = 'HAULER';
 
     const p = ctx.player.pos;
     const a = rand(TAU);
@@ -4725,7 +5229,7 @@ class EscortMission extends Mission {
           size: rand(0.2, 0.45), size2: 0, col: [1.0, 0.45, 0.2], alpha: 0.9, drag: 0.5,
         });
       }
-      if (!this.hurtT || this.hurtT <= 0) { this.hurtT = 4; ctx.toast('Lastaren är under attack!'); }
+      if (!this.hurtT || this.hurtT <= 0) { this.hurtT = 4; ctx.toast('The hauler is under attack!'); }
     } else if (this.hp < this.maxHp) {
       this.hp = Math.min(this.maxHp, this.hp + 12 * dt);
     }
@@ -4783,8 +5287,8 @@ class EscortMission extends Mission {
 class BossMission extends Mission {
   constructor(level, ctx, mgr) {
     super(level);
-    this.title = 'NÅGOT VÄNTAR DÄR UTE';
-    this.label = 'BOSSEN';
+    this.title = 'SOMETHING WAITS OUT THERE';
+    this.label = 'THE BOSS';
     for (let i = 0; i < mgr.plan.camps; i++) {
       mgr.spawnCamp(ctx, mgr.campSpot(ctx, 48, ARENA_RADIUS - 14), mgr.plan.budget / mgr.plan.camps);
     }
@@ -4798,8 +5302,8 @@ class BossMission extends Mission {
 
   get status() {
     const t = this.target;
-    if (!t.alive) return 'FÄLLD';
-    return t.guard ? 'HITTA DEN' : `${Math.max(0, Math.round(t.hp / t.maxHp * 100))} %`;
+    if (!t.alive) return 'DOWN';
+    return t.guard ? 'FIND IT' : `${Math.max(0, Math.round(t.hp / t.maxHp * 100))} %`;
   }
 
   update(dt, ctx) {
@@ -4873,12 +5377,12 @@ class AdventureManager {
    */
   makePlan(level, type) {
     if (type === 'boss') return { size: 'boss', camps: 2, budget: 5 + level * 1.5 };
-    if (type === 'defend') return { size: 'kort', camps: 2, budget: 6 + level * 1.4 };
-    if (type === 'escort') return { size: 'lång', camps: 3, budget: 9 + level * 2.2 };
+    if (type === 'defend') return { size: 'short', camps: 2, budget: 6 + level * 1.4 };
+    if (type === 'escort') return { size: 'long', camps: 3, budget: 9 + level * 2.2 };
     const r = Math.random();
-    if (r < 0.30) return { size: 'kort', camps: 2, budget: 5 + level * 1.7 };
-    if (r < 0.75) return { size: 'vanlig', camps: 4, budget: 8 + level * 2.3 };
-    return { size: 'lång', camps: 6, budget: 11 + level * 3.0 };
+    if (r < 0.30) return { size: 'short', camps: 2, budget: 5 + level * 1.7 };
+    if (r < 0.75) return { size: 'normal', camps: 4, budget: 8 + level * 2.3 };
+    return { size: 'long', camps: 6, budget: 11 + level * 3.0 };
   }
 
   /** Monsterlista för ett läger, prisad så svårare typer blir färre. */
@@ -5027,13 +5531,14 @@ class AdventureManager {
         e.wake(ctx);
         e.enrage = true;
       }
-      ctx.toast('Allt som lever söker upp dig');
+      ctx.toast('Everything still alive is coming for you');
     }
   }
 }
 
 // ═══ combat.js ═══
 // Projektiler, explosioner och drops.
+
 
 
 /** Närmaste träffpunkt mellan en sträcka och en sfär — hindrar snabba skott från att missa. */
@@ -5087,9 +5592,9 @@ class Combat {
       if (Math.abs(angleDelta(p.yaw, Math.atan2(dx, dz))) > arc) continue;
       if (Math.abs((e.pos.y + e.height * 0.5) - (p.pos.y + 1.3)) > e.height * 0.5 + 2.6) continue;
 
-      const crit = Math.random() < st.crit || fin;
+      const crit = Math.random() < Math.min(st.crit, CRIT_CAP) || fin;
       const dmg = st.damage * (fin ? 2.8 : 1.7) * (crit ? st.critMult : 1);
-      const killed = e.damage(dmg, ctx, crit);
+      const killed = e.damage(dmg + st.burn, ctx, crit);
       ctx.sound[crit ? 'swordCrit' : 'swordHit']();
       if (st.lifesteal > 0) p.heal(dmg * st.lifesteal);
       // rejäl knockback — svagare mot tunga fiender
@@ -5102,19 +5607,35 @@ class Combat {
       hitAny = true;
     }
 
-    // svepande partikelbåge framför krigaren
-    const n = fin ? 22 : 13;
+    /*
+     * Svepet ritas som en sammanhängande båge i två lager: en tät, ljus kärna
+     * längs eggens väg och ett glesare, mörkare sken utanför den. Tidigare låg
+     * partiklarna på ett enda avstånd och drev utåt — det blev ett moln, inte
+     * ett hugg. Nu följer de klingans radie, och varje punkt längs bågen föds
+     * en aning senare än den förra så spåret sveper i huggets riktning.
+     */
+    const n = fin ? 30 : 18;
+    const dir = p.swingSide > 0 ? 1 : -1;
     for (let i = 0; i < n; i++) {
-      const a = p.yaw + (i / (n - 1) - 0.5) * arc * 2;
-      const d = range * 0.75;
-      ctx.particles.spawn({
-        x: p.pos.x + Math.sin(a) * d, y: p.pos.y + 1.3 + (Math.random() - 0.5) * (fin ? 1.6 : 0.4),
-        z: p.pos.z + Math.cos(a) * d,
-        vx: Math.sin(a) * (fin ? 7 : 3), vy: fin ? rand(1, 4) : 0.5, vz: Math.cos(a) * (fin ? 7 : 3),
-        life: fin ? 0.34 : 0.18, size: fin ? 0.95 : 0.55, size2: 0.05,
-        col: fin ? [1.0, 0.72, 0.25] : hitAny ? [1.0, 0.8, 0.5] : [0.8, 0.85, 0.95],
-        alpha: fin ? 0.9 : 0.7, drag: 0.5,
-      });
+      const f = i / (n - 1);
+      const a = p.yaw + (f - 0.5) * arc * 2 * dir;
+      for (let layer = 0; layer < 2; layer++) {
+        const d = range * (layer ? 0.92 : 0.66);
+        const sinA = Math.sin(a), cosA = Math.cos(a);
+        ctx.particles.spawn({
+          x: p.pos.x + sinA * d + rand(-0.12, 0.12),
+          y: p.pos.y + 1.3 + (fin ? (f - 0.5) * 1.5 : (Math.random() - 0.5) * 0.35),
+          z: p.pos.z + cosA * d + rand(-0.12, 0.12),
+          // liten drift utåt, så bågen tunnas ut i stället för att bara slockna
+          vx: sinA * (fin ? 5 : 2.2), vy: fin ? rand(0.5, 2.5) : 0.4, vz: cosA * (fin ? 5 : 2.2),
+          life: (fin ? 0.34 : 0.2) * (layer ? 0.7 : 1) - f * 0.04,
+          size: (fin ? 1.0 : 0.6) * (layer ? 0.7 : 1), size2: 0.04,
+          col: fin ? [1.0, 0.78, 0.30]
+            : layer ? [0.75, 0.85, 1.0]
+              : hitAny ? [1.0, 0.9, 0.65] : [0.95, 0.98, 1.0],
+          alpha: (fin ? 0.95 : 0.8) * (layer ? 0.45 : 1), drag: 0.6,
+        });
+      }
     }
     p.shake = Math.min(0.5, p.shake + (fin ? 0.3 : hitAny ? 0.08 : 0.03));
   }
@@ -5211,12 +5732,14 @@ class Combat {
       const c = Math.cos(yawOff), s = Math.sin(yawOff);
       const dx = dir.x * c + dir.z * s;
       const dz = -dir.x * s + dir.z * c;
-      const crit = Math.random() < st.crit;
+      const crit = Math.random() < Math.min(st.crit, CRIT_CAP);
+      // Extra skott gör mindre — annars fördubblar ett enda kort din skada.
+      const falloff = i === 0 ? 1 : 0.75;
       this.shots.push({
         x: m.x, y: m.y, z: m.z,
         vx: dx * st.projSpeed, vy: dir.y * st.projSpeed, vz: dz * st.projSpeed,
         life: 1.7,
-        dmg: st.damage * (crit ? st.critMult : 1),
+        dmg: st.damage * falloff * (crit ? st.critMult : 1),
         crit,
         pierce: st.pierce,
         radius: st.projSize + 0.25,
@@ -5240,13 +5763,16 @@ class Combat {
     let dx = target.pos.x - x, dy = target.pos.y + target.height * 0.5 - y, dz = target.pos.z - z;
     const l = Math.hypot(dx, dy, dz) || 1;
     dx /= l; dy /= l; dz /= l;
+    // drönaren skjuter en gnista, fén en trollformel — olika färg och ljud
+    const fairy = ctx.worldId !== 'city';
     this.shots.push({
       x, y, z, vx: dx * 52, vy: dy * 52, vz: dz * 52,
-      life: 1.5, dmg: ctx.player.stats.damage * 0.55, crit: false,
+      life: 1.5, dmg: ctx.player.stats.damage * 0.5, crit: false,
       pierce: 0, radius: 0.5, explosive: 0, hits: new Set(),
-      col: [1.0, 0.75, 0.25],
+      col: fairy ? [0.7, 1.0, 0.8] : [1.0, 0.75, 0.25],
     });
-    ctx.sound.tone({ f: 900, f2: 420, dur: 0.06, type: 'triangle', vol: 0.05 });
+    if (fairy) ctx.sound.tone({ f: 1250, f2: 1900, dur: 0.09, type: 'sine', vol: 0.045 });
+    else ctx.sound.tone({ f: 900, f2: 420, dur: 0.06, type: 'triangle', vol: 0.05 });
   }
 
   // ------------------------------------------------------------ fiendeskott
@@ -5398,7 +5924,7 @@ class Combat {
         if (segmentHitsSphere(s.x, s.y, s.z, dx, dy, dz, len,
           e.pos.x, e.pos.y + e.height * 0.5, e.pos.z, e.radius + s.radius)) {
           s.hits.add(e);
-          const killed = e.damage(s.dmg, ctx, s.crit);
+          const killed = e.damage(s.dmg + (ctx.player.stats.burn || 0), ctx, s.crit);
           // eldbollen talar genom sin explosion, lasern knäpper elektriskt,
           // allt annat får den vanliga träffen
           if (!s.fireball) {
@@ -5605,8 +6131,8 @@ class HUD {
   /** Toppraden heter olika saker i de två spelsätten. */
   setMode(mode) {
     const adv = mode === 'adventure';
-    $('waveLbl').textContent = adv ? 'NIVÅ' : 'VÅG';
-    $('levelLbl').textContent = adv ? 'RANG' : 'NIVÅ';
+    $('waveLbl').textContent = adv ? 'LEVEL' : 'WAVE';
+    $('levelLbl').textContent = adv ? 'RANK' : 'LEVEL';
     $('goldStat').classList.toggle('hidden', !adv);   // guld finns bara i äventyret
   }
 
@@ -5935,24 +6461,24 @@ class HUD {
       <div class="screen">
         <div class="title">DASHH</div>
         <div class="subtitle">VOIDFALL<span class="betaTag">${VERSION}</span></div>
-        <div class="betaNote">tidig version — buggar och konstigheter förekommer, säg gärna till</div>
+        <div class="betaNote">early build — expect bugs and rough edges, and do tell me about them</div>
         <div class="modes">
           <div class="mode surv" data-m="survival">
             <div class="wIcon">🌊</div>
-            <div class="wName">ÖVERLEVNAD</div>
-            <div class="wDesc">En arena, våg efter våg, boss var femte.
-              Det slutar bara på ett sätt — frågan är hur långt du kom.</div>
-            <div class="wTag">ETT ENDA LÅNGT ANDETAG</div>
+            <div class="wName">SURVIVAL</div>
+            <div class="wDesc">One arena, wave after wave, a boss every fifth.
+              It ends only one way — the question is how far you got.</div>
+            <div class="wTag">ONE LONG BREATH</div>
           </div>
           <div class="mode adv" data-m="adventure">
             <div class="wIcon">🗺️</div>
-            <div class="wName">ÄVENTYR</div>
-            <div class="wDesc">Nivå efter nivå på egna kartor. Monstren står utplacerade
-              och väntar — leta upp dem. Boss var tredje nivå.</div>
-            <div class="wTag">NYTT · BYGGS UT</div>
+            <div class="wName">ADVENTURE</div>
+            <div class="wDesc">Level after level on maps of their own. The monsters are
+              out there waiting — go and find them. A boss every third level.</div>
+            <div class="wTag">NEW · GROWING</div>
           </div>
         </div>
-        <div class="hint">välj spelsätt</div>
+        <div class="hint">choose how to play</div>
       </div>`);
     this.overlay.querySelectorAll('.mode').forEach((el) => {
       el.addEventListener('click', () => onPick(el.dataset.m));
@@ -5962,53 +6488,53 @@ class HUD {
   showStart(onPick, touch, mode = 'survival', onBack = null, checkpoint = null, onResume = null) {
     this._cursor = null;
     const keys = touch ? `
-          <div class="key"><b>VÄNSTER HALVA</b> Spak — rör dig</div>
-          <div class="key"><b>HÖGER HALVA</b> Dra — sikta</div>
+          <div class="key"><b>LEFT HALF</b> Stick — move</div>
+          <div class="key"><b>RIGHT HALF</b> Drag — aim</div>
           <div class="key"><b>ATK</b> Attack</div>
-          <div class="key"><b>DASH</b> Dash · osårbar</div>
-          <div class="key"><b>▲</b> Hoppa · håll för att flyga</div>
-          <div class="key"><b>🔥</b> Eldboll (Vildheim)</div>` : `
-          <div class="key"><b>WASD</b> Rör dig</div>
-          <div class="key"><b>MUS</b> Sikta · mot kanten = svep vyn</div>
-          <div class="key"><b>VÄNSTERKLICK</b> Attack</div>
-          <div class="key"><b>C</b> Eldboll (Vildheim)</div>
+          <div class="key"><b>DASH</b> Dash · invulnerable</div>
+          <div class="key"><b>▲</b> Jump · hold to fly</div>
+          <div class="key"><b>🔥</b> Fireball (Vildheim)</div>` : `
+          <div class="key"><b>WASD</b> Move</div>
+          <div class="key"><b>MOUSE</b> Aim · to the edge sweeps the view</div>
+          <div class="key"><b>LEFT CLICK</b> Attack</div>
+          <div class="key"><b>C</b> Fireball (Vildheim)</div>
           <div class="key"><b>SHIFT</b> Dash</div>
-          <div class="key"><b>MELLANSLAG</b> Hoppa / flyg</div>
-          <div class="key"><b>ESC</b> Paus</div>`;
+          <div class="key"><b>SPACE</b> Jump / fly</div>
+          <div class="key"><b>ESC</b> Pause</div>`;
     const adv = mode === 'adventure';
     this.showOverlay(`
       <div class="screen">
         <div class="title">DASHH</div>
-        <div class="subtitle">${adv ? 'ÄVENTYR' : 'ÖVERLEVNAD'}<span class="betaTag">${VERSION}</span></div>
-        <div class="betaNote">tidig version — buggar och konstigheter förekommer, säg gärna till</div>
+        <div class="subtitle">${adv ? 'ADVENTURE' : 'SURVIVAL'}<span class="betaTag">${VERSION}</span></div>
+        <div class="betaNote">early build — expect bugs and rough edges, and do tell me about them</div>
         ${checkpoint ? `
         <div class="resume">
-          <button class="cta" id="btnResume">FORTSÄTT — NIVÅ ${checkpoint.level + 1}</button>
+          <button class="cta" id="btnResume">CONTINUE — LEVEL ${checkpoint.level + 1}</button>
           <div class="hint">${checkpoint.world === 'city' ? 'Neotropolis' : 'Vildheim'} ·
-            checkpoint på nivå ${checkpoint.level} · ${checkpoint.gold} guld ·
-            rustning ${checkpoint.armor || 0}</div>
+            checkpoint at level ${checkpoint.level} · ${checkpoint.gold} gold ·
+            armour ${checkpoint.armor || 0}</div>
         </div>` : ''}
         <div class="worlds">
           <div class="world wild" data-w="wild">
             <div class="wIcon">🌲</div>
             <div class="wName">VILDHEIM</div>
-            <div class="wDesc">Grönskande vildmark med skogar, sjöar och berg.
-              En krigare i läder med svärd — och eldbollar på <b>C</b>.</div>
-            <div class="wTag">SVÄRD · C = ELDBOLL</div>
+            <div class="wDesc">Green wilderness of forests, lakes and mountains.
+              A warrior in leather with a sword — and fireballs on <b>C</b>.</div>
+            <div class="wTag">SWORD · C = FIREBALL</div>
           </div>
           <div class="world city" data-w="city">
             <div class="wIcon">🌆</div>
             <div class="wName">NEOTROPOLIS</div>
-            <div class="wDesc">Neonstad i evig natt. Flyg som cyborg mellan skyskraporna
-              och bränn monstren med laser ur händerna.</div>
-            <div class="wTag">HÅLL MELLANSLAG = FLYG</div>
+            <div class="wDesc">A neon city in endless night. Fly between the towers as a
+              cyborg and burn the machines down with lasers from your palms.</div>
+            <div class="wTag">HOLD SPACE = FLY</div>
           </div>
         </div>
         <div class="keys">${keys}</div>
         <div class="hint">${checkpoint
-          ? 'väljer du en värld börjar ett nytt äventyr — checkpointen ligger kvar tills du når en ny'
-          : `välj din värld — ${adv ? 'du stannar i den hela äventyret' : 'överlev vågorna'}`}</div>
-        ${onBack ? '<div class="hint back" id="btnBack">← tillbaka till spelsätt</div>' : ''}
+          ? 'picking a world starts a new adventure — your checkpoint keeps until you reach another'
+          : `choose your world — ${adv ? 'you stay in it for the whole adventure' : 'outlast the waves'}`}</div>
+        ${onBack ? '<div class="hint back" id="btnBack">← back to game modes</div>' : ''}
       </div>`);
     this.overlay.querySelectorAll('.world').forEach((el) => {
       el.addEventListener('click', () => onPick(el.dataset.w));
@@ -6021,14 +6547,14 @@ class HUD {
   showFailed(g, mission, onRetry) {
     this.showOverlay(`
       <div class="screen">
-        <div class="goTitle" style="font-size:clamp(34px,7vw,64px)">UPPDRAGET MISSLYCKADES</div>
+        <div class="goTitle" style="font-size:clamp(34px,7vw,64px)">MISSION FAILED</div>
         <div class="hint" style="margin:10px 0 0">${mission ? mission.title : ''}</div>
         <div class="results">
-          <div class="result"><div class="rl">NIVÅ</div><div class="rv">${g.adventure.level}</div></div>
+          <div class="result"><div class="rl">LEVEL</div><div class="rv">${g.adventure.level}</div></div>
           <div class="result"><div class="rl">KILLS</div><div class="rv">${g.kills}</div></div>
         </div>
-        <button class="cta" id="btnRetry">FÖRSÖK IGEN</button>
-        <div class="hint">nivån börjar om — du behåller allt du skaffat</div>
+        <button class="cta" id="btnRetry">TRY AGAIN</button>
+        <div class="hint">the level restarts — you keep everything you earned</div>
       </div>`);
     $('btnRetry').addEventListener('click', onRetry);
   }
@@ -6054,24 +6580,24 @@ class HUD {
           <div class="name">${w.name}</div>
           <div class="desc">${w.desc}</div>
           ${owned ? `<div class="own">×${owned}</div>` : ''}
-          <div class="price">${sold ? 'SLUT' : `${cost} <i>⬤</i>`}</div>
+          <div class="price">${sold ? 'SOLD OUT' : `${cost} <i>⬤</i>`}</div>
         </div>`;
     }).join('') + `
         <div class="ware ${rep && rep <= g.gold ? '' : 'poor'}" data-id="${REPAIR.id}">
           <div class="icon">${REPAIR.icon}</div>
           <div class="name">${REPAIR.name}</div>
           <div class="desc">${REPAIR.desc}</div>
-          <div class="price">${rep ? `${rep} <i>⬤</i>` : 'HELT'}</div>
+          <div class="price">${rep ? `${rep} <i>⬤</i>` : 'FULL'}</div>
         </div>`;
 
     this.showOverlay(`
       <div class="screen shop">
-        <div class="lvlTitle">NIVÅ ${g.adventure.level} KLARAD${g.levelReward ? ` · +${g.levelReward} GULD` : ''}</div>
+        <div class="lvlTitle">LEVEL ${g.adventure.level} CLEARED${g.levelReward ? ` · +${g.levelReward} GOLD` : ''}</div>
         <div class="lvlSub">SHOP</div>
-        <div class="purse">GULD <b>${g.gold}</b></div>
+        <div class="purse">GOLD <b>${g.gold}</b></div>
         <div class="wares">${cards}</div>
-        <button class="cta" id="btnNext">${boss ? `VIDARE — NIVÅ ${next}: BOSS` : `VIDARE — NIVÅ ${next}`}</button>
-        <div class="hint">klicka för att köpa · priset stiger för varje exemplar</div>
+        <button class="cta" id="btnNext">${boss ? `ONWARD — LEVEL ${next}: BOSS` : `ONWARD — LEVEL ${next}`}</button>
+        <div class="hint">click to buy · each one you own raises the price</div>
       </div>`);
     this.overlay.querySelectorAll('.ware').forEach((el) => {
       el.addEventListener('click', () => onBuy(el.dataset.id));
@@ -6089,10 +6615,10 @@ class HUD {
       </div>`).join('');
     this.showOverlay(`
       <div class="screen">
-        <div class="lvlTitle">NIVÅ ${level}</div>
-        <div class="lvlSub">VÄLJ EN UPPGRADERING</div>
+        <div class="lvlTitle">LEVEL ${level}</div>
+        <div class="lvlSub">CHOOSE AN UPGRADE</div>
         <div class="cards">${cards}</div>
-        <div class="hint">klicka eller tryck 1 · 2 · 3</div>
+        <div class="hint">click, or press 1 · 2 · 3</div>
       </div>`);
     this.overlay.querySelectorAll('.card').forEach((el) => {
       el.addEventListener('click', () => onPick(+el.dataset.i));
@@ -6102,9 +6628,9 @@ class HUD {
   showPause(onResume) {
     this.showOverlay(`
       <div class="screen">
-        <div class="title" style="font-size:clamp(40px,8vw,84px)">PAUSAD</div>
-        <button class="cta" id="btnResume">FORTSÄTT</button>
-        <div class="hint">esc eller klicka för att återgå</div>
+        <div class="title" style="font-size:clamp(40px,8vw,84px)">PAUSED</div>
+        <button class="cta" id="btnResume">RESUME</button>
+        <div class="hint">esc or click to go back in</div>
       </div>`);
     $('btnResume').addEventListener('click', onResume);
   }
@@ -6113,27 +6639,27 @@ class HUD {
     const t = Math.floor(g.elapsed);
     const adv = g.mode === 'adventure';
     const best = adv
-      ? `bäst hittills: nivå ${g.best.stage} · ${g.best.kills} kills`
-      : `bäst hittills: våg ${g.best.wave} · ${g.best.kills} kills`;
+      ? `best so far: level ${g.best.stage} · ${g.best.kills} kills`
+      : `best so far: wave ${g.best.wave} · ${g.best.kills} kills`;
     this.showOverlay(`
       <div class="screen">
-        <div class="goTitle">DU FÖLL</div>
+        <div class="goTitle">YOU FELL</div>
         <div class="hint" style="margin:4px 0 0">${g.worldId === 'city' ? 'NEOTROPOLIS' : 'VILDHEIM'}
-          · ${adv ? 'ÄVENTYR' : 'ÖVERLEVNAD'}</div>
+          · ${adv ? 'ADVENTURE' : 'SURVIVAL'}</div>
         <div class="results">
-          <div class="result"><div class="rl">${adv ? 'NIVÅ' : 'VÅG'}</div>
+          <div class="result"><div class="rl">${adv ? 'LEVEL' : 'WAVE'}</div>
             <div class="rv">${adv ? g.adventure.level : g.waves.wave}</div></div>
-          <div class="result"><div class="rl">${adv ? 'RANG' : 'NIVÅ'}</div><div class="rv">${g.level}</div></div>
+          <div class="result"><div class="rl">${adv ? 'RANK' : 'LEVEL'}</div><div class="rv">${g.level}</div></div>
           <div class="result"><div class="rl">KILLS</div><div class="rv">${g.kills}</div></div>
-          ${adv ? `<div class="result"><div class="rl">GULD</div><div class="rv">${g.goldEarned}</div></div>` : ''}
-          <div class="result"><div class="rl">TID</div><div class="rv">${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}</div></div>
-          <div class="result"><div class="rl">SKADA</div><div class="rv">${Math.round(g.damageDealt)}</div></div>
+          ${adv ? `<div class="result"><div class="rl">GOLD</div><div class="rv">${g.goldEarned}</div></div>` : ''}
+          <div class="result"><div class="rl">TIME</div><div class="rv">${Math.floor(t / 60)}:${String(t % 60).padStart(2, '0')}</div></div>
+          <div class="result"><div class="rl">DAMAGE</div><div class="rv">${Math.round(g.damageDealt)}</div></div>
         </div>
         <button class="cta" id="btnRestart">${checkpoint
-          ? `FORTSÄTT — NIVÅ ${checkpoint.level + 1}` : 'SPELA IGEN'}</button>
-        <button class="cta alt" id="btnMenu">TILL MENYN</button>
+          ? `CONTINUE — LEVEL ${checkpoint.level + 1}` : 'PLAY AGAIN'}</button>
+        <button class="cta alt" id="btnMenu">MAIN MENU</button>
         <div class="hint">${checkpoint
-          ? `du återvänder till checkpointen på nivå ${checkpoint.level}, med allt du hade där`
+          ? `you return to the checkpoint at level ${checkpoint.level}, with everything you had there`
           : best}</div>
       </div>`);
     $('btnRestart').addEventListener('click', onRestart);
@@ -6209,13 +6735,18 @@ class Game {
 
   /* Highscore-listan på sidan utanför.
    *
-   * Spelet kör i en iframe och når inte sidans poängsystem direkt, så de två
-   * beskeden som behövs — "en runda började" och "den slutade, så här gick
-   * det" — skickas ut med postMessage. Kör spelet utanför en ram händer
-   * ingenting; window.parent är då fönstret självt och ingen lyssnar.
+   * Spelet kör i en iframe på rastegar.se och når inte sidans poängsystem
+   * direkt, så de två beskeden som behövs — "en runda började" och "den
+   * slutade, så här gick det" — skickas ut med postMessage. Kör spelet
+   * utanför en ram händer ingenting; window.parent är då fönstret självt
+   * och ingen lyssnar.
    *
-   * Bara ÖVERLEVNAD rapporteras. Äventyret återupptas från checkpoints, så en
-   * körning där är flera försök och går inte att jämföra med någon annans.
+   * Bara ÖVERLEVNAD rapporteras. Äventyret återupptas från checkpoints, så
+   * en körning där är flera försök och går inte att jämföra med någon annans.
+   *
+   * DEN HÄR KODEN MÅSTE BO HÄR, inte i den byggda filen på sajten. Den låg
+   * först inklistrad i `static/games/dashh.html`, och nästa `bundle.py` hade
+   * raderat highscore-listan utan att någon märkt det.
    */
   runScore() {
     // Vågen i kvadrat: djup ska väga tyngre än uthållighet, så våg 20 är värd
@@ -6274,6 +6805,12 @@ class Game {
     this.ambientTimer = 0;
     this.hitstop = 0;
     this.interludeT = 0;
+    // vädret: 0 = uppehåll, 1 = ösregn. Byggs upp och avtar långsamt.
+    this.rain = 0;
+    this.rainTarget = 0;
+    this.weatherTimer = rand(40, 100);
+    this.lightning = 0;
+    this.thunderTimer = 0;
     this.hud.clearFloaters();
     this.hud.setBoss(null);
   }
@@ -6282,7 +6819,10 @@ class Game {
     if (worldId) this.worldId = worldId;
     if (mode) this.mode = mode;
     if (checkpoint) this.worldId = checkpoint.world;
-    this.renderer.buildWorld(this.worldId);
+    // Varje körning i Vildheim får sin årstid. Checkpointen minns sin, så
+    // man återvänder till samma skog man lämnade.
+    this.season = checkpoint && checkpoint.season ? checkpoint.season : randomSeasonId();
+    this.renderer.buildWorld(this.worldId, this.season);
     this.colliders = this.renderer.props.grid;
     this.buildings = this.renderer.props.buildings || null;   // taksnipern behöver dem
     this.sound.init();
@@ -6296,11 +6836,11 @@ class Game {
     this.hud.showHUD(true);
     const adv = this.mode === 'adventure';
     if (checkpoint) {
-      this.hud.showBanner(`NIVÅ ${checkpoint.level + 1}`, 'du fortsätter från checkpointen', 3);
+      this.hud.showBanner(`LEVEL ${checkpoint.level + 1}`, 'you pick up where you left off', 3);
     } else if (this.worldId === 'city') {
-      this.hud.showBanner('NEOTROPOLIS', adv ? 'ge dig ut i staden' : 'håll mellanslag — flyg', 3);
+      this.hud.showBanner('NEOTROPOLIS', adv ? 'head out into the city' : 'hold space — fly', 3);
     } else {
-      this.hud.showBanner('VILDHEIM', adv ? 'ge dig ut på kartan' : 'vågorna kommer');
+      this.hud.showBanner('VILDHEIM', SEASON.name.toLowerCase(), 3);
     }
     this.input.enabled = true;
     if (!this.input.touch) this.input.requestLock();
@@ -6406,7 +6946,7 @@ class Game {
   announceBoss(e) {
     const city = this.worldId === 'city';
     const name = e.def.bossName || (city ? 'OVERSEER' : 'VOIDLORD');
-    const sub = e.def.bossSub || (city ? 'overseer aktiveras' : 'voidlord stiger upp');
+    const sub = e.def.bossSub || (city ? 'the overseer wakes' : 'the voidlord rises');
     this.hud.setBoss(e, name);
     this.hud.showBanner('BOSS', sub, 3);
     this.sound.bossSpawn();
@@ -6432,7 +6972,7 @@ class Game {
     this.player.shake = Math.min(1.2, this.player.shake + (e.boss ? 1.0 : 0.12));
     if (e.boss) {
       this.hud.setBoss(null);
-      this.hud.showBanner('BOSSEN FÖLL', '', 2.6);
+      this.hud.showBanner('BOSS DOWN', '', 2.6);
       this.player.shake = 1.0;
     }
   }
@@ -6448,6 +6988,58 @@ class Game {
     if (this.pendingLevelUps > 0 && this.state === 'playing') this.openLevelUp();
   }
 
+  /**
+   * Vädret i Vildheim. Regnet kommer och går av sig självt, byggs upp över
+   * en halv minut och avtar lika långsamt — inget slås på och av. Under
+   * ösregn slår blixtar ner, och åskan hörs efter en fördröjning som beror
+   * på hur långt bort nedslaget var, som i verkligheten.
+   *
+   * Neotropolis regnar inte: det är en inomhusnatt av neon, och regn där
+   * skulle bara skymma sikten i en värld där man redan flyger blint.
+   */
+  updateWeather(dt) {
+    if (this.worldId === 'city') { this.rain = 0; this.lightning = 0; return; }
+
+    this.weatherTimer -= dt;
+    if (this.weatherTimer <= 0) {
+      // ungefär var tredje väderomslag blir regn, resten uppehåll
+      this.rainTarget = Math.random() < 0.35 ? rand(0.45, 1) : 0;
+      this.weatherTimer = this.rainTarget > 0 ? rand(50, 110) : rand(70, 160);
+      if (this.rainTarget > 0.8) this.toast('The sky is darkening');
+    }
+    this.rain += clamp(this.rainTarget - this.rain, -dt * 0.06, dt * 0.045);
+
+    this.lightning = Math.max(0, this.lightning - dt * 3.2);
+    if (this.rain > 0.75) {
+      this.thunderTimer -= dt;
+      if (this.thunderTimer <= 0) {
+        this.thunderTimer = rand(6, 22);
+        this.lightning = 1;
+        // avståndet styr både ljusstyrkan och hur länge det dröjer till dånet
+        const far = rand(0.2, 1);
+        this.sound.thunder(far);
+        this.player.shake = Math.min(1.2, this.player.shake + (1 - far) * 0.5);
+      }
+    }
+
+    // regndroppar: streck som faller runt spelaren och tar slut vid marken
+    if (this.rain > 0.05) {
+      const p = this.player.pos;
+      const drops = Math.round(this.rain * 26);
+      for (let i = 0; i < drops; i++) {
+        const a = rand(TAU), d = Math.sqrt(Math.random()) * 26;
+        const x = p.x + Math.cos(a) * d, z = p.z + Math.sin(a) * d;
+        const gh = Math.max(terrainHeight(x, z), WATER_LEVEL);
+        this.particles.spawn({
+          x, y: gh + rand(6, 17), z,
+          vx: rand(-1, 1), vy: -rand(26, 36), vz: rand(-1, 1),
+          life: rand(0.35, 0.6), size: rand(0.06, 0.13), size2: 0.03,
+          col: [0.62, 0.78, 0.95], alpha: 0.5, drag: 0,
+        });
+      }
+    }
+  }
+
   addGold(n) {
     this.gold += n;
     this.goldEarned += n;
@@ -6458,7 +7050,7 @@ class Game {
     p.armor += n;
     this.sound.tone({ f: 300, f2: 520, dur: 0.16, type: 'triangle', vol: 0.10 });
     this.sound.tone({ f: 600, f2: 900, dur: 0.12, type: 'sine', vol: 0.06, delay: 0.05 });
-    this.toast(`🪖 Rustning ${p.armor}`);
+    this.toast(`🪖 Armour ${p.armor}`);
     this.particles.burst(p.pos.x, p.pos.y + 1.4, p.pos.z, 14, {
       speed: 6, life: 0.5, size: 0.4, size2: 0.05,
       col: [0.72, 0.82, 1.0], alpha: 0.9, drag: 0.6, grav: -3,
@@ -6475,6 +7067,7 @@ class Game {
     const p = this.player;
     this.checkpoint = {
       world: this.worldId,
+      season: this.season,
       level: this.adventure.level,
       stats: Object.assign({}, p.stats),
       hp: p.hp,
@@ -6491,8 +7084,8 @@ class Game {
       shop: [...this.shopLevels],
     };
     try { localStorage.setItem('dashh.checkpoint', JSON.stringify(this.checkpoint)); } catch (e) { /* ignoreras */ }
-    this.hud.showBanner('CHECKPOINT', `nivå ${this.adventure.level} sparad`, 2.6);
-    this.toast(`Checkpoint: nivå ${this.adventure.level}`);
+    this.hud.showBanner('CHECKPOINT', `level ${this.adventure.level} saved`, 2.6);
+    this.toast(`Checkpoint: level ${this.adventure.level}`);
   }
 
   loadCheckpoint() {
@@ -6511,6 +7104,7 @@ class Game {
   applyCheckpoint(cp) {
     const p = this.player;
     Object.assign(p.stats, cp.stats);
+    recalc(p.stats);
     p.hp = Math.min(cp.hp, p.stats.maxHp);
     p.armor = cp.armor || 0;
     p.dashCharges = p.stats.dashMax;
@@ -6545,6 +7139,7 @@ class Game {
     if (owned >= w.max || cost > this.gold) { this.sound.denied(); return false; }
     this.gold -= cost;
     w.apply(p.stats, p);
+    recalc(p.stats);
     this.shopLevels.set(id, owned + 1);
     this.sound.buy();
     return true;
@@ -6555,7 +7150,7 @@ class Game {
     this.input.enabled = false;
     this.input.releaseLock();
     this.sound.levelUp();
-    this.choices = rollChoices(this.upgradeLevels, 3);
+    this.choices = rollChoices(this.upgradeLevels, 3, this.worldId);
     this.hud.showLevelUp(this.level, this.choices, (i) => this.pickUpgrade(i));
   }
 
@@ -6563,6 +7158,7 @@ class Game {
     const u = this.choices[i];
     if (!u) return;
     u.apply(this.player.stats, this.player);
+    recalc(this.player.stats);
     this.upgradeLevels.set(u.id, (this.upgradeLevels.get(u.id) || 0) + 1);
     this.toast(`${u.icon} ${u.name}`);
     this.pendingLevelUps--;
@@ -6575,30 +7171,30 @@ class Game {
   }
 
   onWaveStart(wave, isBoss) {
-    this.hud.showBanner(`VÅG ${wave}`, isBoss ? 'något stort närmar sig' : '');
+    this.hud.showBanner(`WAVE ${wave}`, isBoss ? 'something big is coming' : '');
     this.sound.waveStart();
   }
 
   onWaveClear(wave) {
-    this.hud.showBanner('VÅGEN RENSAD', 'nästa startar snart', 2.0);
-    this.toast(`Våg ${wave} klarad`);
+    this.hud.showBanner('WAVE CLEARED', 'next one starts shortly', 2.0);
+    this.toast(`Wave ${wave} cleared`);
     this.player.heal(this.player.stats.maxHp * 0.08);
   }
 
   // ------------------------------------------------------------- äventyret
 
   onLevelStart(level, isBoss, plan, mission) {
-    this.hud.showBanner(`NIVÅ ${level}`, mission ? mission.title.toLowerCase() : '', 2.6);
+    this.hud.showBanner(`LEVEL ${level}`, mission ? mission.title.toLowerCase() : '', 2.6);
     this.sound.waveStart();
-    if (level === 1) this.toast('Radarn visar uppdragsmålen — gula och blå prickar');
-    else if (plan.size === 'lång') this.toast('Stor karta den här gången');
+    if (level === 1) this.toast('The radar marks your objectives — gold and blue');
+    else if (plan.size === 'long') this.toast('A big map this time');
   }
 
   onLevelClear(level) {
     const reward = 60 + level * 25;
     this.addGold(reward);
     this.levelReward = reward;
-    this.hud.showBanner('NIVÅ KLARAD', `+${reward} guld`, 2.4);
+    this.hud.showBanner('LEVEL CLEARED', `+${reward} gold`, 2.4);
     this.sound.levelUp();
     this.player.heal(this.player.stats.maxHp * 0.15);
     this.interludeT = 2.0;      // en andhämtning innan shoppen
@@ -6606,7 +7202,7 @@ class Game {
 
   /** Uppdraget gick om intet — nivån görs om från början. */
   onLevelFailed(level, mission) {
-    this.hud.showBanner('UPPDRAGET MISSLYCKADES', '', 2.4);
+    this.hud.showBanner('MISSION FAILED', '', 2.4);
     this.sound.gameOver();
     this.state = 'failed';
     this.input.enabled = false;
@@ -6710,22 +7306,51 @@ class Game {
     this.combat.update(dt, this);
     this.particles.update(dt);
 
-    // stämningspartiklar: gnistor på dagen, glödmott på natten
+    this.updateWeather(dt);
+
+    /*
+     * Luften ska aldrig vara tom. Vad som svävar i den beror på var och när:
+     * pollen som driver i solen, eldflugor som blinkar i skymningen, och
+     * asklika flagor i stadens eviga natt. De föds runt spelaren och lever
+     * några sekunder — inget behöver hållas reda på.
+     */
     this.ambientTimer -= dt;
     if (this.ambientTimer <= 0) {
-      this.ambientTimer = 0.06;
       const env = this.env || computeEnv(this.dayTime, this.worldId);
       const night = env.night;
+      const city = this.worldId === 'city';
+      this.ambientTimer = city ? 0.09 : night > 0.45 ? 0.14 : 0.05;
       const a = rand(TAU), d = rand(6, 34);
       const x = p.pos.x + Math.cos(a) * d, z = p.pos.z + Math.sin(a) * d;
       const gh = terrainHeight(x, z);
-      this.particles.spawn({
-        x, y: Math.max(gh, WATER_LEVEL) + rand(0.4, 5), z,
-        vx: rand(-0.4, 0.4), vy: rand(0.1, 0.7), vz: rand(-0.4, 0.4),
-        life: rand(1.6, 3.4), size: rand(0.10, 0.24), size2: 0,
-        col: night > 0.4 ? [0.45, 0.95, 0.8] : [1.0, 0.95, 0.75],
-        alpha: night > 0.4 ? 0.75 : 0.3, drag: 0.05,
-      });
+      const base = Math.max(gh, WATER_LEVEL);
+
+      if (city) {
+        // stoft och glödflagor som stiger mellan husen
+        this.particles.spawn({
+          x, y: base + rand(0.5, 14), z,
+          vx: rand(-0.5, 0.5), vy: rand(0.4, 1.6), vz: rand(-0.5, 0.5),
+          life: rand(2.4, 5.0), size: rand(0.07, 0.17), size2: 0,
+          col: Math.random() < 0.3 ? [1.0, 0.45, 0.65] : [0.45, 0.85, 1.0],
+          alpha: 0.5, drag: 0.06,
+        });
+      } else if (night > 0.45) {
+        // eldflugor: få, långsamma, låga över marken och gulgröna
+        this.particles.spawn({
+          x, y: base + rand(0.3, 2.6), z,
+          vx: rand(-0.35, 0.35), vy: rand(-0.15, 0.35), vz: rand(-0.35, 0.35),
+          life: rand(2.6, 5.2), size: rand(0.13, 0.26), size2: 0.02,
+          col: [0.75, 1.0, 0.35], alpha: 0.9, drag: 0.9,
+        });
+      } else {
+        // pollen: mängder av små ljusa flagor som dalar sakta i dagsljuset
+        this.particles.spawn({
+          x, y: base + rand(0.4, 6.5), z,
+          vx: rand(-0.5, 0.5), vy: rand(-0.25, 0.12), vz: rand(-0.5, 0.5),
+          life: rand(3.0, 6.0), size: rand(0.06, 0.15), size2: 0,
+          col: [1.0, 0.97, 0.80], alpha: 0.34, drag: 0.03,
+        });
+      }
     }
 
     if (!p.alive && this.state === 'playing') this.die();
@@ -6737,12 +7362,44 @@ class Game {
     const r = this.renderer;
     const p = this.player;
     this.env = computeEnv(this.dayTime, this.worldId);
+    if (this.rain > 0.02) this.applyRainToEnv(this.env);
     r.clearBatches();
     if (p.alive) p.draw(r, this.time);
     for (const e of this.enemies) e.draw(r, this.time);
     this.combat.draw(r, this.time);
     if (this.mode === 'adventure') this.adventure.draw(r, this.time);
     r.render(p.camera(this.time), this.env, this.time, p.pos);
+  }
+
+  /**
+   * Regnet dränker färgen ur landskapet: solen dämpas, dimman kryper
+   * närmare och allt gråas ner. Blixten gör tvärtom under ett ögonblick —
+   * hela världen blir vit och skuggorna försvinner.
+   */
+  applyRainToEnv(env) {
+    const w = this.rain;
+    const grey = (c, t) => {
+      const l = (c[0] + c[1] + c[2]) / 3;
+      return [lerp(c[0], l * 0.82, t), lerp(c[1], l * 0.84, t), lerp(c[2], l * 0.95, t)];
+    };
+    env.sunCol = [env.sunCol[0] * (1 - w * 0.55), env.sunCol[1] * (1 - w * 0.55), env.sunCol[2] * (1 - w * 0.5)];
+    env.fogCol = grey(env.fogCol, w * 0.8);
+    env.skyTop = grey(env.skyTop, w * 0.75);
+    env.skyHor = grey(env.skyHor, w * 0.75);
+    env.amb = [env.amb[0] * (1 - w * 0.2), env.amb[1] * (1 - w * 0.18), env.amb[2] * (1 - w * 0.1)];
+    env.fogNear = lerp(env.fogNear, 16, w);
+    env.fogFar = lerp(env.fogFar, 92, w);
+    env.clouds = Math.min(1, env.clouds + w * 0.6);
+    env.wind = [env.wind[0] * (1 + w), env.wind[1] * (1 + w)];
+
+    const f = this.lightning;
+    if (f > 0) {
+      const flash = f * f;
+      env.amb = [env.amb[0] + flash * 1.5, env.amb[1] + flash * 1.6, env.amb[2] + flash * 1.9];
+      env.fogCol = [env.fogCol[0] + flash * 0.5, env.fogCol[1] + flash * 0.52, env.fogCol[2] + flash * 0.6];
+      env.skyTop = [env.skyTop[0] + flash * 0.7, env.skyTop[1] + flash * 0.75, env.skyTop[2] + flash * 0.9];
+      env.skyHor = [env.skyHor[0] + flash * 0.7, env.skyHor[1] + flash * 0.75, env.skyHor[2] + flash * 0.9];
+    }
   }
 
   // -------------------------------------------------------------------- loop
