@@ -521,7 +521,12 @@ def build() -> None:
         shutil.copytree(CONTENT / "quizzes", DIST / "static" / "quizzes")
     if PUBLIC.exists():
         for item in PUBLIC.iterdir():
-            shutil.copy(item, DIST / item.name)
+            if item.is_dir():
+                # A folder in public/ becomes a standalone section at the site
+                # root (e.g. public/val/ -> /val/), copied as-is.
+                shutil.copytree(item, DIST / item.name)
+            else:
+                shutil.copy(item, DIST / item.name)
     write(DIST / "static" / "js" / "config.js",
           "window.RASTEGAR = " + json.dumps(site.get("backend", {}), indent=2) + ";\n")
     write(DIST / "404.html", render(base, title=f"404 — {site['name']}", site_name=site["name"],

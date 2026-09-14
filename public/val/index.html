@@ -1,0 +1,560 @@
+<meta charset="utf-8">
+<title>Valnatt 2026</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="Riksdagsvalet 2026: live-räkning från Valmyndigheten med block mot block, mandat, karta över räknade valdistrikt och grov prognos.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@100..125,400..800&family=Archivo+Narrow:wght@400;500;600&display=swap">
+<style>
+:root{
+  --bg:#0F1216; --panel:#161A20; --panel2:#1D2229; --ink:#E9EDF2; --muted:#9AA4B2; --faint:#67717F; --line:#262C36; --line2:#20252E;
+  --a:#F26F64; --a-soft:#3A1F1D; --b:#6FA6EE; --b-soft:#1B2C45; --other:#4B5563;
+  --good:#5CC784; --bad:#F07C74; --warn:#E9A94B; --live:#3FD07A;
+}
+*{box-sizing:border-box}
+html{color-scheme:dark}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Archivo",system-ui,-apple-system,"Segoe UI",sans-serif;font-size:14px;line-height:1.4;-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+.wrap{max-width:1500px;margin:0 auto;padding:14px 14px 40px;display:flex;flex-direction:column;gap:12px}
+h1,h2,h3{margin:0;text-wrap:balance}
+h1{font-size:17px;font-weight:800;font-stretch:112%;letter-spacing:-.005em}
+h2{font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+a{color:inherit}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:2px solid var(--b);outline-offset:2px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.panel-head{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:6px 14px}
+.note{font-size:11px;color:var(--faint)}
+.ca{color:var(--a)} .cb{color:var(--b)}
+.pill{display:inline-block;font-size:11px;font-weight:700;padding:1px 6px;border-radius:5px;line-height:1.5}
+.pill.up{background:#173A27;color:var(--good)} .pill.down{background:#3F1F1E;color:var(--bad)} .pill.flat{background:var(--line2);color:var(--muted)}
+
+/* Header */
+header{display:grid;grid-template-columns:1.2fr 1.4fr 1fr 1fr 1.1fr;gap:10px 22px;align-items:start;padding:12px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+header .sub{font-size:11px;color:var(--faint);margin-top:2px}
+.stat .lbl{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint)}
+.stat .val{font-size:22px;font-weight:800;line-height:1.15;font-stretch:108%;margin-top:2px}
+.stat .val small{font-size:12px;font-weight:600;color:var(--muted)}
+.stat .sub{font-size:11px;color:var(--muted);margin-top:3px}
+.stat .sub b{color:var(--ink)}
+.prog{height:5px;border-radius:3px;background:var(--line2);margin-top:6px;overflow:hidden;width:100%}
+.prog i{display:block;height:100%;background:var(--b);border-radius:3px;transition:width .6s ease}
+.live{display:inline-flex;align-items:center;gap:7px;font-size:12px;color:var(--muted);padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:var(--panel2);white-space:nowrap;margin-top:4px}
+.live .dot{width:8px;height:8px;border-radius:50%;background:var(--live);animation:pulse 2s infinite}
+.live.stale .dot{background:var(--warn);animation:none}
+.live.off .dot{background:var(--faint);animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(63,208,122,.5)}70%{box-shadow:0 0 0 7px transparent}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion:reduce){.live .dot{animation:none}}
+@media (max-width:1000px){header{grid-template-columns:1fr 1fr 1fr}}
+@media (max-width:640px){header{grid-template-columns:1fr 1fr}}
+
+/* Banner */
+.banner{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;padding:10px 16px;background:var(--panel);border:1px solid var(--line);border-radius:10px;font-size:15px;color:var(--muted)}
+.banner .tag{font-size:10px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;background:var(--panel2);border:1px solid var(--line);border-radius:5px;padding:3px 7px;color:var(--muted)}
+.banner b{font-weight:700;color:var(--ink)}
+.banner .lead{font-weight:800;font-size:16px}
+
+/* Hero blocks */
+.hero{display:grid;grid-template-columns:1fr auto 1fr;gap:10px 20px;align-items:start}
+.bloc .name{font-size:14px;font-weight:700;color:var(--muted)}
+.bloc .big{font-size:48px;font-weight:800;line-height:1;letter-spacing:-.02em;font-stretch:112%;margin:2px 0 4px}
+.bloc .big small{font-size:22px;font-weight:700}
+.bloc .meta{font-size:12px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.bloc.b{text-align:right}.bloc.b .meta{justify-content:flex-end}
+.bloc.a .name,.bloc.a .big{color:var(--a)} .bloc.b .name,.bloc.b .big{color:var(--b)}
+.mid{text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:160px;padding-top:2px}
+.mid .lbl{font-size:13px;color:var(--muted);font-weight:600}
+.mid .num{font-size:40px;font-weight:800;line-height:1.05;font-stretch:110%}
+.mid .who{font-size:12px;color:var(--muted)}
+.mid .who b{font-weight:700}
+@media (max-width:640px){.hero{grid-template-columns:1fr 1fr}.mid{grid-column:1/-1;order:3;flex-direction:row;gap:12px;justify-content:center}.bloc .big{font-size:36px}.mid .num{font-size:28px}}
+
+/* Stacked bars */
+.stack{display:flex;height:22px;border-radius:5px;overflow:hidden;background:var(--line2)}
+.stack i{display:flex;align-items:center;justify-content:center;height:100%;font-size:11px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-shadow:0 1px 1px rgba(0,0,0,.4);border-right:1px solid var(--panel);transition:width .5s ease}
+.stack i.o{color:var(--muted);text-shadow:none}
+.stack i.gap{background:transparent;border:0}
+.barwrap{position:relative;padding-top:4px}
+.barwrap .lbl{display:flex;justify-content:space-between;font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:5px}
+.barwrap .lbl span{font-weight:500;letter-spacing:0;text-transform:none;color:var(--faint)}
+.barwrap .maj{position:absolute;left:50%;top:22px;bottom:0;width:0;border-left:2px solid var(--ink);opacity:.9}
+.ends{display:flex;justify-content:space-between;align-items:baseline;font-size:12px;color:var(--muted);margin-top:4px}
+.ends b{font-size:24px;font-weight:800;color:var(--ink);font-stretch:110%}
+.ends .c{font-size:11px;color:var(--faint)}
+details.blocsel summary{cursor:pointer;font-size:12px;color:var(--muted);user-select:none;list-style:none;display:inline-flex;gap:6px;align-items:center}
+details.blocsel summary::before{content:"▸";font-size:11px}
+details[open].blocsel summary::before{content:"▾"}
+.chiprow{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 9px 4px 7px;border-radius:999px;border:1px solid var(--line);background:var(--panel2);font-weight:700;font-size:13px}
+.chip .sw{width:9px;height:9px;border-radius:50%;flex:none}
+.chip .tag{font-size:10px;font-weight:700;color:var(--faint)}
+.chip.a{border-color:var(--a);background:var(--a-soft)}.chip.a .tag{color:var(--a)}
+.chip.b{border-color:var(--b);background:var(--b-soft)}.chip.b .tag{color:var(--b)}
+.presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.preset{padding:3px 9px;border-radius:6px;border:1px solid var(--line);background:transparent;font-size:12px;color:var(--muted)}
+.preset:hover{color:var(--ink);border-color:var(--muted)}
+
+/* Grid of panels */
+.grid{display:grid;grid-template-columns:300px 1.25fr 1.15fr 1.15fr;gap:12px;align-items:start}
+@media (max-width:1180px){.grid{grid-template-columns:300px 1fr 1fr}.grid .p-prog{grid-column:2/4}}
+@media (max-width:900px){.grid{grid-template-columns:1fr 1fr}.grid .p-prog{grid-column:auto}}
+@media (max-width:640px){.grid{grid-template-columns:1fr}}
+
+/* Map */
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;flex-wrap:wrap;background:var(--panel2)}
+.seg button{padding:5px 9px;border:0;background:transparent;font-size:12px;font-weight:600;color:var(--muted);border-right:1px solid var(--line)}
+.seg button:last-child{border-right:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.map{position:relative;height:620px;background:var(--panel2);border-radius:8px;overflow:hidden;touch-action:none;cursor:grab}
+.map:active{cursor:grabbing}
+.map svg{width:100%;height:100%;display:block}
+.map path{fill:#2A313C;transition:fill .3s}
+.map path:hover{stroke:var(--ink);stroke-width:1.5px;vector-effect:non-scaling-stroke}
+.map .mtip{position:absolute;left:8px;bottom:8px;right:8px;background:var(--panel);border:1px solid var(--line);border-radius:7px;padding:7px 9px;font-size:12px;line-height:1.4;pointer-events:none}
+.map .mtip .sub{color:var(--muted)}
+.map .loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:var(--faint);font-size:12px}
+.maplegend{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;color:var(--muted)}
+.maplegend i{display:inline-block;width:10px;height:10px;border-radius:2px;vertical-align:-1px;margin-right:4px}
+.zooms{display:flex;flex-wrap:wrap;gap:5px}
+.zooms button{padding:3px 8px;border-radius:6px;border:1px solid var(--line);background:transparent;font-size:11px;color:var(--muted)}
+.zooms button:hover{color:var(--ink);border-color:var(--muted)}
+.mapstat{font-size:12px;color:var(--muted)}.mapstat b{color:var(--ink)}
+@media (max-width:640px){.map{height:480px}}
+
+/* Table */
+.miniprog{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted)}
+.miniprog .prog{margin:0;flex:1}
+.vsline{display:flex;justify-content:space-between;align-items:baseline;font-size:15px;font-weight:700}
+.vsline .pill{margin:0 6px}
+.vsbar{display:flex;height:14px;border-radius:4px;overflow:hidden;background:var(--line2)}
+.vsbar i{height:100%;display:block;transition:width .5s}
+.vsbar .ga{background:var(--a)}.vsbar .gb{background:var(--b)}.vsbar .go{background:var(--other)}
+.tbl{display:flex;flex-direction:column}
+.prow{display:grid;grid-template-columns:48px minmax(40px,1fr) 78px 62px 82px 44px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid var(--line2)}
+.prow:last-child{border-bottom:0}
+.prow.head{font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);padding:2px 0 6px}
+.prow .code{font-weight:800;font-size:14px;display:flex;align-items:center;gap:7px}
+.prow .code .sw{width:10px;height:10px;border-radius:2px;flex:none}
+.prow .bar{height:10px;background:transparent;position:relative}
+.prow .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:3px;transition:width .5s}
+.prow .pct{font-weight:800;font-size:17px;text-align:right}
+.prow .d{text-align:right}
+.prow .votes{text-align:right;color:var(--muted);font-size:12px}
+.prow .seats{text-align:right;font-weight:700;font-size:13px}
+.prow .seats.none{color:var(--faint);font-weight:400}
+@media (max-width:420px){.prow{grid-template-columns:44px 1fr 70px 56px}.prow .votes,.prow .seats{display:none}}
+
+/* Trend */
+.trend{position:relative}
+.trend svg{width:100%;height:auto;display:block}
+.trend text{font-family:"Archivo Narrow","Archivo",sans-serif;font-size:11px;fill:var(--muted)}
+.trend .grid{stroke:var(--line2)}
+.trend .ax{stroke:var(--line)}
+.trend .la{stroke:var(--a)}.trend .lb{stroke:var(--b)}
+.trend .lblA{fill:var(--a);font-weight:700;font-size:12px}.trend .lblB{fill:var(--b);font-weight:700;font-size:12px}
+.trend .tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);font-size:11px;padding:5px 8px;border-radius:5px;white-space:nowrap;transform:translate(-50%,-110%);display:none}
+.trend .xh{stroke:var(--muted);stroke-dasharray:2 3;display:none}
+.legend{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:11px;color:var(--muted)}
+.legend i{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+
+/* Prognosis */
+.pg-head{font-size:14px;font-weight:700}
+.pg-two{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:end}
+.pg-two .r{text-align:right}
+.pg-two .l .n,.pg-two .r .n{font-size:30px;font-weight:800;line-height:1.05;font-stretch:110%}
+.pg-two .l .n{color:var(--a)}.pg-two .r .n{color:var(--b)}
+.pg-two .s{font-size:12px;color:var(--muted)}
+.pg-two .s b{color:var(--ink);font-size:14px}
+.pg-list{display:flex;flex-direction:column;gap:5px;font-size:12px}
+.pg-list .row{display:flex;justify-content:space-between;gap:8px;padding:3px 0;border-bottom:1px solid var(--line2)}
+.pg-list .row:last-child{border-bottom:0}
+.pg-list .row span:first-child{color:var(--muted)}
+.pg-list .row b{white-space:nowrap}
+details.how summary{cursor:pointer;font-size:11px;color:var(--faint);list-style:none}
+details.how summary::before{content:"ⓘ ";}
+details.how p{font-size:11px;color:var(--muted);margin:6px 0 0;line-height:1.5}
+
+footer{font-size:11px;color:var(--faint);display:flex;flex-wrap:wrap;gap:6px 18px;justify-content:space-between;padding:0 4px}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Valnatt 2026 · Riksdagsvalet</h1>
+      <div class="sub">Preliminär räkning · <a href="https://resultat.val.se/val2026/RD?r=P" target="_blank" rel="noopener">resultat.val.se</a> · <span id="finalline"></span></div>
+      <div class="live off" id="live"><span class="dot"></span><span id="livetxt">Ansluter…</span></div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Räknade valdistrikt</div>
+      <div class="val"><span id="counted">–</span> av <span id="total">–</span> <small id="pctcounted"></small></div>
+      <div class="prog"><i id="prog" style="width:0%"></i></div>
+      <div class="sub"><b id="votes">–</b> av ≈ <span id="expvotes">–</span> röster · ≈ <b id="leftvotes">–</b> kvar</div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Valdeltagande</div>
+      <div class="val" id="turnout">–</div>
+      <div class="sub">2022: <span id="turnoutPrev">–</span></div>
+      <div class="sub">Blanka <b id="blank">–</b> · ogiltiga <b id="invalid">–</b> <span id="invalidpct"></span></div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Senast uppdaterad</div>
+      <div class="val" id="updated">–</div>
+      <div class="sub" id="updatedDate"></div>
+      <div class="sub" id="fetched"></div>
+    </div>
+    <div class="stat">
+      <div class="lbl">Mandat</div>
+      <div class="val"><span id="seatsA" class="ca">–</span> <small>–</small> <span id="seatsB" class="cb">–</span></div>
+      <div class="sub" id="seatsrc">175 krävs för majoritet (av 349)</div>
+    </div>
+  </header>
+
+  <div class="banner" id="banner"><span class="tag">Just nu</span><span id="bannertxt">–</span></div>
+
+  <section class="panel" aria-label="Block mot block">
+    <div class="hero">
+      <div class="bloc a">
+        <div class="name" id="nameA">Block A</div>
+        <div class="big"><span id="pctA">–</span><small> %</small></div>
+        <div class="meta"><span id="memA"></span><span class="pill flat" id="dA">–</span><span>mot 2022</span></div>
+      </div>
+      <div class="mid">
+        <div class="lbl">Skillnad i röster</div>
+        <div class="num" id="votediff">–</div>
+        <div class="who" id="votewho">–</div>
+      </div>
+      <div class="bloc b">
+        <div class="name" id="nameB">Block B</div>
+        <div class="big"><span id="pctB">–</span><small> %</small></div>
+        <div class="meta"><span>mot 2022</span><span class="pill flat" id="dB">–</span><span id="memB"></span></div>
+      </div>
+    </div>
+    <div class="barwrap">
+      <div class="stack" id="pctstack"></div>
+    </div>
+    <div class="barwrap">
+      <div class="lbl">Mandat i riksdagen <span id="seatsrc2">· Valmyndigheten</span></div>
+      <div class="stack" id="seatstack"></div>
+      <span class="maj" aria-hidden="true"></span>
+      <div class="ends"><span><b id="endA">–</b> mandat</span><span class="c">▲ 175 krävs för majoritet (av 349)</span><span><b id="endB">–</b> mandat</span></div>
+    </div>
+    <details class="blocsel">
+      <summary>Ändra block – klicka på ett parti för att flytta det: utanför → A → B → utanför</summary>
+      <div class="chiprow" id="chips"></div>
+      <div class="presets">
+        <button class="preset" data-a="S,V,MP,C" data-b="SD,M,KD,L">Oppositionen (S+V+MP+C) vs Tidö</button>
+        <button class="preset" data-a="S,V,MP" data-b="SD,M,KD,L">Rödgröna (S+V+MP) vs Tidö</button>
+        <button class="preset" data-a="S,V,MP,C,L" data-b="SD,M,KD">S+V+MP+C+L vs SD+M+KD</button>
+        <button class="preset" data-a="" data-b="">Rensa</button>
+      </div>
+    </details>
+  </section>
+
+  <div class="grid">
+    <section class="panel p-map" aria-label="Karta över räknade valdistrikt">
+      <div class="panel-head"><h2>Karta · räknade valdistrikt</h2></div>
+      <div class="seg" role="group" aria-label="Färgläggning">
+        <button type="button" data-mode="counted" aria-pressed="true">Räknat</button>
+        <button type="button" data-mode="bloc" aria-pressed="false">Ledande block</button>
+        <button type="button" data-mode="party" aria-pressed="false">Största parti</button>
+      </div>
+      <div class="map" id="map"><div class="loading" id="maploading">Laddar 6 312 valdistrikt…</div></div>
+      <div class="maplegend" id="maplegend"></div>
+      <div class="mapstat"><b id="mapcounted">–</b> av 6 312 distrikt med yta räknade<span id="mapupd"></span></div>
+      <div class="zooms" id="zooms">
+        <button type="button" data-z="all">Hela landet</button>
+        <button type="button" data-z="13480,131600,900">Stockholm</button>
+        <button type="button" data-z="6380,128000,800">Göteborg</button>
+        <button type="button" data-z="7480,123300,1000">Malmö</button>
+      </div>
+      <div class="note">Scrolla för att zooma, dra för att panorera. Uppsamlingsdistrikt (sena förtidsröster m.m.) räknas 16–17 september och saknar yta.</div>
+    </section>
+
+    <section class="panel p-tbl" aria-label="Hela riket">
+      <div class="panel-head"><h2>Hela riket</h2><span class="note">Förändring i procentenheter mot 2022</span></div>
+      <div class="miniprog"><div class="prog"><i id="prog2" style="width:0%"></i></div><span id="progtxt">–</span></div>
+      <div class="vsline"><span><span class="ca" id="vsA">–</span><span class="pill flat" id="vsdA">–</span></span><span><span class="pill flat" id="vsdB">–</span><span class="cb" id="vsB">–</span></span></div>
+      <div class="vsbar" id="vsbar"></div>
+      <div class="note" id="vsnote"></div>
+      <div class="tbl" id="parties"></div>
+    </section>
+
+    <section class="panel p-trend" aria-label="Under kvällen">
+      <div class="panel-head"><h2>Under kvällen · röstandel per block</h2></div>
+      <div class="trend" id="trend"><div class="note">Trenden ritas när det finns minst två mätpunkter.</div></div>
+      <div class="legend" id="trendlegend"></div>
+    </section>
+
+    <section class="panel p-prog" aria-label="Grov prognos">
+      <div class="panel-head"><h2>Grov prognos · slutresultat</h2></div>
+      <div class="pg-head" id="pghead">–</div>
+      <div class="pg-two">
+        <div class="l"><div class="s" id="pgnameA">–</div><div class="n" id="pgA">–</div><div class="s">≈ <b id="pgsA">–</b> mandat</div></div>
+        <div class="r"><div class="s" id="pgnameB">–</div><div class="n" id="pgB">–</div><div class="s">≈ <b id="pgsB">–</b> mandat</div></div>
+      </div>
+      <div class="vsbar" id="pgbar"></div>
+      <div class="note" id="pgnote">–</div>
+      <h2 style="margin-top:4px">Mest kvar att räkna</h2>
+      <div class="pg-list" id="pglist"></div>
+      <details class="how"><summary>Så räknas prognosen</summary><p>För varje valkrets antas de oräknade distrikten rösta som de redan räknade distrikten i samma valkrets, med lika många röster per distrikt. Summan över alla 29 valkretsar ger rikets prognos, och mandaten beräknas med jämkade uddatalsmetoden (4 %-spärr). Uppsamlingsdistriktens röster (sena förtidsröster, utlandsröster) kan avvika, så prognosen är grov.</p></details>
+    </section>
+  </div>
+
+  <footer>
+    <span>Källa: Valmyndigheten, <a href="https://resultat.val.se/val2026/RD?r=P" target="_blank" rel="noopener">resultat.val.se</a>. Kartgeometri: Valmyndighetens valdistrikt 2026 (SWEREF99 TM), förenklad.</span>
+    <span>Blockvalet sparas i din webbläsare.</span>
+  </footer>
+</div>
+
+<script>
+const SEED = {"updatedAt":"14 september 2026 18:28:58","reportedAt":"14 september 2026 18:30:04","fetchedAt":"2026-09-14T22:32:35Z","counted":6312,"total":6626,"votes":6466743,"validVotes":6381397,"turnout":"80,3 %","turnoutPrev":"84,2 %","stage":"preliminär","seatsOfficial":[{"partibeteckning":"Arbetarepartiet-Socialdemokraterna","partiforkortning":"S","partikod":"0002","antalMandat":100,"antalMandatForegaendeVal":107,"forandringAntalMandat":-7},{"partibeteckning":"Centerpartiet","partiforkortning":"C","partikod":"0004","antalMandat":25,"antalMandatForegaendeVal":24,"forandringAntalMandat":1},{"partibeteckning":"Kristdemokraterna","partiforkortning":"KD","partikod":"0068","antalMandat":22,"antalMandatForegaendeVal":19,"forandringAntalMandat":3},{"partibeteckning":"Liberalerna (tidigare Folkpartiet)","partiforkortning":"L","partikod":"0003","antalMandat":19,"antalMandatForegaendeVal":16,"forandringAntalMandat":3},{"partibeteckning":"Miljöpartiet de gröna","partiforkortning":"MP","partikod":"0055","antalMandat":22,"antalMandatForegaendeVal":18,"forandringAntalMandat":4},{"partibeteckning":"Moderaterna","partiforkortning":"M","partikod":"0001","antalMandat":70,"antalMandatForegaendeVal":68,"forandringAntalMandat":2},{"partibeteckning":"Sverigedemokraterna","partiforkortning":"SD","partikod":"0110","antalMandat":62,"antalMandatForegaendeVal":73,"forandringAntalMandat":-11},{"partibeteckning":"Vänsterpartiet","partiforkortning":"V","partikod":"0005","antalMandat":29,"antalMandatForegaendeVal":24,"forandringAntalMandat":5}],"invalid":{"blank":54344,"other":28466,"notRegistered":2536,"total":85346,"pct":1.3},"final":{"counted":15,"total":6626,"updatedAt":"14 september 2026 19:31:17","votes":12920},"parties":[{"code":"S","name":"Arbetarepartiet-Socialdemokraterna","pct":28.1,"prevPct":30.3,"delta":-2.3,"votes":1790848,"color":"#FF0000","seats":100,"seatsPrev":107},{"code":"M","name":"Moderaterna","pct":19.9,"prevPct":19.1,"delta":0.8,"votes":1267018,"color":"#66BEE6","seats":70,"seatsPrev":68},{"code":"SD","name":"Sverigedemokraterna","pct":17.5,"prevPct":20.5,"delta":-3.0,"votes":1118521,"color":"#4E83A3","seats":62,"seatsPrev":73},{"code":"V","name":"Vänsterpartiet","pct":8.3,"prevPct":6.7,"delta":1.5,"votes":526521,"color":"#C40000","seats":29,"seatsPrev":24},{"code":"C","name":"Centerpartiet","pct":7.1,"prevPct":6.7,"delta":0.3,"votes":450557,"color":"#63A91D","seats":25,"seatsPrev":24},{"code":"KD","name":"Kristdemokraterna","pct":6.2,"prevPct":5.3,"delta":0.9,"votes":395880,"color":"#1B5CB1","seats":22,"seatsPrev":19},{"code":"MP","name":"Miljöpartiet de gröna","pct":6.1,"prevPct":5.1,"delta":1.0,"votes":389609,"color":"#008000","seats":22,"seatsPrev":18},{"code":"L","name":"Liberalerna (tidigare Folkpartiet)","pct":5.4,"prevPct":4.6,"delta":0.8,"votes":342575,"color":"#3399FF","seats":19,"seatsPrev":16},{"code":"ÖVR","name":"Övriga anmälda partier","pct":1.6,"prevPct":1.5,"delta":0.0,"votes":99868,"color":null,"seats":null,"seatsPrev":null}],"notice":"Det finns 6312 valdistrikt som räknas på valkvällen i vallokalerna. Resultat från den preliminära räkningen presenteras löpande då de rapporteras. Utöver dessa valdistrikt finns 314 uppsamlingsdistrikt som räknas av kommunerna den 16-17 september.\n\nSlutlig rösträkning hos länsstyrelsen pågår. Uppgifter kan ändras fram till att resultaten är fastställda och protokoll har publicerats.","valkretsar":{"10":{"name":"Blekinge län","votes":100844,"counted":95,"total":102,"updatedAt":"14 september 2026 03:34:52","pct":{"S":28.7,"SD":24.5,"M":18.4,"KD":7.3,"V":5.7,"C":5.5,"L":4.9,"MP":3.8,"ÖVR":1.3}},"11":{"name":"Malmö kommun","votes":204458,"counted":215,"total":217,"updatedAt":"14 september 2026 10:02:58","pct":{"S":29,"V":17.1,"M":16.5,"SD":13.2,"MP":9.2,"C":5.8,"L":4.6,"KD":3.3,"ÖVR":1.2}},"12":{"name":"Skåne läns västra","votes":193114,"counted":189,"total":197,"updatedAt":"14 september 2026 02:18:15","pct":{"S":26.1,"SD":24.1,"M":20.1,"V":7.7,"L":5.8,"C":5.3,"KD":5.3,"MP":4.3,"ÖVR":1.3}},"13":{"name":"Skåne läns södra","votes":259865,"counted":251,"total":263,"updatedAt":"14 september 2026 03:18:26","pct":{"M":23.2,"S":22.8,"SD":19.9,"C":8,"MP":7.2,"L":6.5,"V":5.9,"KD":5.4,"ÖVR":1.1}},"14":{"name":"Skåne läns norra och östra","votes":198407,"counted":181,"total":195,"updatedAt":"14 september 2026 02:30:16","pct":{"SD":27.4,"S":23.2,"M":20.9,"KD":6.9,"V":5.8,"L":5.5,"C":5.3,"MP":3.6,"ÖVR":1.4}},"15":{"name":"Hallands län","votes":214716,"counted":204,"total":211,"updatedAt":"14 september 2026 03:38:48","pct":{"S":25.7,"M":23.2,"SD":19.7,"C":7.6,"KD":7.1,"L":5.9,"V":5.2,"MP":4.3,"ÖVR":1.3}},"16":{"name":"Göteborgs kommun","votes":357214,"counted":396,"total":397,"updatedAt":"14 september 2026 12:28:24","pct":{"S":27.1,"M":18.2,"V":15,"SD":11.9,"MP":9,"C":6.5,"L":6,"KD":4.9,"ÖVR":1.4}},"17":{"name":"Västra Götalands läns västra","votes":240029,"counted":227,"total":238,"updatedAt":"14 september 2026 03:03:37","pct":{"S":25.3,"M":21.5,"SD":18.3,"C":7.4,"KD":7.3,"L":6.4,"MP":6.3,"V":6.2,"ÖVR":1.4}},"18":{"name":"Västra Götalands läns norra","votes":163122,"counted":159,"total":174,"updatedAt":"14 september 2026 04:27:08","pct":{"S":28.8,"SD":21.6,"M":19,"KD":7,"V":6.9,"C":5.8,"L":4.9,"MP":4.5,"ÖVR":1.5}},"19":{"name":"Västra Götalands läns södra","votes":136067,"counted":148,"total":158,"updatedAt":"14 september 2026 10:10:34","pct":{"S":27.4,"SD":20.8,"M":19.6,"KD":7.9,"V":6.9,"C":6.8,"L":4.7,"MP":4.3,"ÖVR":1.7}},"20":{"name":"Västra Götalands läns östra","votes":160538,"counted":152,"total":167,"updatedAt":"14 september 2026 01:19:58","pct":{"S":28.2,"SD":21.4,"M":20,"KD":8.1,"C":6.6,"V":5.6,"L":4.4,"MP":4,"ÖVR":1.7}},"21":{"name":"Värmlands län","votes":167014,"counted":178,"total":194,"updatedAt":"14 september 2026 01:46:19","pct":{"S":31.3,"M":20.1,"SD":19.6,"KD":6.8,"C":6.1,"V":5.7,"L":4.5,"MP":4.3,"ÖVR":1.6}},"22":{"name":"Örebro län","votes":194208,"counted":204,"total":217,"updatedAt":"14 september 2026 04:16:33","pct":{"S":30.4,"SD":17.8,"M":17.7,"V":7.7,"KD":6.3,"C":5.7,"MP":4.9,"L":4.5,"ÖVR":5.1}},"23":{"name":"Västmanlands län","votes":163449,"counted":166,"total":176,"updatedAt":"14 september 2026 17:35:37","pct":{"S":30.6,"SD":20.5,"M":19.7,"V":7.8,"KD":5.6,"C":5.3,"L":5.1,"MP":3.7,"ÖVR":1.7}},"24":{"name":"Dalarnas län","votes":179289,"counted":167,"total":182,"updatedAt":"14 september 2026 01:32:02","pct":{"S":29.6,"SD":22.1,"M":18.3,"KD":7.1,"C":6.5,"V":5.7,"MP":4.7,"L":4,"ÖVR":1.8}},"25":{"name":"Gävleborgs län","votes":177990,"counted":152,"total":162,"updatedAt":"14 september 2026 03:48:30","pct":{"S":31.8,"SD":21.5,"M":17.8,"V":6.7,"KD":6.2,"C":6.1,"MP":4.2,"L":4,"ÖVR":1.7}},"26":{"name":"Västernorrlands län","votes":153330,"counted":158,"total":167,"updatedAt":"14 september 2026 13:31:10","pct":{"S":34.4,"SD":19.2,"M":16.3,"KD":7,"C":6.9,"V":6.3,"MP":4.6,"L":3.7,"ÖVR":1.6}},"27":{"name":"Jämtlands län","votes":81965,"counted":85,"total":93,"updatedAt":"14 september 2026 03:13:36","pct":{"S":31.7,"M":17.4,"SD":17.4,"C":10.1,"MP":6.6,"V":6,"KD":5.5,"L":3.6,"ÖVR":1.7}},"28":{"name":"Västerbottens län","votes":172527,"counted":175,"total":191,"updatedAt":"14 september 2026 04:04:07","pct":{"S":37.2,"M":15.4,"SD":12.6,"V":9.3,"MP":7.5,"C":7.2,"KD":5.9,"L":3.5,"ÖVR":1.5}},"29":{"name":"Norrbottens län","votes":152651,"counted":157,"total":171,"updatedAt":"14 september 2026 03:10:25","pct":{"S":37.8,"SD":18,"M":16.3,"V":6.8,"KD":6.5,"C":5.1,"MP":4.5,"L":3.4,"ÖVR":1.6}},"01":{"name":"Stockholms kommun","votes":613569,"counted":606,"total":612,"updatedAt":"14 september 2026 18:28:58","pct":{"S":26.3,"M":19.1,"V":12.8,"MP":11.2,"C":9.9,"SD":8.3,"L":7.2,"KD":3.9,"ÖVR":1.2}},"02":{"name":"Stockholms län","votes":832552,"counted":820,"total":848,"updatedAt":"14 september 2026 16:08:28","pct":{"S":25.7,"M":23.9,"SD":15,"C":7.9,"V":7.9,"L":6.7,"KD":5.8,"MP":5.7,"ÖVR":1.5}},"03":{"name":"Uppsala län","votes":248606,"counted":235,"total":243,"updatedAt":"14 september 2026 10:02:36","pct":{"S":27,"M":18.5,"SD":15.8,"V":9.4,"MP":8.3,"C":7.7,"KD":6.7,"L":5,"ÖVR":1.6}},"04":{"name":"Södermanlands län","votes":180930,"counted":184,"total":193,"updatedAt":"14 september 2026 03:49:19","pct":{"S":30.6,"SD":20.3,"M":19.6,"V":7.2,"KD":5.8,"C":5.6,"MP":4.8,"L":4.6,"ÖVR":1.6}},"05":{"name":"Östergötlands län","votes":292981,"counted":285,"total":300,"updatedAt":"14 september 2026 03:55:19","pct":{"S":28.4,"M":20.6,"SD":18.6,"V":6.9,"C":6.8,"KD":6.6,"MP":5.6,"L":4.9,"ÖVR":1.6}},"06":{"name":"Jönköpings län","votes":226383,"counted":202,"total":215,"updatedAt":"14 september 2026 08:32:29","pct":{"S":26.6,"SD":20.6,"M":19.8,"KD":10.3,"C":7.1,"V":5.8,"L":4.6,"MP":3.8,"ÖVR":1.5}},"07":{"name":"Kronobergs län","votes":121359,"counted":119,"total":127,"updatedAt":"14 september 2026 04:20:56","pct":{"S":27.7,"SD":20.4,"M":20.1,"KD":8.1,"V":7.4,"C":6.3,"L":4.4,"MP":4.4,"ÖVR":1.3}},"08":{"name":"Kalmar län","votes":153777,"counted":162,"total":175,"updatedAt":"14 september 2026 03:48:47","pct":{"S":29.2,"SD":21.4,"M":18.8,"KD":8.4,"C":6.4,"V":5.9,"L":4.3,"MP":4.1,"ÖVR":1.5}},"09":{"name":"Gotlands län","votes":40443,"counted":40,"total":41,"updatedAt":"14 september 2026 01:32:03","pct":{"S":31.1,"M":18.3,"SD":13.5,"C":10.8,"MP":7.9,"V":6.6,"L":5.3,"KD":5.3,"ÖVR":1.2}}},"kartaAt":"2026-09-14T22:35:41.946Z","history":[{"t":"2026-09-13T20:56:35Z","counted":4430,"pct":{"S":27.8,"M":19.8,"SD":17.7,"V":8.1,"C":7.2,"KD":6.3,"MP":6.2,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T20:58:36Z","counted":4511,"pct":{"S":27.7,"M":19.8,"SD":17.7,"V":8.1,"C":7.2,"KD":6.3,"MP":6.2,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:01:35Z","counted":4604,"pct":{"S":27.8,"M":19.8,"SD":17.7,"V":8.1,"C":7.2,"KD":6.3,"MP":6.2,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:15:42Z","counted":4939,"pct":{"S":27.8,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.3,"MP":6.2,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:16:35Z","counted":4948,"pct":{"S":27.8,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.3,"MP":6.2,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:18:36Z","counted":4983,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.2,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:20:35Z","counted":5031,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.3,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:22:35Z","counted":5060,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.3,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:24:35Z","counted":5090,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.3,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:26:36Z","counted":5120,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:28:36Z","counted":5161,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:30:35Z","counted":5183,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:32:36Z","counted":5212,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:34:35Z","counted":5239,"pct":{"S":27.9,"M":19.9,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:36:36Z","counted":5262,"pct":{"S":27.9,"M":19.9,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:38:37Z","counted":5289,"pct":{"S":27.9,"M":19.9,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:40:35Z","counted":5321,"pct":{"S":27.9,"M":19.9,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:42:35Z","counted":5335,"pct":{"S":27.9,"M":19.9,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:44:35Z","counted":5355,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:46:36Z","counted":5387,"pct":{"S":27.9,"M":19.9,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:57:17Z","counted":5474,"pct":{"S":27.9,"M":19.8,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T21:59:47Z","counted":5496,"pct":{"S":27.9,"M":19.9,"SD":17.7,"V":8.1,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:47:17Z","counted":6068,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:47:39Z","counted":6073,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:48:36Z","counted":6075,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:50:36Z","counted":6084,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:52:35Z","counted":6086,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:54:35Z","counted":6091,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:56:36Z","counted":6095,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-13T23:58:36Z","counted":6100,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:00:36Z","counted":6105,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:02:36Z","counted":6110,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:04:35Z","counted":6116,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:06:35Z","counted":6118,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:08:35Z","counted":6122,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:10:36Z","counted":6124,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:12:36Z","counted":6131,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:14:36Z","counted":6133,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:16:36Z","counted":6138,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:18:36Z","counted":6139,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:20:36Z","counted":6141,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:22:35Z","counted":6149,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:24:35Z","counted":6152,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:26:35Z","counted":6155,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:28:35Z","counted":6156,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:30:36Z","counted":6170,"pct":{"S":28.0,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:32:36Z","counted":6175,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:34:37Z","counted":6177,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:38:35Z","counted":6181,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:40:35Z","counted":6182,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:42:35Z","counted":6187,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:44:35Z","counted":6190,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:46:36Z","counted":6191,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:48:36Z","counted":6193,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:50:36Z","counted":6195,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:54:36Z","counted":6197,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T00:56:58Z","counted":6198,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T01:38:09Z","counted":6226,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T02:58:10Z","counted":6272,"pct":{"S":28.1,"M":19.9,"SD":17.6,"V":8.2,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}},{"t":"2026-09-14T22:30:16Z","counted":6312,"pct":{"S":28.1,"M":19.9,"SD":17.5,"V":8.3,"C":7.1,"KD":6.2,"MP":6.1,"L":5.4,"ÖVR":1.6}}]};
+const SEATS = 349, MAJ = 175, THRESHOLD = 4, MAP_TOTAL = 6312;
+const DEFAULT_BLOCS = {a:['S','V','MP','C'], b:['SD','M','KD','L']};
+const LS_KEY = 'valnatt.blocs.v2';
+const HTTP_BASE = 'https://raw.githubusercontent.com/PajBram/rastegar/val-data/';
+let data = normalize(SEED), blocs = loadBlocs(), live = false, source = 'seed';
+let geo = null, mapData = {}, mapOrder = ['S','SD','M','V','KD','C','MP','L','ÖVR'], mapFetchedAt = null, mapMode = 'counted', mapCountedKey = null;
+const pathByCode = new Map(); const vkBox = {};
+let vb = null, fullVb = null, svgEl = null;
+
+const $ = id => document.getElementById(id);
+const fmtN = n => (n==null||isNaN(n)?'–':Math.round(n).toLocaleString('sv-SE'));
+const fmtP = (n,d=1) => (n==null||isNaN(n)?'–':n.toLocaleString('sv-SE',{minimumFractionDigits:d,maximumFractionDigits:d}));
+const fmtD = (n,d=2) => n==null?'–':(n>0?'+':n<0?'−':'±')+fmtP(Math.abs(n),d);
+const same = (x,y) => x.length===y.length && x.every(v=>y.includes(v));
+const byCode = () => Object.fromEntries(data.parties.map(p=>[p.code,p]));
+function normalize(d){ if(!d||!Array.isArray(d.parties)) return d; const tot=d.validVotes||d.parties.reduce((a,p)=>a+(p.votes||0),0);
+  for(const p of d.parties){ p.pct1=p.pct; if(tot&&typeof p.votes==='number') p.pct=Math.round(p.votes/tot*10000)/100; } return d; }
+function loadBlocs(){ try{ const v=JSON.parse(localStorage.getItem(LS_KEY)); if(v&&Array.isArray(v.a)&&Array.isArray(v.b)) return v; }catch(e){} return {a:[...DEFAULT_BLOCS.a], b:[...DEFAULT_BLOCS.b]}; }
+function saveBlocs(){ try{ localStorage.setItem(LS_KEY, JSON.stringify(blocs)); }catch(e){} }
+function blocName(list, which){
+  if(same(list,['SD','M','KD','L'])) return 'Tidö-partierna';
+  if(same(list,['S','V','MP','C'])) return 'Oppositionen';
+  if(same(list,['S','V','MP'])) return 'Rödgröna';
+  if(!list.length) return which==='a'?'Block A (tomt)':'Block B (tomt)';
+  return which==='a'?'Block A':'Block B';
+}
+const shortName = (list,w) => blocName(list,w).split(' ')[0].replace(/-partierna|partierna/,'');
+function partyColor(code){ const p=data.parties.find(x=>x.code===code); return (p&&p.color)||'var(--other)'; }
+
+// Jämkade uddatalsmetoden på riksandel (första divisor 1,2)
+function estimateSeats(shares){ // shares: {code: pct}
+  const el = Object.entries(shares).filter(([c,p])=>c!=='ÖVR' && p>=THRESHOLD);
+  const s = Object.fromEntries(Object.keys(shares).map(c=>[c,0]));
+  for(let i=0;i<SEATS;i++){ let best=null,bq=-1; for(const [c,p] of el){ const q=p/(s[c]===0?1.2:2*s[c]+1); if(q>bq){bq=q;best=c;} } if(best==null) break; s[best]++; }
+  return s;
+}
+function officialSeats(){ const s={}; let any=false; for(const p of data.parties){ if(typeof p.seats==='number'){ s[p.code]=p.seats; any=true; } } return any?s:null; }
+function seatMap(){ return officialSeats() || estimateSeats(Object.fromEntries(data.parties.map(p=>[p.code,p.pct]))); }
+function sumBloc(list, seats){ const bc=byCode(); return list.reduce((acc,c)=>({pct:acc.pct+(bc[c]?.pct||0), prev:acc.prev+(bc[c]?.prevPct||0), votes:acc.votes+(bc[c]?.votes||0), seats:acc.seats+(seats?.[c]||0)}),{pct:0,prev:0,votes:0,seats:0}); }
+const pillCls = d => d>0.005?'up':d<-0.005?'down':'flat';
+
+// ---- Prognos ----
+function prognosis(){
+  const vks = data.valkretsar; if(!vks) return null;
+  const totals = {}; let projVotes=0, counted=0, cDist=0, tDist=0;
+  const rows=[];
+  for(const [k,v] of Object.entries(vks)){
+    if(!v.total) continue;
+    const per = v.counted>0 ? v.votes/v.counted : 0;
+    const est = v.counted>0 ? v.votes + (v.total-v.counted)*per : 0;
+    projVotes += est; counted += v.votes; cDist+=v.counted; tDist+=v.total;
+    for(const [c,p] of Object.entries(v.pct||{})) totals[c]=(totals[c]||0)+est*p/100;
+    rows.push({k, name:v.name, left:(v.total-v.counted)/v.total, remaining:v.total-v.counted, pct:v.pct||{}});
+  }
+  if(!projVotes) return null;
+  const shares = Object.fromEntries(Object.entries(totals).map(([c,v])=>[c,v/projVotes*100]));
+  return {shares, projVotes, counted, cDist, tDist, rows, seats:estimateSeats(shares)};
+}
+
+// ---- Render ----
+function renderHeader(){
+  const share = data.total? data.counted/data.total*100:0;
+  $('counted').textContent=fmtN(data.counted); $('total').textContent=fmtN(data.total);
+  $('pctcounted').textContent='('+fmtP(share,0)+' %)'; $('prog').style.width=share.toFixed(2)+'%';
+  const pg = prognosis();
+  $('votes').textContent=fmtN(data.votes);
+  const exp = pg ? pg.projVotes + (data.votes - pg.counted) : null;
+  $('expvotes').textContent = exp? fmtN(Math.round(exp/1000)*1000):'–';
+  $('leftvotes').textContent = exp? fmtN(Math.max(0,Math.round((exp-data.votes)/1000)*1000)):'–';
+  $('turnout').textContent=data.turnout||'–'; $('turnoutPrev').textContent=data.turnoutPrev||'–';
+  if(data.invalid){ $('blank').textContent=fmtN(data.invalid.blank); $('invalid').textContent=fmtN((data.invalid.other||0)+(data.invalid.notRegistered||0)); $('invalidpct').textContent='('+fmtP(data.invalid.pct)+' % av rösterna)'; }
+  const u = data.updatedAt||''; $('updated').textContent=u.replace(/^\d+ \w+ \d{4} /,''); $('updatedDate').textContent=u.replace(/ \d\d:\d\d:\d\d$/,'');
+  $('finalline').textContent = data.final ? 'Slutlig räkning (länsstyrelsen): '+fmtN(data.final.counted)+' av '+fmtN(data.final.total)+' distrikt' : '';
+  tickLive();
+}
+function renderBlocs(){
+  const seats=seatMap(), official=!!officialSeats();
+  const A=sumBloc(blocs.a,seats), B=sumBloc(blocs.b,seats), bc=byCode();
+  const nA=blocName(blocs.a,'a'), nB=blocName(blocs.b,'b');
+  $('nameA').textContent=nA; $('nameB').textContent=nB;
+  $('pctA').textContent=fmtP(A.pct,2); $('pctB').textContent=fmtP(B.pct,2);
+  $('memA').textContent=blocs.a.join(' · ')||'inga partier'; $('memB').textContent=blocs.b.join(' · ')||'inga partier';
+  const dA=A.pct-A.prev, dB=B.pct-B.prev;
+  $('dA').textContent=fmtD(dA); $('dA').className='pill '+pillCls(dA); $('dB').textContent=fmtD(dB); $('dB').className='pill '+pillCls(dB);
+  const vd=A.votes-B.votes;
+  $('votediff').textContent=fmtN(Math.abs(vd)); $('votediff').className='num '+(vd>0?'ca':vd<0?'cb':'');
+  $('votewho').innerHTML = vd===0?'lika':'<b class="'+(vd>0?'ca':'cb')+'">'+(vd>0?nA:nB)+'</b> före';
+  $('seatsA').textContent=A.seats; $('seatsB').textContent=B.seats; $('endA').textContent=A.seats; $('endB').textContent=B.seats;
+  $('seatsrc').textContent = (official?'Valmyndighetens fördelning':'uppskattning från riksandel')+' · 175 för majoritet';
+  $('seatsrc2').textContent = official?'· Valmyndigheten':'· uppskattning från riksandel';
+  // banner
+  const d=A.pct-B.pct, lead=d>0?{n:nA,c:'ca',s:A,o:B}:{n:nB,c:'cb',s:B,o:A};
+  const sd=lead.s.seats-lead.o.seats;
+  let txt = Math.abs(d)<0.005 ? '<b>Dött lopp</b> i röstandel' : '<span class="lead '+lead.c+'">'+lead.n+' leder med '+fmtP(Math.abs(d),2)+' procentenheter</span>';
+  txt += ' · '+(sd>0?'<b>'+lead.n+'</b> '+sd+' mandat före ('+lead.s.seats+'–'+lead.o.seats+')':sd<0?'<b>'+lead.o.n+'</b> '+(-sd)+' mandat före ('+lead.o.seats+'–'+lead.s.seats+')':'lika många mandat ('+lead.s.seats+'–'+lead.o.seats+')');
+  const majA=A.seats>=MAJ, majB=B.seats>=MAJ;
+  txt += ' · '+(majA?'<b>'+nA+'</b> har egen majoritet':majB?'<b>'+nB+'</b> har egen majoritet':'inget block har egen majoritet');
+  $('bannertxt').innerHTML=txt;
+  // stacked bars
+  const others = data.parties.filter(p=>!blocs.a.includes(p.code)&&!blocs.b.includes(p.code));
+  const CANON=['V','S','MP','C','L','KD','M','SD']; const ci=c=>{const i=CANON.indexOf(c); return i<0?99:i;}; const ordA=[...blocs.a].sort((x,y)=>ci(x)-ci(y)), ordB=[...blocs.b].sort((x,y)=>ci(x)-ci(y));
+  const barW=$('pctstack').clientWidth||600;
+  const seg=(code,val,total,label,cls)=>{ const px=val/total*barW; const txt=px>58?code+' '+label:px>26?code:''; return '<i class="'+(cls||'')+'" style="width:'+(val/total*100)+'%;background:'+(cls==='o'?'var(--other)':partyColor(code))+'" title="'+code+' '+label+'">'+txt+'</i>'; };
+  let ps=''; for(const c of ordA) ps+=seg(c,bc[c]?.pct||0,100,fmtP(bc[c]?.pct,1)+' %');
+  for(const p of others) ps+=seg(p.code,p.pct,100,fmtP(p.pct)+' %','o');
+  for(const c of ordB) ps+=seg(c,bc[c]?.pct||0,100,fmtP(bc[c]?.pct,1)+' %');
+  $('pctstack').innerHTML=ps;
+  let ss=''; for(const c of ordA) ss+=seg(c,seats[c]||0,SEATS,String(seats[c]||0));
+  const oSeats=others.reduce((a,p)=>a+(seats[p.code]||0),0); if(oSeats) ss+=seg('ÖVR',oSeats,SEATS,String(oSeats),'o');
+  for(const c of ordB) ss+=seg(c,seats[c]||0,SEATS,String(seats[c]||0));
+  $('seatstack').innerHTML=ss;
+  // chips
+  const wrap=$('chips'); wrap.innerHTML='';
+  for(const p of data.parties){ if(p.code==='ÖVR') continue; const st=blocs.a.includes(p.code)?'a':blocs.b.includes(p.code)?'b':'';
+    const b=document.createElement('button'); b.type='button'; b.className='chip '+st; b.dataset.code=p.code; b.title=p.name; b.setAttribute('aria-pressed',st?'true':'false');
+    b.innerHTML='<span class="sw" style="background:'+(p.color||'var(--other)')+'"></span>'+p.code+'<span class="tag">'+st.toUpperCase()+'</span>'; wrap.appendChild(b); }
+  // table header vs
+  $('vsA').textContent=shortName(blocs.a,'a')+' '+fmtP(A.pct,2)+' %'; $('vsB').textContent=fmtP(B.pct,2)+' % '+shortName(blocs.b,'b');
+  $('vsdA').textContent=fmtD(dA); $('vsdA').className='pill '+pillCls(dA); $('vsdB').textContent=fmtD(dB); $('vsdB').className='pill '+pillCls(dB);
+  const oth=Math.max(0,100-A.pct-B.pct);
+  $('vsbar').innerHTML='<i class="ga" style="width:'+A.pct+'%"></i><i class="go" style="width:'+oth+'%"></i><i class="gb" style="width:'+B.pct+'%"></i>';
+  $('vsnote').textContent=fmtN(data.validVotes)+' giltiga röster · valdeltagande '+(data.turnout||'–');
+  renderTrend(); renderPrognos(); if(mapMode==='bloc') paintMap();
+}
+function renderTable(){
+  const seats=seatMap(); const max=Math.max(30,...data.parties.map(p=>p.pct));
+  const share=data.total?data.counted/data.total*100:0; $('prog2').style.width=share.toFixed(2)+'%'; $('progtxt').innerHTML=fmtN(data.counted)+' av '+fmtN(data.total)+' distrikt <b>('+fmtP(share,0)+' %)</b>';
+  const rows=[...data.parties].sort((x,y)=>y.pct-x.pct);
+  let h='<div class="prow head"><span>Parti</span><span></span><span style="text-align:right">Andel</span><span style="text-align:right">±2022</span><span style="text-align:right">Röster</span><span style="text-align:right">Mandat</span></div>';
+  for(const p of rows){ const s=p.code==='ÖVR'?null:(seats[p.code]||0);
+    h+='<div class="prow"><span class="code"><span class="sw" style="background:'+(p.color||'var(--other)')+'"></span>'+p.code+'</span>'
+      +'<span class="bar"><i style="width:'+(p.pct/max*100)+'%;background:'+(p.color||'var(--other)')+'"></i></span>'
+      +'<span class="pct">'+fmtP(p.pct,2)+' %</span><span class="d"><span class="pill '+pillCls(p.delta)+'">'+fmtD(p.delta,1)+'</span></span>'
+      +'<span class="votes">'+fmtN(p.votes)+'</span><span class="seats '+(s?'':'none')+'">'+(s==null?'–':s)+'</span></div>'; }
+  $('parties').innerHTML=h;
+}
+function renderPrognos(){
+  const pg=prognosis(); const nA=blocName(blocs.a,'a'), nB=blocName(blocs.b,'b');
+  $('pgnameA').textContent=shortName(blocs.a,'a'); $('pgnameB').textContent=shortName(blocs.b,'b');
+  if(!pg){ $('pghead').textContent='Prognos visas när data per valkrets finns.'; return; }
+  const sA=blocs.a.reduce((a,c)=>a+(pg.shares[c]||0),0), sB=blocs.b.reduce((a,c)=>a+(pg.shares[c]||0),0);
+  const mA=blocs.a.reduce((a,c)=>a+(pg.seats[c]||0),0), mB=blocs.b.reduce((a,c)=>a+(pg.seats[c]||0),0);
+  $('pgA').textContent=fmtP(sA,2)+' %'; $('pgB').textContent=fmtP(sB,2)+' %'; $('pgsA').textContent=mA; $('pgsB').textContent=mB;
+  $('pgbar').innerHTML='<i class="ga" style="width:'+sA+'%"></i><i class="go" style="width:'+Math.max(0,100-sA-sB)+'%"></i><i class="gb" style="width:'+sB+'%"></i>';
+  $('pghead').innerHTML = mA>=MAJ?'<span class="ca">'+nA+'</span> får egen majoritet':mB>=MAJ?'<span class="cb">'+nB+'</span> får egen majoritet':(sA>sB?'<span class="ca">'+nA+'</span>':'<span class="cb">'+nB+'</span>')+' störst, men utan egen majoritet';
+  const doneShare = pg.projVotes? pg.counted/pg.projVotes*100:0;
+  $('pgnote').textContent='Ungefär '+fmtP(doneShare,0)+' % av de förväntade rösterna är räknade ('+fmtN(pg.cDist)+' av '+fmtN(pg.tDist)+' distrikt).';
+  const natA=blocs.a.reduce((a,c)=>a+(byCode()[c]?.pct||0),0), natB=blocs.b.reduce((a,c)=>a+(byCode()[c]?.pct||0),0);
+  const rows=pg.rows.filter(r=>r.remaining>0).sort((x,y)=>y.left-x.left).slice(0,8);
+  $('pglist').innerHTML = rows.length? rows.map(r=>{ const a=blocs.a.reduce((s,c)=>s+(r.pct[c]||0),0), b=blocs.b.reduce((s,c)=>s+(r.pct[c]||0),0); const lean=(a-b)-(natA-natB);
+      return '<div class="row"><span>'+r.name+': <b>'+fmtP(r.left*100,0)+' % kvar</b> ('+r.remaining+' distrikt)</span><b class="'+(lean>=0?'ca':'cb')+'">'+(lean>=0?shortName(blocs.a,'a'):shortName(blocs.b,'b'))+' '+fmtD(Math.abs(lean))+'</b></div>'; }).join('')
+    : '<div class="row"><span>Alla distrikt räknade.</span></div>';
+}
+function renderTrend(){
+  const box=$('trend'); const h=(data.history||[]).filter(pt=>pt&&pt.pct);
+  $('trendlegend').innerHTML='<span><i style="background:var(--a)"></i>'+blocName(blocs.a,'a')+'</span><span><i style="background:var(--b)"></i>'+blocName(blocs.b,'b')+'</span><span>· '+h.length+' uppdateringar</span>';
+  if(h.length<2){ box.innerHTML='<div class="note">Trenden ritas när det finns minst två mätpunkter.</div>'; return; }
+  const sumB=(pt,list)=>list.reduce((a,c)=>a+(pt.pct[c]||0),0);
+  const pts=h.map(pt=>({t:new Date(pt.t),counted:pt.counted,a:sumB(pt,blocs.a),b:sumB(pt,blocs.b)}));
+  const W=640,H=300,ml=34,mr=72,mt=14,mb=30; const t0=pts[0].t.getTime(), t1=pts[pts.length-1].t.getTime()||t0+1;
+  const vals=pts.flatMap(p=>[p.a,p.b]); let lo=Math.floor(Math.min(...vals)-1), hi=Math.ceil(Math.max(...vals)+1); if(hi-lo<4){const m=(hi+lo)/2; lo=Math.floor(m-2); hi=Math.ceil(m+2);}
+  const X=t=>ml+(t-t0)/(t1-t0||1)*(W-ml-mr), Y=v=>mt+(hi-v)/(hi-lo)*(H-mt-mb);
+  const path=k=>pts.map((p,i)=>(i?'L':'M')+X(p.t.getTime()).toFixed(1)+' '+Y(p[k]).toFixed(1)).join(' ');
+  let g=''; const step=(hi-lo)>12?4:(hi-lo)>6?2:1;
+  for(let v=Math.ceil(lo/step)*step; v<=hi; v+=step) g+='<line class="grid" x1="'+ml+'" x2="'+(W-mr)+'" y1="'+Y(v)+'" y2="'+Y(v)+'"/><text x="'+(ml-6)+'" y="'+(Y(v)+4)+'" text-anchor="end">'+v+'</text>';
+  const nT=Math.min(5,pts.length); for(let i=0;i<nT;i++){ const t=t0+(t1-t0)*i/(nT-1||1); g+='<text x="'+X(t)+'" y="'+(H-10)+'" text-anchor="middle">'+new Date(t).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})+'</text>'; }
+  const last=pts[pts.length-1];
+  box.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" role="img" aria-label="Blockens andelar över tid">'+g+'<line class="ax" x1="'+ml+'" x2="'+(W-mr)+'" y1="'+(H-mb)+'" y2="'+(H-mb)+'"/>'
+    +'<path class="la" d="'+path('a')+'" fill="none" stroke-width="2" stroke-linejoin="round"/><path class="lb" d="'+path('b')+'" fill="none" stroke-width="2" stroke-linejoin="round"/>'
+    +'<text class="lblA" x="'+(W-mr+6)+'" y="'+(Y(last.a)+4)+'">'+fmtP(last.a,2)+' %</text><text class="lblB" x="'+(W-mr+6)+'" y="'+(Y(last.b)+4)+'">'+fmtP(last.b,2)+' %</text>'
+    +'<line class="xh" id="xh" y1="'+mt+'" y2="'+(H-mb)+'"/></svg><div class="tip" id="tip"></div>';
+  const svg=box.querySelector('svg'), tip=$('tip'), xh=$('xh');
+  svg.addEventListener('mousemove',e=>{ const r=svg.getBoundingClientRect(); const x=(e.clientX-r.left)/r.width*W; let best=pts[0],bd=1e9; for(const p of pts){ const d=Math.abs(X(p.t.getTime())-x); if(d<bd){bd=d;best=p;} }
+    const px=X(best.t.getTime()); xh.setAttribute('x1',px); xh.setAttribute('x2',px); xh.style.display='block'; tip.style.display='block'; tip.style.left=(px/W*100)+'%'; tip.style.top=(mt/H*100)+'%';
+    tip.textContent=best.t.toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'})+' · '+fmtN(best.counted)+' distrikt · A '+fmtP(best.a,2)+' % · B '+fmtP(best.b,2)+' %'; });
+  svg.addEventListener('mouseleave',()=>{ tip.style.display='none'; xh.style.display='none'; });
+}
+function renderAll(){ renderHeader(); renderTable(); renderBlocs(); if(mapMode==='party') paintMap(); renderVkTip(); }
+function renderVkTip(){}
+
+// ---- Interaktion ----
+$('chips').addEventListener('click',e=>{ const b=e.target.closest('.chip'); if(!b) return; const c=b.dataset.code;
+  if(blocs.a.includes(c)){ blocs.a=blocs.a.filter(x=>x!==c); blocs.b.push(c); } else if(blocs.b.includes(c)){ blocs.b=blocs.b.filter(x=>x!==c); } else { blocs.a.push(c); }
+  saveBlocs(); renderBlocs(); });
+document.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{ blocs={a:b.dataset.a?b.dataset.a.split(','):[], b:b.dataset.b?b.dataset.b.split(','):[]}; saveBlocs(); renderBlocs(); }));
+
+function tickLive(){
+  const el=$('live'), txt=$('livetxt');
+  if(source==='seed'){ el.className='live off'; txt.textContent='Ansluter till livedata…'; $('fetched').textContent=''; return; }
+  const age=(Date.now()-new Date(data.fetchedAt).getTime())/60000;
+  el.className='live'+(age>12?' stale':''); txt.textContent=age<1?'Live · hämtat nyss':'Live · hämtat för '+Math.round(age)+' min sedan';
+  $('fetched').textContent = source==='db'?'via artifact-databas':'nya siffror inom ca 5 minuter';
+}
+setInterval(tickLive,15000);
+let rsT=null; window.addEventListener('resize',()=>{ clearTimeout(rsT); rsT=setTimeout(renderBlocs,150); });
+
+// ---- Karta ----
+const mapEl=$('map');
+function setVb(x,y,w,h){ vb={x,y,w,h}; svgEl&&svgEl.setAttribute('viewBox',x+' '+y+' '+w+' '+h); }
+async function loadGeo(){
+  try{ const r=await fetch('distrikt.json'); if(!r.ok) throw new Error(r.status); geo=await r.json(); }catch(e){ $('maploading').textContent='Kartan kunde inte laddas.'; return; }
+  const [x0,y0,x1,y1]=geo.meta.bbox; const W=x1-x0,H=y1-y0; const parts=[];
+  for(const [code,ent] of Object.entries(geo.d)){ const vk=ent[2]; let d='';
+    for(const r of ent[3]){ for(let i=0;i<r.length;i+=2){ const X=r[i]-x0,Y=y1-r[i+1]; d+=(i?'L':'M')+X+' '+Y; const b=vkBox[vk]||(vkBox[vk]=[1e9,1e9,-1e9,-1e9]); if(X<b[0])b[0]=X; if(Y<b[1])b[1]=Y; if(X>b[2])b[2]=X; if(Y>b[3])b[3]=Y; } d+='Z'; }
+    parts.push('<path d="'+d+'" data-c="'+code+'"/>'); }
+  mapEl.innerHTML='<svg viewBox="0 0 '+W+' '+H+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Karta över Sveriges valdistrikt">'+parts.join('')+'</svg><div class="mtip" id="mtip" hidden></div>';
+  svgEl=mapEl.querySelector('svg'); fullVb={x:0,y:0,w:W,h:H}; setVb(0,0,W,H);
+  svgEl.querySelectorAll('path').forEach(p=>pathByCode.set(p.dataset.c,p)); paintMap();
+}
+function districtFill(code){ const row=mapData[code]; if(!row) return null;
+  if(mapMode==='counted') return '#9DB4D6';
+  if(mapMode==='party'){ let bi=-1,bv=-1; for(let i=0;i<mapOrder.length;i++){ if(mapOrder[i]==='ÖVR') continue; const v=row[i+1]||0; if(v>bv){bv=v;bi=i;} } return bi<0?'var(--other)':partyColor(mapOrder[bi]); }
+  const sum=list=>list.reduce((a,c)=>{ const i=mapOrder.indexOf(c); return a+(i>=0?(row[i+1]||0):0); },0); const A=sum(blocs.a),B=sum(blocs.b);
+  if(!blocs.a.length&&!blocs.b.length) return 'var(--other)'; return A>B?'var(--a)':B>A?'var(--b)':'var(--other)'; }
+function paintMap(){ if(!svgEl) return; let n=0; for(const [code,p] of pathByCode){ const f=districtFill(code); if(f){n++; p.style.fill=f;} else p.style.fill=''; }
+  $('mapcounted').textContent=fmtN(n); $('mapupd').textContent=mapFetchedAt?' · kartdata '+new Date(mapFetchedAt).toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'}):'';
+  const L=$('maplegend');
+  if(mapMode==='counted') L.innerHTML='<span><i style="background:#9DB4D6"></i>Räknat</span><span><i style="background:#2A313C"></i>Ej räknat</span>';
+  else if(mapMode==='party') L.innerHTML=mapOrder.filter(c=>c!=='ÖVR').map(c=>'<span><i style="background:'+partyColor(c)+'"></i>'+c+'</span>').join('')+'<span><i style="background:#2A313C"></i>Ej räknat</span>';
+  else L.innerHTML='<span><i style="background:var(--a)"></i>'+blocName(blocs.a,'a')+'</span><span><i style="background:var(--b)"></i>'+blocName(blocs.b,'b')+'</span><span><i style="background:var(--other)"></i>Lika</span><span><i style="background:#2A313C"></i>Ej räknat</span>'; }
+document.querySelectorAll('.seg [data-mode]').forEach(b=>b.addEventListener('click',()=>{ mapMode=b.dataset.mode; document.querySelectorAll('.seg [data-mode]').forEach(x=>x.setAttribute('aria-pressed',x===b?'true':'false')); paintMap(); }));
+$('zooms').addEventListener('click',e=>{ const b=e.target.closest('[data-z]'); if(!b||!svgEl) return; if(b.dataset.z==='all'){ setVb(fullVb.x,fullVb.y,fullVb.w,fullVb.h); return; }
+  const [cx,cy,half]=b.dataset.z.split(',').map(Number); const [x0,,,y1]=geo.meta.bbox; const X=cx-x0,Y=y1-cy; setVb(X-half,Y-half*1.6,half*2,half*3.2); });
+mapEl.addEventListener('wheel',e=>{ if(!svgEl) return; e.preventDefault(); const pt=svgPoint(e); const f=Math.exp(e.deltaY*0.0015); const w=Math.min(fullVb.w*1.5,Math.max(150,vb.w*f)), h=w*(vb.h/vb.w); setVb(pt.x-(pt.x-vb.x)*(w/vb.w), pt.y-(pt.y-vb.y)*(h/vb.h), w, h); },{passive:false});
+let drag=null;
+mapEl.addEventListener('pointerdown',e=>{ if(!svgEl) return; drag={x:e.clientX,y:e.clientY,vb:{...vb}}; mapEl.setPointerCapture(e.pointerId); });
+mapEl.addEventListener('pointermove',e=>{ if(drag){ const k=1/svgEl.getScreenCTM().a; setVb(drag.vb.x-(e.clientX-drag.x)*k, drag.vb.y-(e.clientY-drag.y)*k, drag.vb.w, drag.vb.h); return; }
+  const p=e.target.closest('path'); const tip=$('mtip'); if(!p||!tip){ if(tip) tip.hidden=true; return; } const code=p.dataset.c, ent=geo.d[code], row=mapData[code];
+  let txt='<b>'+ent[0]+'</b> <span class="sub">· '+ent[1]+' · '+(data.valkretsar?.[ent[2]]?.name||'')+'</span><br>';
+  if(!row) txt+='<span class="sub">Ej räknat ännu</span>'; else { const top=mapOrder.map((c,i)=>[c,row[i+1]||0]).filter(x=>x[0]!=='ÖVR').sort((a,b)=>b[1]-a[1]).slice(0,4); txt+='Räknat · '+fmtN(row[0])+' röster · '+top.map(([c,v])=>'<b>'+c+'</b> '+fmtP(v)+' %').join(' · '); }
+  tip.innerHTML=txt; tip.hidden=false; });
+mapEl.addEventListener('pointerup',()=>{drag=null;}); mapEl.addEventListener('pointercancel',()=>{drag=null;}); mapEl.addEventListener('pointerleave',()=>{ drag=null; const t=$('mtip'); if(t) t.hidden=true; });
+function svgPoint(e){ const pt=svgEl.createSVGPoint(); pt.x=e.clientX; pt.y=e.clientY; return pt.matrixTransform(svgEl.getScreenCTM().inverse()); }
+
+// ---- Data: artifact-databas (Claude) eller JSON från GitHub (rastegar.se) ----
+function applyMapDocs(docs){ const merged={}; let latest=null; for(const v of docs){ if(!v||!v.d) continue; Object.assign(merged,v.d); if(v.order) mapOrder=v.order; if(!latest||v.fetchedAt>latest) latest=v.fetchedAt; } mapData=merged; mapFetchedAt=latest; paintMap(); }
+async function pollHttp(){
+  try{ const r=await fetch(HTTP_BASE+'riksdag.json?t='+Date.now(),{cache:'no-store'}); if(!r.ok) throw new Error(r.status); const d=await r.json();
+    if(d&&Array.isArray(d.parties)){ const changed = d.updatedAt!==data.updatedAt || source!=='http'; data=normalize(d); source='http'; renderAll();
+      const key=(d.kartaAt||'')+'|'+d.counted; if(key!==mapCountedKey){ mapCountedKey=key; const docs=[]; const ids=[]; for(let i=1;i<=29;i++) ids.push(String(i).padStart(2,'0'));
+        await Promise.all(ids.map(async id=>{ try{ const q=await fetch(HTTP_BASE+'karta/'+id+'.json?t='+Date.now(),{cache:'no-store'}); if(q.ok) docs.push(await q.json()); }catch(e){} })); applyMapDocs(docs); } }
+  }catch(e){ console.warn('poll',e); }
+}
+(async()=>{
+  renderAll(); loadGeo();
+  const db = window.claude && window.claude.use ? await window.claude.use('db') : null;
+  if(db){
+    db.collection('val').orderBy('fetchedAt','desc').limit(1).onSnapshot(qs=>{ const d=qs.docs[0]?.data(); if(d&&Array.isArray(d.parties)){ data=normalize(d); source='db'; renderAll(); } }, e=>console.warn('db',e));
+    db.collection('karta').orderBy('fetchedAt','desc').limit(2).onSnapshot(qs=>applyMapDocs(qs.docs.map(x=>x.data())), e=>console.warn('karta',e));
+  } else { pollHttp(); setInterval(pollHttp,60000); }
+})();
+</script>

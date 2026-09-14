@@ -147,3 +147,20 @@ Se **[CONTENT.md](CONTENT.md)**. Den beskriver exakt var devlogg-inlägg, anime-
 - **GitHub:** repot är publikt eftersom GitHub Pages kräver det på gratisplanen.
 - **Supabase:** ett eget gratisprojekt, skilt från TAG:s. Nycklarna i `content/site.json` under `backend` är projektets URL och **anon-nyckeln** — den är publik och avsedd att ligga i webbläsaren. Service-nyckeln får aldrig hamna i repot.
 - **Moderering av gästboken:** Paj öppnar tabellen `guestbook` i Supabase Table Editor och antingen kryssar i `hidden` eller raderar raden.
+
+## /val/ – valnattssidan (undantag)
+
+`public/val/` är en fristående sida (rastegar.se/val/) som visar riksdagsvalet 2026 live:
+block mot block, mandat, karta över räknade valdistrikt och en grov prognos. Den är
+**på svenska och mörk** – ett medvetet undantag från sajtens ljusa, engelska uttryck,
+eftersom publiken är svenska valföljare och förlagan var en mörk dashboard.
+
+- `public/val/index.html` är hela sidan (egen CSS/JS, inga sajtgemensamma filer).
+  Källan bor i `~/val/valnatt.html`; kopiera därifrån vid ändring.
+- `public/val/distrikt.json` (2 MB) är förenklad geometri för alla 6 312 valdistrikt
+  (Valmyndighetens fil, SWEREF99 TM, enheter om 50 m).
+- Datan hämtas i webbläsaren från grenen **`val-data`** i samma repo via
+  raw.githubusercontent.com (`riksdag.json`, `karta/NN.json`). Grenen skrivs av
+  ett script som hämtar från resultat.val.se; den byggs aldrig av GitHub Pages
+  och ska inte mergas till `main`. Cachen på raw är ~5 minuter.
+- `build.py` kopierar mappar i `public/` rakt av till roten (tillagt för detta).
