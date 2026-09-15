@@ -497,7 +497,7 @@ function tickLive(){
   if(source==='seed'){ el.className='live off'; txt.textContent='Ansluter till livedata…'; $('fetched').textContent=''; return; }
   const age=(Date.now()-new Date(data.fetchedAt).getTime())/60000;
   el.className='live'+(age>12?' stale':''); txt.textContent=age<1?'Live · hämtat nyss':'Live · hämtat för '+Math.round(age)+' min sedan';
-  $('fetched').textContent = source==='db'?'via artifact-databas':'nya siffror inom ca 5 minuter';
+  $('fetched').textContent = source==='db'?'via artifact-databas':'uppdateras ungefär en gång i timmen';
 }
 setInterval(tickLive,15000);
 let rsT=null; window.addEventListener('resize',()=>{ clearTimeout(rsT); rsT=setTimeout(renderBlocs,150); });

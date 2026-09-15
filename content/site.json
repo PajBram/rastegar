@@ -10,6 +10,11 @@
       "url": "/"
     },
     {
+      "id": "val",
+      "label": "Election 2026",
+      "url": "/val/"
+    },
+    {
       "id": "games",
       "label": "Games",
       "url": "/games/"
