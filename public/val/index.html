@@ -294,7 +294,7 @@ footer{font-size:11px;color:var(--faint);display:flex;flex-wrap:wrap;gap:6px 18p
       <div class="note" id="pgnote">–</div>
       <h2 style="margin-top:4px">Mest kvar att räkna</h2>
       <div class="pg-list" id="pglist"></div>
-      <details class="how"><summary>Så räknas prognosen</summary><p>För varje valkrets antas de oräknade distrikten rösta som de redan räknade distrikten i samma valkrets, med lika många röster per distrikt. Summan över alla 29 valkretsar ger rikets prognos, och mandaten beräknas med jämkade uddatalsmetoden (4 %-spärr). Uppsamlingsdistriktens röster (sena förtidsröster, utlandsröster) kan avvika, så prognosen är grov.</p></details>
+      <details class="how"><summary>Så räknas prognosen</summary><p>De oräknade distrikten är uppsamlingsdistrikt (sena förtidsröster, utlandsröster m.m.). För varje valkrets antas de ge lika många röster och samma partifördelning som valkretsens uppsamlingsdistrikt fick i den slutliga räkningen 2022. Där 2022-siffror saknas antas de oräknade distrikten rösta som de redan räknade i samma valkrets. Summan över alla 29 valkretsar ger rikets prognos, och mandaten beräknas med jämkade uddatalsmetoden (4 %-spärr). Prognosen är grov: valdeltagande och partival kan ha ändrats sedan 2022.</p></details>
     </section>
   </div>
 
@@ -350,19 +350,27 @@ const pillCls = d => d>0.005?'up':d<-0.005?'down':'flat';
 // ---- Prognos ----
 function prognosis(){
   const vks = data.valkretsar; if(!vks) return null;
-  const totals = {}; let projVotes=0, counted=0, cDist=0, tDist=0;
+  const totals = {}; let projVotes=0, counted=0, cDist=0, tDist=0, used2022=false;
   const rows=[];
   for(const [k,v] of Object.entries(vks)){
     if(!v.total) continue;
-    const per = v.counted>0 ? v.votes/v.counted : 0;
-    const est = v.counted>0 ? v.votes + (v.total-v.counted)*per : 0;
+    const rem = v.rem2022, remaining = v.total-v.counted;
+    let est, remPct;
+    if(rem && rem.votes && remaining>0){ // oräknade uppsamlingsdistrikt antas rösta som 2022
+      est = v.votes + rem.votes; remPct = rem.pct; used2022 = true;
+      for(const [c,p] of Object.entries(v.pct||{})) totals[c]=(totals[c]||0)+v.votes*p/100;
+      for(const [c,p] of Object.entries(rem.pct||{})) totals[c]=(totals[c]||0)+rem.votes*p/100;
+    } else {
+      const per = v.counted>0 ? v.votes/v.counted : 0;
+      est = v.counted>0 ? v.votes + remaining*per : 0; remPct = v.pct||{};
+      for(const [c,p] of Object.entries(v.pct||{})) totals[c]=(totals[c]||0)+est*p/100;
+    }
     projVotes += est; counted += v.votes; cDist+=v.counted; tDist+=v.total;
-    for(const [c,p] of Object.entries(v.pct||{})) totals[c]=(totals[c]||0)+est*p/100;
-    rows.push({k, name:v.name, left:(v.total-v.counted)/v.total, remaining:v.total-v.counted, pct:v.pct||{}});
+    rows.push({k, name:v.name, left:remaining/v.total, remaining, pct:remPct, remVotes:est-v.votes});
   }
   if(!projVotes) return null;
   const shares = Object.fromEntries(Object.entries(totals).map(([c,v])=>[c,v/projVotes*100]));
-  return {shares, projVotes, counted, cDist, tDist, rows, seats:estimateSeats(shares)};
+  return {shares, projVotes, counted, cDist, tDist, rows, used2022, seats:estimateSeats(shares)};
 }
 
 // ---- Render ----
@@ -452,11 +460,11 @@ function renderPrognos(){
   $('pgbar').innerHTML='<i class="ga" style="width:'+sA+'%"></i><i class="go" style="width:'+Math.max(0,100-sA-sB)+'%"></i><i class="gb" style="width:'+sB+'%"></i>';
   $('pghead').innerHTML = mA>=MAJ?'<span class="ca">'+nA+'</span> får egen majoritet':mB>=MAJ?'<span class="cb">'+nB+'</span> får egen majoritet':(sA>sB?'<span class="ca">'+nA+'</span>':'<span class="cb">'+nB+'</span>')+' störst, men utan egen majoritet';
   const doneShare = pg.projVotes? pg.counted/pg.projVotes*100:0;
-  $('pgnote').textContent='Ungefär '+fmtP(doneShare,0)+' % av de förväntade rösterna är räknade ('+fmtN(pg.cDist)+' av '+fmtN(pg.tDist)+' distrikt).';
+  $('pgnote').textContent='Ungefär '+fmtP(doneShare,0)+' % av de förväntade rösterna är räknade ('+fmtN(pg.cDist)+' av '+fmtN(pg.tDist)+' distrikt).'+(pg.used2022?' Oräknade uppsamlingsdistrikt antas rösta som i valet 2022.':'');
   const natA=blocs.a.reduce((a,c)=>a+(byCode()[c]?.pct||0),0), natB=blocs.b.reduce((a,c)=>a+(byCode()[c]?.pct||0),0);
   const rows=pg.rows.filter(r=>r.remaining>0).sort((x,y)=>y.left-x.left).slice(0,8);
   $('pglist').innerHTML = rows.length? rows.map(r=>{ const a=blocs.a.reduce((s,c)=>s+(r.pct[c]||0),0), b=blocs.b.reduce((s,c)=>s+(r.pct[c]||0),0); const lean=(a-b)-(natA-natB);
-      return '<div class="row"><span>'+r.name+': <b>'+fmtP(r.left*100,0)+' % kvar</b> ('+r.remaining+' distrikt)</span><b class="'+(lean>=0?'ca':'cb')+'">'+(lean>=0?shortName(blocs.a,'a'):shortName(blocs.b,'b'))+' '+fmtD(Math.abs(lean))+'</b></div>'; }).join('')
+      return '<div class="row"><span>'+r.name+': <b>'+fmtP(r.left*100,0)+' % kvar</b> ('+r.remaining+' distrikt · ≈ '+fmtN(r.remVotes)+' röster)</span><b class="'+(lean>=0?'ca':'cb')+'">'+(lean>=0?shortName(blocs.a,'a'):shortName(blocs.b,'b'))+' '+fmtD(Math.abs(lean))+'</b></div>'; }).join('')
     : '<div class="row"><span>Alla distrikt räknade.</span></div>';
 }
 function renderTrend(){
