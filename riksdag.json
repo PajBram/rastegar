@@ -1,12 +1,12 @@
 {
-  "updatedAt": "16 september 2026 20:05:16",
-  "reportedAt": "16 september 2026 20:06:00",
-  "fetchedAt": "2026-09-16T18:09:05Z",
-  "counted": 6598,
+  "updatedAt": "16 september 2026 21:08:31",
+  "reportedAt": "16 september 2026 21:09:28",
+  "fetchedAt": "2026-09-16T19:14:17Z",
+  "counted": 6606,
   "total": 6626,
-  "votes": 6709234,
-  "validVotes": 6618061,
-  "turnout": "83,3 %",
+  "votes": 6731899,
+  "validVotes": 6640221,
+  "turnout": "83,6 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -54,9 +54,9 @@
       "partibeteckning": "Moderaterna",
       "partiforkortning": "M",
       "partikod": "0001",
-      "antalMandat": 71,
+      "antalMandat": 70,
       "antalMandatForegaendeVal": 68,
-      "forandringAntalMandat": 3
+      "forandringAntalMandat": 2
     },
     {
       "partibeteckning": "Sverigedemokraterna",
@@ -70,23 +70,23 @@
       "partibeteckning": "Vänsterpartiet",
       "partiforkortning": "V",
       "partikod": "0005",
-      "antalMandat": 29,
+      "antalMandat": 30,
       "antalMandatForegaendeVal": 24,
-      "forandringAntalMandat": 5
+      "forandringAntalMandat": 6
     }
   ],
   "invalid": {
-    "blank": 56756,
-    "other": 31793,
-    "notRegistered": 2624,
-    "total": 91173,
+    "blank": 56927,
+    "other": 32122,
+    "notRegistered": 2629,
+    "total": 91678,
     "pct": 1.4
   },
   "final": {
-    "counted": 1918,
+    "counted": 1957,
     "total": 6626,
-    "updatedAt": "16 september 2026 19:56:10",
-    "votes": 1954903
+    "updatedAt": "16 september 2026 21:00:52",
+    "votes": 1996272
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1854062,
+      "votes": 1860492,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -103,12 +103,12 @@
     {
       "code": "M",
       "name": "Moderaterna",
-      "pct": 19.9,
+      "pct": 19.8,
       "prevPct": 19.1,
-      "delta": 0.8,
-      "votes": 1314426,
+      "delta": 0.7,
+      "votes": 1317974,
       "color": "#66BEE6",
-      "seats": 71,
+      "seats": 70,
       "seatsPrev": 68
     },
     {
@@ -116,8 +116,8 @@
       "name": "Sverigedemokraterna",
       "pct": 17.6,
       "prevPct": 20.5,
-      "delta": -2.9,
-      "votes": 1163893,
+      "delta": -3.0,
+      "votes": 1166353,
       "color": "#4E83A3",
       "seats": 62,
       "seatsPrev": 73
@@ -127,10 +127,10 @@
       "name": "Vänsterpartiet",
       "pct": 8.3,
       "prevPct": 6.7,
-      "delta": 1.5,
-      "votes": 548285,
+      "delta": 1.6,
+      "votes": 551900,
       "color": "#C40000",
-      "seats": 29,
+      "seats": 30,
       "seatsPrev": 24
     },
     {
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 465700,
+      "votes": 467279,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.9,
-      "votes": 410555,
+      "votes": 411354,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 402774,
+      "votes": 405025,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 353788,
+      "votes": 354795,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 104578,
+      "votes": 105049,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1465,6 +1465,21 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-16T19:14:17Z",
+      "counted": 6606,
+      "pct": {
+        "S": 28.0,
+        "M": 19.8,
+        "SD": 17.6,
+        "V": 8.3,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -1503,16 +1518,16 @@
     },
     "11": {
       "name": "Malmö kommun",
-      "votes": 204458,
-      "counted": 215,
+      "votes": 208078,
+      "counted": 216,
       "total": 217,
-      "updatedAt": "14 september 2026 10:02:58",
+      "updatedAt": "16 september 2026 20:17:35",
       "pct": {
-        "S": 29,
-        "V": 17.1,
-        "M": 16.5,
-        "SD": 13.2,
-        "MP": 9.2,
+        "S": 29.1,
+        "V": 17.2,
+        "M": 16.4,
+        "SD": 13.1,
+        "MP": 9.3,
         "C": 5.8,
         "L": 4.6,
         "KD": 3.3,
@@ -1866,15 +1881,15 @@
     },
     "22": {
       "name": "Örebro län",
-      "votes": 199109,
-      "counted": 215,
+      "votes": 201959,
+      "counted": 217,
       "total": 217,
-      "updatedAt": "16 september 2026 17:43:19",
+      "updatedAt": "16 september 2026 20:31:11",
       "pct": {
         "S": 30.4,
-        "SD": 17.9,
-        "M": 17.7,
-        "V": 7.7,
+        "SD": 17.8,
+        "M": 17.6,
+        "V": 7.8,
         "KD": 6.2,
         "C": 5.7,
         "MP": 4.9,
@@ -1965,15 +1980,15 @@
     },
     "25": {
       "name": "Gävleborgs län",
-      "votes": 181913,
-      "counted": 161,
+      "votes": 183712,
+      "counted": 162,
       "total": 162,
-      "updatedAt": "16 september 2026 18:28:26",
+      "updatedAt": "16 september 2026 20:16:26",
       "pct": {
         "S": 31.8,
-        "SD": 21.6,
+        "SD": 21.5,
         "M": 17.7,
-        "V": 6.7,
+        "V": 6.8,
         "KD": 6.2,
         "C": 6.1,
         "MP": 4.2,
@@ -2130,15 +2145,15 @@
     },
     "01": {
       "name": "Stockholms kommun",
-      "votes": 613569,
-      "counted": 606,
+      "votes": 623468,
+      "counted": 608,
       "total": 612,
-      "updatedAt": "14 september 2026 18:28:58",
+      "updatedAt": "16 september 2026 21:08:31",
       "pct": {
         "S": 26.3,
-        "M": 19.1,
-        "V": 12.8,
-        "MP": 11.2,
+        "M": 19,
+        "V": 12.9,
+        "MP": 11.3,
         "C": 9.9,
         "SD": 8.3,
         "L": 7.2,
@@ -2163,13 +2178,13 @@
     },
     "02": {
       "name": "Stockholms län",
-      "votes": 872203,
-      "counted": 845,
+      "votes": 875123,
+      "counted": 846,
       "total": 848,
-      "updatedAt": "16 september 2026 20:05:16",
+      "updatedAt": "16 september 2026 21:03:44",
       "pct": {
-        "S": 25.7,
-        "M": 23.9,
+        "S": 25.8,
+        "M": 23.8,
         "SD": 14.9,
         "V": 8,
         "C": 7.9,
@@ -2196,16 +2211,16 @@
     },
     "03": {
       "name": "Uppsala län",
-      "votes": 251220,
-      "counted": 241,
+      "votes": 252292,
+      "counted": 242,
       "total": 243,
-      "updatedAt": "16 september 2026 16:24:36",
+      "updatedAt": "16 september 2026 20:27:14",
       "pct": {
         "S": 27,
         "M": 18.5,
         "SD": 15.9,
         "V": 9.4,
-        "MP": 8.3,
+        "MP": 8.2,
         "C": 7.7,
         "KD": 6.7,
         "L": 5,
@@ -2426,5 +2441,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-16T18:10:57.344Z"
+  "kartaAt": "2026-09-16T19:15:56.835Z"
 }
