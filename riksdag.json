@@ -1,12 +1,12 @@
 {
-  "updatedAt": "16 september 2026 19:04:33",
-  "reportedAt": "16 september 2026 19:05:17",
-  "fetchedAt": "2026-09-16T17:07:17Z",
-  "counted": 6585,
+  "updatedAt": "16 september 2026 20:05:16",
+  "reportedAt": "16 september 2026 20:06:00",
+  "fetchedAt": "2026-09-16T18:09:05Z",
+  "counted": 6598,
   "total": 6626,
-  "votes": 6678315,
-  "validVotes": 6587722,
-  "turnout": "82,9 %",
+  "votes": 6709234,
+  "validVotes": 6618061,
+  "turnout": "83,3 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -54,17 +54,17 @@
       "partibeteckning": "Moderaterna",
       "partiforkortning": "M",
       "partikod": "0001",
-      "antalMandat": 70,
+      "antalMandat": 71,
       "antalMandatForegaendeVal": 68,
-      "forandringAntalMandat": 2
+      "forandringAntalMandat": 3
     },
     {
       "partibeteckning": "Sverigedemokraterna",
       "partiforkortning": "SD",
       "partikod": "0110",
-      "antalMandat": 63,
+      "antalMandat": 62,
       "antalMandatForegaendeVal": 73,
-      "forandringAntalMandat": -10
+      "forandringAntalMandat": -11
     },
     {
       "partibeteckning": "Vänsterpartiet",
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 56519,
-    "other": 31463,
-    "notRegistered": 2611,
-    "total": 90593,
+    "blank": 56756,
+    "other": 31793,
+    "notRegistered": 2624,
+    "total": 91173,
     "pct": 1.4
   },
   "final": {
-    "counted": 1870,
+    "counted": 1918,
     "total": 6626,
-    "updatedAt": "16 september 2026 18:57:12",
-    "votes": 1901751
+    "updatedAt": "16 september 2026 19:56:10",
+    "votes": 1954903
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1846101,
+      "votes": 1854062,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -105,10 +105,10 @@
       "name": "Moderaterna",
       "pct": 19.9,
       "prevPct": 19.1,
-      "delta": 0.7,
-      "votes": 1307742,
+      "delta": 0.8,
+      "votes": 1314426,
       "color": "#66BEE6",
-      "seats": 70,
+      "seats": 71,
       "seatsPrev": 68
     },
     {
@@ -117,9 +117,9 @@
       "pct": 17.6,
       "prevPct": 20.5,
       "delta": -2.9,
-      "votes": 1159903,
+      "votes": 1163893,
       "color": "#4E83A3",
-      "seats": 63,
+      "seats": 62,
       "seatsPrev": 73
     },
     {
@@ -128,7 +128,7 @@
       "pct": 8.3,
       "prevPct": 6.7,
       "delta": 1.5,
-      "votes": 544796,
+      "votes": 548285,
       "color": "#C40000",
       "seats": 29,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 463465,
+      "votes": 465700,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.9,
-      "votes": 409082,
+      "votes": 410555,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 400417,
+      "votes": 402774,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 352134,
+      "votes": 353788,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 104082,
+      "votes": 104578,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1450,6 +1450,21 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-16T18:09:05Z",
+      "counted": 6598,
+      "pct": {
+        "S": 28.0,
+        "M": 19.9,
+        "SD": 17.6,
+        "V": 8.3,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -1554,19 +1569,19 @@
     },
     "13": {
       "name": "Skåne läns södra",
-      "votes": 265611,
-      "counted": 261,
+      "votes": 269025,
+      "counted": 262,
       "total": 263,
-      "updatedAt": "16 september 2026 16:48:59",
+      "updatedAt": "16 september 2026 19:53:29",
       "pct": {
         "M": 23.2,
         "S": 22.8,
-        "SD": 19.9,
-        "C": 7.9,
-        "MP": 7.1,
+        "SD": 19.8,
+        "C": 8,
+        "MP": 7.3,
         "L": 6.5,
         "V": 6,
-        "KD": 5.4,
+        "KD": 5.3,
         "ÖVR": 1.1
       },
       "rem2022": {
@@ -1587,19 +1602,19 @@
     },
     "14": {
       "name": "Skåne läns norra och östra",
-      "votes": 204858,
-      "counted": 194,
+      "votes": 205525,
+      "counted": 195,
       "total": 195,
-      "updatedAt": "16 september 2026 16:30:06",
+      "updatedAt": "16 september 2026 19:15:46",
       "pct": {
-        "SD": 27.3,
+        "SD": 27.2,
         "S": 23.2,
-        "M": 20.9,
+        "M": 20.8,
         "KD": 6.9,
-        "V": 5.9,
+        "V": 6,
         "L": 5.5,
         "C": 5.3,
-        "MP": 3.6,
+        "MP": 3.7,
         "ÖVR": 1.4
       },
       "rem2022": {
@@ -1884,18 +1899,18 @@
     },
     "23": {
       "name": "Västmanlands län",
-      "votes": 169206,
-      "counted": 175,
+      "votes": 175964,
+      "counted": 176,
       "total": 176,
-      "updatedAt": "16 september 2026 18:52:21",
+      "updatedAt": "16 september 2026 19:10:01",
       "pct": {
         "S": 30.5,
-        "SD": 20.6,
-        "M": 19.6,
-        "V": 7.8,
+        "SD": 20.4,
+        "M": 19.7,
+        "V": 8,
         "KD": 5.6,
         "C": 5.3,
-        "L": 5.1,
+        "L": 5,
         "MP": 3.7,
         "ÖVR": 1.8
       },
@@ -2049,16 +2064,16 @@
     },
     "28": {
       "name": "Västerbottens län",
-      "votes": 178387,
-      "counted": 190,
+      "votes": 180215,
+      "counted": 191,
       "total": 191,
-      "updatedAt": "16 september 2026 18:19:15",
+      "updatedAt": "16 september 2026 19:36:07",
       "pct": {
-        "S": 37,
+        "S": 36.9,
         "M": 15.4,
-        "SD": 12.8,
+        "SD": 12.7,
         "V": 9.3,
-        "MP": 7.4,
+        "MP": 7.5,
         "C": 7.2,
         "KD": 5.9,
         "L": 3.5,
@@ -2148,14 +2163,14 @@
     },
     "02": {
       "name": "Stockholms län",
-      "votes": 860731,
-      "counted": 838,
+      "votes": 872203,
+      "counted": 845,
       "total": 848,
-      "updatedAt": "16 september 2026 19:04:33",
+      "updatedAt": "16 september 2026 20:05:16",
       "pct": {
-        "S": 25.8,
-        "M": 23.8,
-        "SD": 15,
+        "S": 25.7,
+        "M": 23.9,
+        "SD": 14.9,
         "V": 8,
         "C": 7.9,
         "L": 6.7,
@@ -2247,15 +2262,15 @@
     },
     "05": {
       "name": "Östergötlands län",
-      "votes": 299039,
-      "counted": 296,
+      "votes": 304287,
+      "counted": 297,
       "total": 300,
-      "updatedAt": "16 september 2026 17:36:03",
+      "updatedAt": "16 september 2026 19:09:40",
       "pct": {
         "S": 28.4,
-        "M": 20.6,
+        "M": 20.5,
         "SD": 18.6,
-        "V": 6.8,
+        "V": 7,
         "C": 6.8,
         "KD": 6.6,
         "MP": 5.6,
@@ -2379,19 +2394,19 @@
     },
     "09": {
       "name": "Gotlands län",
-      "votes": 40443,
-      "counted": 40,
+      "votes": 41395,
+      "counted": 41,
       "total": 41,
-      "updatedAt": "14 september 2026 01:32:03",
+      "updatedAt": "16 september 2026 19:41:46",
       "pct": {
         "S": 31.1,
         "M": 18.3,
         "SD": 13.5,
-        "C": 10.8,
+        "C": 10.7,
         "MP": 7.9,
-        "V": 6.6,
+        "V": 6.7,
         "L": 5.3,
-        "KD": 5.3,
+        "KD": 5.2,
         "ÖVR": 1.2
       },
       "rem2022": {
@@ -2411,5 +2426,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-16T17:08:22.969Z"
+  "kartaAt": "2026-09-16T18:10:57.344Z"
 }
