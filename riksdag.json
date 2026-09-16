@@ -1,12 +1,12 @@
 {
-  "updatedAt": "16 september 2026 18:02:45",
-  "reportedAt": "16 september 2026 18:03:30",
-  "fetchedAt": "2026-09-16T16:07:17Z",
-  "counted": 6574,
+  "updatedAt": "16 september 2026 19:04:33",
+  "reportedAt": "16 september 2026 19:05:17",
+  "fetchedAt": "2026-09-16T17:07:17Z",
+  "counted": 6585,
   "total": 6626,
-  "votes": 6661058,
-  "validVotes": 6570915,
-  "turnout": "82,7 %",
+  "votes": 6678315,
+  "validVotes": 6587722,
+  "turnout": "82,9 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 56344,
-    "other": 31194,
-    "notRegistered": 2605,
-    "total": 90143,
+    "blank": 56519,
+    "other": 31463,
+    "notRegistered": 2611,
+    "total": 90593,
     "pct": 1.4
   },
   "final": {
-    "counted": 1801,
+    "counted": 1870,
     "total": 6626,
-    "updatedAt": "16 september 2026 17:59:29",
-    "votes": 1826588
+    "updatedAt": "16 september 2026 18:57:12",
+    "votes": 1901751
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1841298,
+      "votes": 1846101,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -105,8 +105,8 @@
       "name": "Moderaterna",
       "pct": 19.9,
       "prevPct": 19.1,
-      "delta": 0.8,
-      "votes": 1304505,
+      "delta": 0.7,
+      "votes": 1307742,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -117,7 +117,7 @@
       "pct": 17.6,
       "prevPct": 20.5,
       "delta": -2.9,
-      "votes": 1156795,
+      "votes": 1159903,
       "color": "#4E83A3",
       "seats": 63,
       "seatsPrev": 73
@@ -128,7 +128,7 @@
       "pct": 8.3,
       "prevPct": 6.7,
       "delta": 1.5,
-      "votes": 543085,
+      "votes": 544796,
       "color": "#C40000",
       "seats": 29,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 462489,
+      "votes": 463465,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.9,
-      "votes": 408022,
+      "votes": 409082,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 399567,
+      "votes": 400417,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 351386,
+      "votes": 352134,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,13 +183,13 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 103768,
+      "votes": 104082,
       "color": null,
       "seats": null,
       "seatsPrev": null
     }
   ],
-  "notice": "Det finns 6312 valdistrikt som räknas på valkvällen i vallokalerna. Resultat från den preliminära räkningen presenteras löpande då de rapporteras. Utöver dessa valdistrikt finns 314 uppsamlingsdistrikt som räknas av kommunerna den 16-17 september.\n\nSlutlig rösträkning hos länsstyrelsen pågår. Uppgifter kan ändras fram till att resultaten är fastställda och protokoll har publicerats.",
+  "notice": "Det finns 6312 valdistrikt i riksdagsvalet som räknas på valkvällen i vallokalerna. Utöver dessa valdistrikt finns 314 uppsamlingsdistrikt som räknas av kommunerna den 16-17 september. I länsstyrelsens slutliga rösträkning räknas alla 6626 distrikt. ",
   "history": [
     {
       "t": "2026-09-13T19:33:26Z",
@@ -1435,6 +1435,21 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-16T17:07:17Z",
+      "counted": 6585,
+      "pct": {
+        "S": 28.0,
+        "M": 19.9,
+        "SD": 17.6,
+        "V": 8.3,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -1671,10 +1686,10 @@
     },
     "17": {
       "name": "Västra Götalands läns västra",
-      "votes": 256294,
-      "counted": 237,
+      "votes": 257971,
+      "counted": 238,
       "total": 238,
-      "updatedAt": "16 september 2026 17:53:26",
+      "updatedAt": "16 september 2026 18:49:06",
       "pct": {
         "S": 25.3,
         "M": 21.5,
@@ -1704,16 +1719,16 @@
     },
     "18": {
       "name": "Västra Götalands läns norra",
-      "votes": 174670,
-      "counted": 173,
+      "votes": 175653,
+      "counted": 174,
       "total": 174,
-      "updatedAt": "16 september 2026 18:02:45",
+      "updatedAt": "16 september 2026 18:25:19",
       "pct": {
         "S": 28.6,
         "SD": 21.6,
         "M": 19.1,
-        "V": 7,
-        "KD": 7,
+        "V": 7.1,
+        "KD": 6.9,
         "C": 5.8,
         "L": 4.9,
         "MP": 4.5,
@@ -1737,10 +1752,10 @@
     },
     "19": {
       "name": "Västra Götalands läns södra",
-      "votes": 144448,
-      "counted": 157,
+      "votes": 145717,
+      "counted": 158,
       "total": 158,
-      "updatedAt": "16 september 2026 18:06:34",
+      "updatedAt": "16 september 2026 18:14:42",
       "pct": {
         "S": 27.3,
         "SD": 20.7,
@@ -1869,14 +1884,14 @@
     },
     "23": {
       "name": "Västmanlands län",
-      "votes": 166869,
-      "counted": 174,
+      "votes": 169206,
+      "counted": 175,
       "total": 176,
-      "updatedAt": "16 september 2026 15:23:48",
+      "updatedAt": "16 september 2026 18:52:21",
       "pct": {
         "S": 30.5,
         "SD": 20.6,
-        "M": 19.7,
+        "M": 19.6,
         "V": 7.8,
         "KD": 5.6,
         "C": 5.3,
@@ -1935,10 +1950,10 @@
     },
     "25": {
       "name": "Gävleborgs län",
-      "votes": 181372,
-      "counted": 160,
+      "votes": 181913,
+      "counted": 161,
       "total": 162,
-      "updatedAt": "16 september 2026 15:12:24",
+      "updatedAt": "16 september 2026 18:28:26",
       "pct": {
         "S": 31.8,
         "SD": 21.6,
@@ -2034,10 +2049,10 @@
     },
     "28": {
       "name": "Västerbottens län",
-      "votes": 177498,
-      "counted": 189,
+      "votes": 178387,
+      "counted": 190,
       "total": 191,
-      "updatedAt": "16 september 2026 17:04:07",
+      "updatedAt": "16 september 2026 18:19:15",
       "pct": {
         "S": 37,
         "M": 15.4,
@@ -2133,18 +2148,18 @@
     },
     "02": {
       "name": "Stockholms län",
-      "votes": 857283,
-      "counted": 836,
+      "votes": 860731,
+      "counted": 838,
       "total": 848,
-      "updatedAt": "16 september 2026 17:55:14",
+      "updatedAt": "16 september 2026 19:04:33",
       "pct": {
         "S": 25.8,
-        "M": 23.9,
+        "M": 23.8,
         "SD": 15,
         "V": 8,
         "C": 7.9,
         "L": 6.7,
-        "KD": 5.8,
+        "KD": 5.7,
         "MP": 5.7,
         "ÖVR": 1.5
       },
@@ -2265,15 +2280,15 @@
     },
     "06": {
       "name": "Jönköpings län",
-      "votes": 232152,
-      "counted": 214,
+      "votes": 235483,
+      "counted": 215,
       "total": 215,
-      "updatedAt": "16 september 2026 16:31:51",
+      "updatedAt": "16 september 2026 18:51:59",
       "pct": {
-        "S": 26.5,
+        "S": 26.6,
         "SD": 20.6,
-        "M": 19.7,
-        "KD": 10.3,
+        "M": 19.8,
+        "KD": 10.2,
         "C": 7,
         "V": 5.9,
         "L": 4.6,
@@ -2396,5 +2411,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-16T16:31:01.144Z"
+  "kartaAt": "2026-09-16T17:08:22.969Z"
 }
