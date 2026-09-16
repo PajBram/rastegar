@@ -1,12 +1,12 @@
 {
-  "updatedAt": "16 september 2026 17:38:42",
-  "reportedAt": "16 september 2026 17:39:23",
-  "fetchedAt": "2026-09-16T15:43:15Z",
-  "counted": 6563,
+  "updatedAt": "16 september 2026 18:02:45",
+  "reportedAt": "16 september 2026 18:03:30",
+  "fetchedAt": "2026-09-16T16:07:17Z",
+  "counted": 6574,
   "total": 6626,
-  "votes": 6640434,
-  "validVotes": 6550724,
-  "turnout": "82,5 %",
+  "votes": 6661058,
+  "validVotes": 6570915,
+  "turnout": "82,7 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -14,9 +14,9 @@
       "partibeteckning": "Arbetarepartiet-Socialdemokraterna",
       "partiforkortning": "S",
       "partikod": "0002",
-      "antalMandat": 100,
+      "antalMandat": 99,
       "antalMandatForegaendeVal": 107,
-      "forandringAntalMandat": -7
+      "forandringAntalMandat": -8
     },
     {
       "partibeteckning": "Centerpartiet",
@@ -62,9 +62,9 @@
       "partibeteckning": "Sverigedemokraterna",
       "partiforkortning": "SD",
       "partikod": "0110",
-      "antalMandat": 62,
+      "antalMandat": 63,
       "antalMandatForegaendeVal": 73,
-      "forandringAntalMandat": -11
+      "forandringAntalMandat": -10
     },
     {
       "partibeteckning": "Vänsterpartiet",
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 56177,
-    "other": 30935,
-    "notRegistered": 2598,
-    "total": 89710,
+    "blank": 56344,
+    "other": 31194,
+    "notRegistered": 2605,
+    "total": 90143,
     "pct": 1.4
   },
   "final": {
-    "counted": 1658,
+    "counted": 1801,
     "total": 6626,
-    "updatedAt": "16 september 2026 17:36:30",
-    "votes": 1692897
+    "updatedAt": "16 september 2026 17:59:29",
+    "votes": 1826588
   },
   "parties": [
     {
@@ -95,18 +95,18 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1836452,
+      "votes": 1841298,
       "color": "#FF0000",
-      "seats": 100,
+      "seats": 99,
       "seatsPrev": 107
     },
     {
       "code": "M",
       "name": "Moderaterna",
-      "pct": 19.8,
+      "pct": 19.9,
       "prevPct": 19.1,
-      "delta": 0.7,
-      "votes": 1299695,
+      "delta": 0.8,
+      "votes": 1304505,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -117,9 +117,9 @@
       "pct": 17.6,
       "prevPct": 20.5,
       "delta": -2.9,
-      "votes": 1153386,
+      "votes": 1156795,
       "color": "#4E83A3",
-      "seats": 62,
+      "seats": 63,
       "seatsPrev": 73
     },
     {
@@ -128,7 +128,7 @@
       "pct": 8.3,
       "prevPct": 6.7,
       "delta": 1.5,
-      "votes": 541519,
+      "votes": 543085,
       "color": "#C40000",
       "seats": 29,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 461031,
+      "votes": 462489,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.9,
-      "votes": 406835,
+      "votes": 408022,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 398346,
+      "votes": 399567,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 350078,
+      "votes": 351386,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 103382,
+      "votes": 103768,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1420,22 +1420,37 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-16T16:07:17Z",
+      "counted": 6574,
+      "pct": {
+        "S": 28.0,
+        "M": 19.9,
+        "SD": 17.6,
+        "V": 8.3,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
     "10": {
       "name": "Blekinge län",
-      "votes": 103442,
-      "counted": 101,
+      "votes": 103848,
+      "counted": 102,
       "total": 102,
-      "updatedAt": "16 september 2026 17:38:42",
+      "updatedAt": "16 september 2026 17:54:35",
       "pct": {
         "S": 28.6,
         "SD": 24.4,
         "M": 18.3,
         "KD": 7.3,
-        "V": 5.8,
-        "C": 5.4,
+        "V": 5.9,
+        "C": 5.5,
         "L": 4.9,
         "MP": 3.8,
         "ÖVR": 1.4
@@ -1590,19 +1605,19 @@
     },
     "15": {
       "name": "Hallands län",
-      "votes": 216145,
-      "counted": 207,
+      "votes": 223779,
+      "counted": 209,
       "total": 211,
-      "updatedAt": "16 september 2026 15:07:10",
+      "updatedAt": "16 september 2026 18:00:38",
       "pct": {
-        "S": 25.7,
-        "M": 23.2,
+        "S": 25.5,
+        "M": 23.3,
         "SD": 19.7,
         "C": 7.6,
         "KD": 7.1,
-        "L": 5.9,
+        "L": 6,
         "V": 5.2,
-        "MP": 4.3,
+        "MP": 4.4,
         "ÖVR": 1.3
       },
       "rem2022": {
@@ -1656,19 +1671,19 @@
     },
     "17": {
       "name": "Västra Götalands läns västra",
-      "votes": 251133,
-      "counted": 236,
+      "votes": 256294,
+      "counted": 237,
       "total": 238,
-      "updatedAt": "16 september 2026 17:21:51",
+      "updatedAt": "16 september 2026 17:53:26",
       "pct": {
         "S": 25.3,
         "M": 21.5,
-        "SD": 18.3,
+        "SD": 18.2,
         "C": 7.4,
-        "KD": 7.3,
+        "KD": 7.2,
+        "V": 6.3,
         "L": 6.3,
         "MP": 6.3,
-        "V": 6.3,
         "ÖVR": 1.4
       },
       "rem2022": {
@@ -1689,14 +1704,14 @@
     },
     "18": {
       "name": "Västra Götalands läns norra",
-      "votes": 173592,
-      "counted": 172,
+      "votes": 174670,
+      "counted": 173,
       "total": 174,
-      "updatedAt": "16 september 2026 16:32:42",
+      "updatedAt": "16 september 2026 18:02:45",
       "pct": {
         "S": 28.6,
         "SD": 21.6,
-        "M": 19,
+        "M": 19.1,
         "V": 7,
         "KD": 7,
         "C": 5.8,
@@ -1722,17 +1737,17 @@
     },
     "19": {
       "name": "Västra Götalands läns södra",
-      "votes": 140407,
-      "counted": 154,
+      "votes": 144448,
+      "counted": 157,
       "total": 158,
-      "updatedAt": "16 september 2026 15:44:31",
+      "updatedAt": "16 september 2026 18:06:34",
       "pct": {
         "S": 27.3,
-        "SD": 20.9,
+        "SD": 20.7,
         "M": 19.6,
         "KD": 7.9,
-        "V": 6.9,
-        "C": 6.8,
+        "V": 7.1,
+        "C": 6.7,
         "L": 4.7,
         "MP": 4.3,
         "ÖVR": 1.7
@@ -1788,10 +1803,10 @@
     },
     "21": {
       "name": "Värmlands län",
-      "votes": 175749,
-      "counted": 191,
+      "votes": 176805,
+      "counted": 192,
       "total": 194,
-      "updatedAt": "16 september 2026 17:35:07",
+      "updatedAt": "16 september 2026 18:07:55",
       "pct": {
         "S": 31.1,
         "M": 20,
@@ -2118,13 +2133,13 @@
     },
     "02": {
       "name": "Stockholms län",
-      "votes": 855941,
-      "counted": 835,
+      "votes": 857283,
+      "counted": 836,
       "total": 848,
-      "updatedAt": "16 september 2026 17:27:12",
+      "updatedAt": "16 september 2026 17:55:14",
       "pct": {
         "S": 25.8,
-        "M": 23.8,
+        "M": 23.9,
         "SD": 15,
         "V": 8,
         "C": 7.9,
@@ -2184,10 +2199,10 @@
     },
     "04": {
       "name": "Södermanlands län",
-      "votes": 189604,
-      "counted": 192,
+      "votes": 190020,
+      "counted": 193,
       "total": 193,
-      "updatedAt": "16 september 2026 17:28:29",
+      "updatedAt": "16 september 2026 17:51:05",
       "pct": {
         "S": 30.6,
         "SD": 20.2,
@@ -2195,7 +2210,7 @@
         "V": 7.3,
         "KD": 5.7,
         "C": 5.6,
-        "MP": 4.8,
+        "MP": 4.9,
         "L": 4.5,
         "ÖVR": 1.6
       },
@@ -2381,5 +2396,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-16T15:47:35.144Z"
+  "kartaAt": "2026-09-16T16:31:01.144Z"
 }
