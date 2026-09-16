@@ -1,12 +1,12 @@
 {
-  "updatedAt": "16 september 2026 21:08:31",
-  "reportedAt": "16 september 2026 21:09:28",
-  "fetchedAt": "2026-09-16T19:14:17Z",
-  "counted": 6606,
+  "updatedAt": "16 september 2026 21:50:18",
+  "reportedAt": "16 september 2026 21:51:00",
+  "fetchedAt": "2026-09-16T20:08:28Z",
+  "counted": 6615,
   "total": 6626,
-  "votes": 6731899,
-  "validVotes": 6640221,
-  "turnout": "83,6 %",
+  "votes": 6773632,
+  "validVotes": 6681153,
+  "turnout": "84,1 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 56927,
-    "other": 32122,
-    "notRegistered": 2629,
-    "total": 91678,
+    "blank": 57209,
+    "other": 32626,
+    "notRegistered": 2644,
+    "total": 92479,
     "pct": 1.4
   },
   "final": {
-    "counted": 1957,
+    "counted": 1975,
     "total": 6626,
-    "updatedAt": "16 september 2026 21:00:52",
-    "votes": 1996272
+    "updatedAt": "16 september 2026 21:12:23",
+    "votes": 2015744
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1860492,
+      "votes": 1871521,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -103,10 +103,10 @@
     {
       "code": "M",
       "name": "Moderaterna",
-      "pct": 19.8,
+      "pct": 19.9,
       "prevPct": 19.1,
       "delta": 0.7,
-      "votes": 1317974,
+      "votes": 1326223,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -114,10 +114,10 @@
     {
       "code": "SD",
       "name": "Sverigedemokraterna",
-      "pct": 17.6,
+      "pct": 17.5,
       "prevPct": 20.5,
       "delta": -3.0,
-      "votes": 1166353,
+      "votes": 1170589,
       "color": "#4E83A3",
       "seats": 62,
       "seatsPrev": 73
@@ -125,10 +125,10 @@
     {
       "code": "V",
       "name": "Vänsterpartiet",
-      "pct": 8.3,
+      "pct": 8.4,
       "prevPct": 6.7,
       "delta": 1.6,
-      "votes": 551900,
+      "votes": 558266,
       "color": "#C40000",
       "seats": 30,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 467279,
+      "votes": 470443,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -149,8 +149,8 @@
       "name": "Kristdemokraterna",
       "pct": 6.2,
       "prevPct": 5.3,
-      "delta": 0.9,
-      "votes": 411354,
+      "delta": 0.8,
+      "votes": 413148,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 405025,
+      "votes": 408199,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 354795,
+      "votes": 357091,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 105049,
+      "votes": 105673,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1480,6 +1480,21 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-16T20:07:52Z",
+      "counted": 6615,
+      "pct": {
+        "S": 28.0,
+        "M": 19.9,
+        "SD": 17.5,
+        "V": 8.4,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -1518,17 +1533,17 @@
     },
     "11": {
       "name": "Malmö kommun",
-      "votes": 208078,
-      "counted": 216,
+      "votes": 211899,
+      "counted": 217,
       "total": 217,
-      "updatedAt": "16 september 2026 20:17:35",
+      "updatedAt": "16 september 2026 21:42:42",
       "pct": {
-        "S": 29.1,
+        "S": 29,
         "V": 17.2,
-        "M": 16.4,
+        "M": 16.5,
         "SD": 13.1,
         "MP": 9.3,
-        "C": 5.8,
+        "C": 5.9,
         "L": 4.6,
         "KD": 3.3,
         "ÖVR": 1.2
@@ -1815,19 +1830,19 @@
     },
     "20": {
       "name": "Västra Götalands läns östra",
-      "votes": 174445,
-      "counted": 166,
+      "votes": 178274,
+      "counted": 167,
       "total": 167,
-      "updatedAt": "16 september 2026 17:03:47",
+      "updatedAt": "16 september 2026 21:25:15",
       "pct": {
         "S": 28.1,
-        "SD": 21.5,
-        "M": 19.9,
+        "SD": 21.4,
+        "M": 20,
         "KD": 8,
         "C": 6.5,
-        "V": 5.7,
+        "V": 5.8,
         "L": 4.4,
-        "MP": 4,
+        "MP": 4.1,
         "ÖVR": 1.7
       },
       "rem2022": {
@@ -2145,18 +2160,18 @@
     },
     "01": {
       "name": "Stockholms kommun",
-      "votes": 623468,
-      "counted": 608,
+      "votes": 648473,
+      "counted": 612,
       "total": 612,
-      "updatedAt": "16 september 2026 21:08:31",
+      "updatedAt": "16 september 2026 21:50:18",
       "pct": {
         "S": 26.3,
-        "M": 19,
-        "V": 12.9,
-        "MP": 11.3,
-        "C": 9.9,
+        "M": 19.1,
+        "V": 13,
+        "MP": 11.2,
+        "C": 9.8,
         "SD": 8.3,
-        "L": 7.2,
+        "L": 7.1,
         "KD": 3.9,
         "ÖVR": 1.2
       },
@@ -2178,19 +2193,19 @@
     },
     "02": {
       "name": "Stockholms län",
-      "votes": 875123,
-      "counted": 846,
+      "votes": 882427,
+      "counted": 848,
       "total": 848,
-      "updatedAt": "16 september 2026 21:03:44",
+      "updatedAt": "16 september 2026 21:38:49",
       "pct": {
         "S": 25.8,
         "M": 23.8,
         "SD": 14.9,
-        "V": 8,
-        "C": 7.9,
-        "L": 6.7,
-        "KD": 5.7,
+        "V": 8.1,
+        "C": 7.8,
+        "L": 6.6,
         "MP": 5.7,
+        "KD": 5.7,
         "ÖVR": 1.5
       },
       "rem2022": {
@@ -2277,10 +2292,10 @@
     },
     "05": {
       "name": "Östergötlands län",
-      "votes": 304287,
-      "counted": 297,
+      "votes": 305260,
+      "counted": 298,
       "total": 300,
-      "updatedAt": "16 september 2026 19:09:40",
+      "updatedAt": "16 september 2026 21:32:43",
       "pct": {
         "S": 28.4,
         "M": 20.5,
@@ -2441,5 +2456,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-16T19:15:56.835Z"
+  "kartaAt": "2026-09-16T20:11:35.968Z"
 }
