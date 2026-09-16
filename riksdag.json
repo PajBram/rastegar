@@ -1,12 +1,12 @@
 {
-  "updatedAt": "16 september 2026 10:36:27",
-  "reportedAt": "16 september 2026 10:37:18",
-  "fetchedAt": "2026-09-16T09:27:15Z",
-  "counted": 6314,
+  "updatedAt": "16 september 2026 12:07:54",
+  "reportedAt": "16 september 2026 12:08:43",
+  "fetchedAt": "2026-09-16T10:10:51Z",
+  "counted": 6328,
   "total": 6626,
-  "votes": 6467043,
-  "validVotes": 6381686,
-  "turnout": "80,3 %",
+  "votes": 6470942,
+  "validVotes": 6385509,
+  "turnout": "80,4 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 54350,
-    "other": 28471,
-    "notRegistered": 2536,
-    "total": 85357,
+    "blank": 54399,
+    "other": 28495,
+    "notRegistered": 2539,
+    "total": 85433,
     "pct": 1.3
   },
   "final": {
-    "counted": 959,
+    "counted": 1015,
     "total": 6626,
-    "updatedAt": "16 september 2026 11:22:54",
-    "votes": 979894
+    "updatedAt": "16 september 2026 12:06:18",
+    "votes": 1038815
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.1,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1790916,
+      "votes": 1792019,
       "color": "#FF0000",
       "seats": 100,
       "seatsPrev": 107
@@ -106,7 +106,7 @@
       "pct": 19.9,
       "prevPct": 19.1,
       "delta": 0.8,
-      "votes": 1267074,
+      "votes": 1267717,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -117,7 +117,7 @@
       "pct": 17.5,
       "prevPct": 20.5,
       "delta": -3.0,
-      "votes": 1118586,
+      "votes": 1119600,
       "color": "#4E83A3",
       "seats": 62,
       "seatsPrev": 73
@@ -128,7 +128,7 @@
       "pct": 8.3,
       "prevPct": 6.7,
       "delta": 1.5,
-      "votes": 526542,
+      "votes": 526838,
       "color": "#C40000",
       "seats": 29,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.1,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 450575,
+      "votes": 450766,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.9,
-      "votes": 395906,
+      "votes": 396117,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 389624,
+      "votes": 389770,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.4,
       "prevPct": 4.6,
       "delta": 0.8,
-      "votes": 342590,
+      "votes": 342714,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 99873,
+      "votes": 99968,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1360,6 +1360,21 @@
         "L": 5.4,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-16T10:10:51Z",
+      "counted": 6328,
+      "pct": {
+        "S": 28.1,
+        "M": 19.9,
+        "SD": 17.5,
+        "V": 8.3,
+        "C": 7.1,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.4,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -1497,10 +1512,10 @@
     },
     "14": {
       "name": "Skåne läns norra och östra",
-      "votes": 198407,
-      "counted": 181,
+      "votes": 198811,
+      "counted": 182,
       "total": 195,
-      "updatedAt": "14 september 2026 02:30:16",
+      "updatedAt": "16 september 2026 11:54:30",
       "pct": {
         "SD": 27.4,
         "S": 23.2,
@@ -1728,13 +1743,13 @@
     },
     "21": {
       "name": "Värmlands län",
-      "votes": 167014,
-      "counted": 178,
+      "votes": 167235,
+      "counted": 179,
       "total": 194,
-      "updatedAt": "14 september 2026 01:46:19",
+      "updatedAt": "16 september 2026 11:59:00",
       "pct": {
         "S": 31.3,
-        "M": 20.1,
+        "M": 20,
         "SD": 19.6,
         "KD": 6.8,
         "C": 6.1,
@@ -1761,10 +1776,10 @@
     },
     "22": {
       "name": "Örebro län",
-      "votes": 194208,
-      "counted": 204,
+      "votes": 194776,
+      "counted": 206,
       "total": 217,
-      "updatedAt": "14 september 2026 04:16:33",
+      "updatedAt": "16 september 2026 11:58:34",
       "pct": {
         "S": 30.4,
         "SD": 17.8,
@@ -1794,10 +1809,10 @@
     },
     "23": {
       "name": "Västmanlands län",
-      "votes": 163449,
-      "counted": 166,
+      "votes": 163697,
+      "counted": 167,
       "total": 176,
-      "updatedAt": "14 september 2026 17:35:37",
+      "updatedAt": "16 september 2026 11:56:30",
       "pct": {
         "S": 30.6,
         "SD": 20.5,
@@ -1926,14 +1941,14 @@
     },
     "27": {
       "name": "Jämtlands län",
-      "votes": 81965,
-      "counted": 85,
+      "votes": 82330,
+      "counted": 86,
       "total": 93,
-      "updatedAt": "14 september 2026 03:13:36",
+      "updatedAt": "16 september 2026 12:07:54",
       "pct": {
         "S": 31.7,
-        "M": 17.4,
         "SD": 17.4,
+        "M": 17.4,
         "C": 10.1,
         "MP": 6.6,
         "V": 6,
@@ -1992,10 +2007,10 @@
     },
     "29": {
       "name": "Norrbottens län",
-      "votes": 152934,
-      "counted": 158,
+      "votes": 153041,
+      "counted": 159,
       "total": 171,
-      "updatedAt": "16 september 2026 11:25:35",
+      "updatedAt": "16 september 2026 11:55:11",
       "pct": {
         "S": 37.7,
         "SD": 18,
@@ -2157,10 +2172,10 @@
     },
     "05": {
       "name": "Östergötlands län",
-      "votes": 292981,
-      "counted": 285,
+      "votes": 293096,
+      "counted": 286,
       "total": 300,
-      "updatedAt": "14 september 2026 03:55:19",
+      "updatedAt": "16 september 2026 12:02:47",
       "pct": {
         "S": 28.4,
         "M": 20.6,
@@ -2321,5 +2336,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-16T10:09:28.945Z"
+  "kartaAt": "2026-09-16T10:12:05.762Z"
 }
