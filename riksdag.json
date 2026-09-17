@@ -1,11 +1,11 @@
 {
-  "updatedAt": "17 september 2026 13:14:38",
-  "reportedAt": "17 september 2026 13:13:41",
-  "fetchedAt": "2026-09-17T11:43:08Z",
+  "updatedAt": "17 september 2026 18:03:32",
+  "reportedAt": "17 september 2026 18:02:51",
+  "fetchedAt": "2026-09-17T16:07:34Z",
   "counted": 6626,
   "total": 6626,
-  "votes": 6829346,
-  "validVotes": 6735629,
+  "votes": 6829278,
+  "validVotes": 6735557,
   "turnout": "84,8 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 57646,
-    "other": 33406,
+    "blank": 57648,
+    "other": 33408,
     "notRegistered": 2665,
-    "total": 93717,
+    "total": 93721,
     "pct": 1.4
   },
   "final": {
-    "counted": 2870,
+    "counted": 3576,
     "total": 6626,
-    "updatedAt": "17 september 2026 13:40:14",
-    "votes": 2924744
+    "updatedAt": "17 september 2026 17:57:11",
+    "votes": 3615992
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1886465,
+      "votes": 1886535,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -106,7 +106,7 @@
       "pct": 19.8,
       "prevPct": 19.1,
       "delta": 0.7,
-      "votes": 1336810,
+      "votes": 1336802,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -117,7 +117,7 @@
       "pct": 17.5,
       "prevPct": 20.5,
       "delta": -3.1,
-      "votes": 1176840,
+      "votes": 1176834,
       "color": "#4E83A3",
       "seats": 62,
       "seatsPrev": 73
@@ -128,7 +128,7 @@
       "pct": 8.4,
       "prevPct": 6.7,
       "delta": 1.7,
-      "votes": 565614,
+      "votes": 565599,
       "color": "#C40000",
       "seats": 30,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 474548,
+      "votes": 474541,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.8,
-      "votes": 415870,
+      "votes": 415867,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.1,
-      "votes": 413097,
+      "votes": 413091,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 359845,
+      "votes": 359850,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 106540,
+      "votes": 106438,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1543,6 +1543,21 @@
     },
     {
       "t": "2026-09-17T11:43:08Z",
+      "counted": 6626,
+      "pct": {
+        "S": 28.0,
+        "M": 19.8,
+        "SD": 17.5,
+        "V": 8.4,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
+    },
+    {
+      "t": "2026-09-17T16:07:34Z",
       "counted": 6626,
       "pct": {
         "S": 28.0,
