@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300" role="img" aria-label="Two small figures back to back in a dark hangar, surrounded by crawling creatures">
+  <defs>
+    <linearGradient id="hs-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f7f2ea"/><stop offset="100%" stop-color="#ded3c3"/>
+    </linearGradient>
+    <radialGradient id="hs-lamp" cx="0.5" cy="0" r="0.9">
+      <stop offset="0%" stop-color="#16120f" stop-opacity="0"/><stop offset="100%" stop-color="#16120f" stop-opacity=".18"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="400" height="300" fill="url(#hs-sky)"/>
+
+  <!-- screentone -->
+  <g fill="#16120f" opacity=".07">
+    <circle cx="24" cy="24" r="2"/><circle cx="60" cy="24" r="2"/><circle cx="96" cy="24" r="2"/>
+    <circle cx="24" cy="60" r="2"/><circle cx="60" cy="60" r="2"/><circle cx="96" cy="60" r="2"/>
+    <circle cx="24" cy="96" r="2"/><circle cx="60" cy="96" r="2"/>
+    <circle cx="376" cy="276" r="2"/><circle cx="340" cy="276" r="2"/><circle cx="304" cy="276" r="2"/>
+    <circle cx="376" cy="240" r="2"/><circle cx="340" cy="240" r="2"/>
+  </g>
+
+  <!-- hangar: roof trusses and a welded door -->
+  <g fill="none" stroke="#16120f" stroke-width="3" stroke-linecap="round">
+    <path d="M0 78 H400"/>
+    <path d="M40 78 l40-40 l40 40 l40-40 l40 40 l40-40 l40 40 l40-40 l40 40"/>
+    <path d="M0 38 H400"/>
+  </g>
+  <g fill="#16120f">
+    <rect x="150" y="88" width="100" height="70"/>
+    <rect x="196" y="88" width="8" height="70" fill="#f7f2ea"/>
+    <rect x="160" y="118" width="18" height="6" fill="#f7f2ea"/><rect x="222" y="118" width="18" height="6" fill="#f7f2ea"/>
+  </g>
+  <!-- lamp cone -->
+  <path d="M160 40 L110 300 H290 L240 40 z" fill="url(#hs-lamp)"/>
+
+  <!-- floor line and crates -->
+  <g fill="#16120f">
+    <path d="M0 236 H400 v64 H0 z" opacity=".92"/>
+    <rect x="28" y="196" width="46" height="40"/>
+    <rect x="326" y="200" width="46" height="36"/>
+    <rect x="34" y="202" width="34" height="3" fill="#ded3c3"/><rect x="332" y="206" width="34" height="3" fill="#ded3c3"/>
+  </g>
+
+  <!-- the two survivors, back to back -->
+  <g fill="#16120f">
+    <!-- player one, left, with a shotgun -->
+    <circle cx="178" cy="176" r="11"/>
+    <path d="M166 190 h24 l6 44 h-36 z"/>
+    <rect x="132" y="197" width="40" height="7"/>
+    <rect x="128" y="195" width="8" height="11"/>
+    <path d="M168 234 l-6 22 h10 l4-22 z"/><path d="M182 234 l2 22 h10 l-4-22 z"/>
+    <!-- player two, right, with a rifle -->
+    <circle cx="222" cy="176" r="11"/>
+    <path d="M210 190 h24 l6 44 h-36 z"/>
+    <rect x="228" y="197" width="48" height="6"/>
+    <rect x="272" y="195" width="8" height="10"/>
+    <path d="M212 234 l-4 22 h10 l2-22 z"/><path d="M228 234 l6 22 h10 l-8-22 z"/>
+  </g>
+  <!-- visors -->
+  <rect x="169" y="172" width="12" height="4" fill="#ded3c3"/>
+  <rect x="219" y="172" width="12" height="4" fill="#ded3c3"/>
+
+  <!-- creatures closing in -->
+  <g fill="#16120f">
+    <g transform="translate(70 258)"><ellipse cx="0" cy="0" rx="16" ry="9"/><path d="M-16 0 l-10-8 M-12 5 l-10 8 M16 0 l10-8 M12 5 l10 8" stroke="#16120f" stroke-width="3" fill="none"/></g>
+    <g transform="translate(320 262)"><ellipse cx="0" cy="0" rx="16" ry="9"/><path d="M-16 0 l-10-8 M-12 5 l-10 8 M16 0 l10-8 M12 5 l10 8" stroke="#16120f" stroke-width="3" fill="none"/></g>
+    <g transform="translate(110 220)"><ellipse cx="0" cy="0" rx="12" ry="7"/><path d="M-12 0 l-8-6 M-9 4 l-8 6 M12 0 l8-6 M9 4 l8 6" stroke="#16120f" stroke-width="2.5" fill="none"/></g>
+    <g transform="translate(300 214)"><ellipse cx="0" cy="0" rx="12" ry="7"/><path d="M-12 0 l-8-6 M-9 4 l-8 6 M12 0 l8-6 M9 4 l8 6" stroke="#16120f" stroke-width="2.5" fill="none"/></g>
+    <!-- a brute at the back -->
+    <g transform="translate(348 150)"><path d="M-22 26 q-8-30 22-34 q30 4 22 34 z"/><rect x="-14" y="6" width="6" height="5" fill="#ded3c3"/><rect x="8" y="6" width="6" height="5" fill="#ded3c3"/></g>
+  </g>
+  <!-- eyes on the creatures -->
+  <g fill="#ded3c3">
+    <rect x="64" y="254" width="4" height="3"/><rect x="72" y="254" width="4" height="3"/>
+    <rect x="314" y="258" width="4" height="3"/><rect x="322" y="258" width="4" height="3"/>
+  </g>
+
+  <!-- muzzle flash -->
+  <g fill="none" stroke="#16120f" stroke-width="3" stroke-linecap="round">
+    <path d="M120 200 l-14-6 M120 200 l-16 2 M120 200 l-12 8"/>
+    <path d="M286 199 l14-6 M286 199 l16 2 M286 199 l12 8"/>
+  </g>
+</svg>

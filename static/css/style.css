@@ -358,6 +358,7 @@ main { display: block; }
    stage rather than in the paper panels the canvas games use. */
 .dashh { position: relative; background: #05060c; border: 1px solid var(--hair); }
 .dashh__frame { display: block; width: 100%; aspect-ratio: 16 / 10; border: 0; }
+.dashh__frame.is-16x9 { aspect-ratio: 16 / 9; }
 
 /* Fullscreen: the frame drops its aspect ratio and takes the whole screen,
    because the game letterboxes itself and reflows its own HUD. */
