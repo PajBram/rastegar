@@ -1,12 +1,12 @@
 {
-  "updatedAt": "16 september 2026 22:45:13",
-  "reportedAt": "16 september 2026 22:45:57",
-  "fetchedAt": "2026-09-16T21:07:18Z",
-  "counted": 6620,
+  "updatedAt": "17 september 2026 10:02:32",
+  "reportedAt": "17 september 2026 10:01:38",
+  "fetchedAt": "2026-09-17T08:17:51Z",
+  "counted": 6622,
   "total": 6626,
-  "votes": 6789584,
-  "validVotes": 6696797,
-  "turnout": "84,3 %",
+  "votes": 6791330,
+  "validVotes": 6698490,
+  "turnout": "84,4 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 57339,
-    "other": 32799,
+    "blank": 57358,
+    "other": 32833,
     "notRegistered": 2649,
-    "total": 92787,
+    "total": 92840,
     "pct": 1.4
   },
   "final": {
-    "counted": 2054,
+    "counted": 2283,
     "total": 6626,
-    "updatedAt": "16 september 2026 22:43:50",
-    "votes": 2091929
+    "updatedAt": "17 september 2026 10:15:17",
+    "votes": 2321921
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1876046,
+      "votes": 1876502,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -106,7 +106,7 @@
       "pct": 19.9,
       "prevPct": 19.1,
       "delta": 0.8,
-      "votes": 1329696,
+      "votes": 1330053,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -117,7 +117,7 @@
       "pct": 17.5,
       "prevPct": 20.5,
       "delta": -3.0,
-      "votes": 1172659,
+      "votes": 1172911,
       "color": "#4E83A3",
       "seats": 62,
       "seatsPrev": 73
@@ -128,7 +128,7 @@
       "pct": 8.4,
       "prevPct": 6.7,
       "delta": 1.6,
-      "votes": 559618,
+      "votes": 559815,
       "color": "#C40000",
       "seats": 30,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 471631,
+      "votes": 471757,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.8,
-      "votes": 414063,
+      "votes": 414149,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 409320,
+      "votes": 409455,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 357823,
+      "votes": 357875,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 105941,
+      "votes": 105973,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1510,6 +1510,21 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-17T08:17:51Z",
+      "counted": 6622,
+      "pct": {
+        "S": 28.0,
+        "M": 19.9,
+        "SD": 17.5,
+        "V": 8.4,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -2406,18 +2421,18 @@
     },
     "08": {
       "name": "Kalmar län",
-      "votes": 159459,
-      "counted": 173,
+      "votes": 161152,
+      "counted": 175,
       "total": 175,
-      "updatedAt": "16 september 2026 16:09:18",
+      "updatedAt": "17 september 2026 10:01:38",
       "pct": {
-        "S": 29.1,
+        "S": 29,
         "SD": 21.4,
         "M": 18.7,
         "KD": 8.4,
         "C": 6.4,
         "V": 6.1,
-        "L": 4.3,
+        "L": 4.2,
         "MP": 4.1,
         "ÖVR": 1.5
       },
@@ -2471,5 +2486,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-16T21:11:23.707Z"
+  "kartaAt": "2026-09-17T09:22:50.630Z"
 }
