@@ -1,11 +1,11 @@
 {
-  "updatedAt": "17 september 2026 10:02:32",
-  "reportedAt": "17 september 2026 10:01:38",
-  "fetchedAt": "2026-09-17T08:17:51Z",
-  "counted": 6622,
+  "updatedAt": "17 september 2026 12:02:53",
+  "reportedAt": "17 september 2026 12:01:39",
+  "fetchedAt": "2026-09-17T10:21:40Z",
+  "counted": 6624,
   "total": 6626,
-  "votes": 6791330,
-  "validVotes": 6698490,
+  "votes": 6794282,
+  "validVotes": 6701367,
   "turnout": "84,4 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 57358,
-    "other": 32833,
-    "notRegistered": 2649,
-    "total": 92840,
+    "blank": 57383,
+    "other": 32882,
+    "notRegistered": 2650,
+    "total": 92915,
     "pct": 1.4
   },
   "final": {
-    "counted": 2283,
+    "counted": 2703,
     "total": 6626,
-    "updatedAt": "17 september 2026 10:15:17",
-    "votes": 2321921
+    "updatedAt": "17 september 2026 12:14:23",
+    "votes": 2763607
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1876502,
+      "votes": 1877130,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -106,7 +106,7 @@
       "pct": 19.9,
       "prevPct": 19.1,
       "delta": 0.8,
-      "votes": 1330053,
+      "votes": 1330876,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -117,7 +117,7 @@
       "pct": 17.5,
       "prevPct": 20.5,
       "delta": -3.0,
-      "votes": 1172911,
+      "votes": 1173472,
       "color": "#4E83A3",
       "seats": 62,
       "seatsPrev": 73
@@ -128,7 +128,7 @@
       "pct": 8.4,
       "prevPct": 6.7,
       "delta": 1.6,
-      "votes": 559815,
+      "votes": 559962,
       "color": "#C40000",
       "seats": 30,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 471757,
+      "votes": 471946,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.8,
-      "votes": 414149,
+      "votes": 414323,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -161,7 +161,7 @@
       "pct": 6.1,
       "prevPct": 5.1,
       "delta": 1.0,
-      "votes": 409455,
+      "votes": 409605,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 357875,
+      "votes": 358032,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 105973,
+      "votes": 106021,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1525,6 +1525,21 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-17T10:21:40Z",
+      "counted": 6624,
+      "pct": {
+        "S": 28.0,
+        "M": 19.9,
+        "SD": 17.5,
+        "V": 8.4,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -1629,12 +1644,12 @@
     },
     "13": {
       "name": "Skåne läns södra",
-      "votes": 269025,
-      "counted": 262,
+      "votes": 270190,
+      "counted": 263,
       "total": 263,
-      "updatedAt": "16 september 2026 19:53:29",
+      "updatedAt": "17 september 2026 12:01:39",
       "pct": {
-        "M": 23.2,
+        "M": 23.3,
         "S": 22.8,
         "SD": 19.8,
         "C": 8,
@@ -1728,18 +1743,18 @@
     },
     "16": {
       "name": "Göteborgs kommun",
-      "votes": 357214,
-      "counted": 396,
+      "votes": 378715,
+      "counted": 397,
       "total": 397,
-      "updatedAt": "14 september 2026 12:28:24",
+      "updatedAt": "17 september 2026 13:13:41",
       "pct": {
         "S": 27.1,
         "M": 18.2,
-        "V": 15,
-        "SD": 11.9,
-        "MP": 9,
+        "V": 15.1,
+        "SD": 11.8,
+        "MP": 9.1,
         "C": 6.5,
-        "L": 6,
+        "L": 5.9,
         "KD": 4.9,
         "ÖVR": 1.4
       },
@@ -1893,12 +1908,12 @@
     },
     "21": {
       "name": "Värmlands län",
-      "votes": 182225,
-      "counted": 193,
+      "votes": 183937,
+      "counted": 194,
       "total": 194,
-      "updatedAt": "16 september 2026 22:45:13",
+      "updatedAt": "17 september 2026 11:39:17",
       "pct": {
-        "S": 31.1,
+        "S": 31,
         "M": 20.1,
         "SD": 19.7,
         "KD": 6.9,
@@ -2486,5 +2501,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-17T09:22:50.630Z"
+  "kartaAt": "2026-09-17T11:24:47.598Z"
 }
