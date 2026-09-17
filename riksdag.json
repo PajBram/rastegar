@@ -1,12 +1,12 @@
 {
-  "updatedAt": "17 september 2026 12:02:53",
-  "reportedAt": "17 september 2026 12:01:39",
-  "fetchedAt": "2026-09-17T10:21:40Z",
-  "counted": 6624,
+  "updatedAt": "17 september 2026 13:14:38",
+  "reportedAt": "17 september 2026 13:13:41",
+  "fetchedAt": "2026-09-17T11:43:08Z",
+  "counted": 6626,
   "total": 6626,
-  "votes": 6794282,
-  "validVotes": 6701367,
-  "turnout": "84,4 %",
+  "votes": 6829346,
+  "validVotes": 6735629,
+  "turnout": "84,8 %",
   "turnoutPrev": "84,2 %",
   "stage": "preliminär",
   "seatsOfficial": [
@@ -76,17 +76,17 @@
     }
   ],
   "invalid": {
-    "blank": 57383,
-    "other": 32882,
-    "notRegistered": 2650,
-    "total": 92915,
+    "blank": 57646,
+    "other": 33406,
+    "notRegistered": 2665,
+    "total": 93717,
     "pct": 1.4
   },
   "final": {
-    "counted": 2703,
+    "counted": 2870,
     "total": 6626,
-    "updatedAt": "17 september 2026 12:14:23",
-    "votes": 2763607
+    "updatedAt": "17 september 2026 13:40:14",
+    "votes": 2924744
   },
   "parties": [
     {
@@ -95,7 +95,7 @@
       "pct": 28.0,
       "prevPct": 30.3,
       "delta": -2.3,
-      "votes": 1877130,
+      "votes": 1886465,
       "color": "#FF0000",
       "seats": 99,
       "seatsPrev": 107
@@ -103,10 +103,10 @@
     {
       "code": "M",
       "name": "Moderaterna",
-      "pct": 19.9,
+      "pct": 19.8,
       "prevPct": 19.1,
-      "delta": 0.8,
-      "votes": 1330876,
+      "delta": 0.7,
+      "votes": 1336810,
       "color": "#66BEE6",
       "seats": 70,
       "seatsPrev": 68
@@ -116,8 +116,8 @@
       "name": "Sverigedemokraterna",
       "pct": 17.5,
       "prevPct": 20.5,
-      "delta": -3.0,
-      "votes": 1173472,
+      "delta": -3.1,
+      "votes": 1176840,
       "color": "#4E83A3",
       "seats": 62,
       "seatsPrev": 73
@@ -127,8 +127,8 @@
       "name": "Vänsterpartiet",
       "pct": 8.4,
       "prevPct": 6.7,
-      "delta": 1.6,
-      "votes": 559962,
+      "delta": 1.7,
+      "votes": 565614,
       "color": "#C40000",
       "seats": 30,
       "seatsPrev": 24
@@ -139,7 +139,7 @@
       "pct": 7.0,
       "prevPct": 6.7,
       "delta": 0.3,
-      "votes": 471946,
+      "votes": 474548,
       "color": "#63A91D",
       "seats": 25,
       "seatsPrev": 24
@@ -150,7 +150,7 @@
       "pct": 6.2,
       "prevPct": 5.3,
       "delta": 0.8,
-      "votes": 414323,
+      "votes": 415870,
       "color": "#1B5CB1",
       "seats": 22,
       "seatsPrev": 19
@@ -160,8 +160,8 @@
       "name": "Miljöpartiet de gröna",
       "pct": 6.1,
       "prevPct": 5.1,
-      "delta": 1.0,
-      "votes": 409605,
+      "delta": 1.1,
+      "votes": 413097,
       "color": "#008000",
       "seats": 22,
       "seatsPrev": 18
@@ -172,7 +172,7 @@
       "pct": 5.3,
       "prevPct": 4.6,
       "delta": 0.7,
-      "votes": 358032,
+      "votes": 359845,
       "color": "#3399FF",
       "seats": 19,
       "seatsPrev": 16
@@ -183,7 +183,7 @@
       "pct": 1.6,
       "prevPct": 1.5,
       "delta": 0.0,
-      "votes": 106021,
+      "votes": 106540,
       "color": null,
       "seats": null,
       "seatsPrev": null
@@ -1540,6 +1540,21 @@
         "L": 5.3,
         "ÖVR": 1.6
       }
+    },
+    {
+      "t": "2026-09-17T11:43:08Z",
+      "counted": 6626,
+      "pct": {
+        "S": 28.0,
+        "M": 19.8,
+        "SD": 17.5,
+        "V": 8.4,
+        "C": 7.0,
+        "KD": 6.2,
+        "MP": 6.1,
+        "L": 5.3,
+        "ÖVR": 1.6
+      }
     }
   ],
   "valkretsar": {
@@ -2271,18 +2286,18 @@
     },
     "03": {
       "name": "Uppsala län",
-      "votes": 252292,
-      "counted": 242,
+      "votes": 265053,
+      "counted": 243,
       "total": 243,
-      "updatedAt": "16 september 2026 20:27:14",
+      "updatedAt": "17 september 2026 12:53:20",
       "pct": {
-        "S": 27,
-        "M": 18.5,
-        "SD": 15.9,
-        "V": 9.4,
-        "MP": 8.2,
+        "S": 27.1,
+        "M": 18.4,
+        "SD": 15.6,
+        "V": 9.7,
+        "MP": 8.4,
         "C": 7.7,
-        "KD": 6.7,
+        "KD": 6.6,
         "L": 5,
         "ÖVR": 1.6
       },
@@ -2501,5 +2516,5 @@
       }
     }
   },
-  "kartaAt": "2026-09-17T11:24:47.598Z"
+  "kartaAt": "2026-09-17T12:15:33.103Z"
 }
