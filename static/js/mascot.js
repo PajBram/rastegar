@@ -12,7 +12,7 @@
  *
  * Rules it keeps to:
  *   - prefers-reduced-motion means no mascot at all, not a slower one.
- *   - the game pages own the screen; it stays away from them.
+ *   - the game pages and the skill tree own the screen; it stays away from them.
  *   - it stops dead when the tab is hidden, and costs nothing while it is.
  *   - it never sits on top of anything you can click. Only the figures
  *     themselves take a pointer, and tapping one tags it.
@@ -20,9 +20,10 @@
 (function () {
   'use strict';
 
-  // A canvas game fills the screen and takes every touch. A man walking over
-  // the top of it is not a joke, it is a bug.
-  if (document.getElementById('game-root')) return;
+  // A canvas game fills the screen and takes every touch, and so does the
+  // skill tree, with its tray of picks along the bottom. A man walking over
+  // the top of either is not a joke, it is a bug.
+  if (document.getElementById('game-root') || document.getElementById('skilltree')) return;
 
   var motion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)');
   if (motion && motion.matches) return;

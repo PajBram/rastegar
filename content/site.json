@@ -20,6 +20,11 @@
       "url": "/games/"
     },
     {
+      "id": "skilltree",
+      "label": "Skill Tree",
+      "url": "/skilltree/"
+    },
+    {
       "id": "devlog",
       "label": "Devlog",
       "url": "/devlog/"

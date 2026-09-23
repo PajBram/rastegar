@@ -54,15 +54,19 @@ content/               ALLT innehåll. Se CONTENT.md
   games/               Ett spelkort per fil (JSON)
   quizzes/             Frågebanker (JSON), kopieras till /static/quizzes/
   anime/watchlist.json Serier, betyg, omdömen
+  skilltree/           skills.json (ögonblicksbild, skrivs av verktyget) och
+                       branches.json (grenar, färger, nyckelord, pin)
 templates/             base.html + en mall per sidtyp. {{token}} ersätts av build.py
 static/                Kopieras rakt av till dist/static/
   css/style.css        Hela designsystemet, ett enda ark
   js/                  main.js (meny), quiz.js (quizmotor), arcade.js (spelskal),
-                       scores.js (highscore), guestbook.js, mascot.js (kullgubbarna)
+                       scores.js (highscore), guestbook.js, mascot.js (kullgubbarna),
+                       skilltree.js (webben, valen, skicka till Claude)
   games/               Ett canvas-spel per fil, byggt ovanpå arcade.js
   img/                 scene-*.svg (sidscener), games/<slug>.svg (spelomslag)
   fonts/               Självhostade typsnitt
 tools/mock_backend.py  Härmar Supabase lokalt för test av highscore och gästbok
+tools/skilltree.py     Hämtar skill tree-datan från skills.sh och GitHub
 public/                Filer som kopieras till roten: CNAME, robots.txt, .nojekyll
 supabase/schema.sql    Tabeller, RLS-policyer och RPC-funktioner
 ```
@@ -97,9 +101,12 @@ Principer:
 - **Loggan** är skrivstil (`Great Vibes`) över en hårlinje med domänen under i
   spärrade versaler. Rör den inte utan att fråga.
 - **Inget mörkt läge.** Det togs bort i omgörningen; sajten är ljus, punkt.
+  Undantag: scenen på `/skilltree/` är mörk, eftersom Paj ville att den skulle
+  se ut som Johans skill tree. Sajtens typsnitt, hårlinjer och rött gäller där
+  också; bara papperet är mörkt.
 - **Maskoten** (`static/js/mascot.js`) är en liten bläckfigur som går längs
   fönstrets underkant och spelar kull med en besökare i rött pannband. Den
-  finns inte alls vid `prefers-reduced-motion`, aldrig på spelsidorna, tonas
+  finns inte alls vid `prefers-reduced-motion`, aldrig på spelsidorna eller skill tree, tonas
   bort medan man scrollar, och byter till kritstreck över den mörka foten.
   `__mascot.step()` och `__mascot.chase()` driver den utan att vänta på riktig
   tid.
@@ -147,6 +154,31 @@ Se **[CONTENT.md](CONTENT.md)**. Den beskriver exakt var devlogg-inlägg, anime-
 - **GitHub:** repot är publikt eftersom GitHub Pages kräver det på gratisplanen.
 - **Supabase:** ett eget gratisprojekt, skilt från TAG:s. Nycklarna i `content/site.json` under `backend` är projektets URL och **anon-nyckeln** — den är publik och avsedd att ligga i webbläsaren. Service-nyckeln får aldrig hamna i repot.
 - **Moderering av gästboken:** Paj öppnar tabellen `guestbook` i Supabase Table Editor och antingen kryssar i `hidden` eller raderar raden.
+
+## /skilltree/ – karta över agent-skills
+
+En flik i menyn (tillagd 23 sep 2026, efter förlaga från johanslekstuga.com/skilltree,
+som krediteras på sidan). De mest installerade skillsen på skills.sh som en rund
+väv: en prick per skill, grupperade i 15 grenar, de mest installerade närmast mitten.
+Trådarna är antingen författarens egna hänvisningar (en SKILL.md som nämner en annan
+skill, heldragen) eller likhet i beskrivningarna (svag). Under webben ligger samma
+skills som listor, för mobil och skärmläsare.
+
+- **Skicka till Claude:** besökaren samlar skills i en korg. Dialogen bygger en
+  förfrågan och öppnar den med `claude://code/new?q=` (Claude-appen) eller
+  `claude-cli://open?q=` (terminalen, max 5 000 tecken), eller kopierar den.
+  Prompten fylls bara i; inget körs förrän besökaren trycker Enter. Claude laddar
+  ner varje mapp direkt från författarens GitHub till `~/.claude/skills/` och
+  ombeds läsa SKILL.md först. Inget passerar sajten. Valen sparas i
+  `localStorage`, och "Copy a link to these picks" ger en länk `#picks=...`.
+- **Datan är en ögonblicksbild** i `content/skilltree/skills.json`. Bygget rör
+  aldrig nätet. Uppdatera med `python3 tools/skilltree.py` (se CONTENT.md).
+- **Urvalet:** bara GitHub-repon, bara skills beskrivna på engelska, en kopia per
+  skill-namn, högst 15 per repo. Skills som försvunnit ur sina repon hoppas över,
+  eftersom de inte går att installera.
+- Färgerna är valda så att grannar runt cirkeln går att skilja åt även med
+  färgblindhet, mot den mörka bakgrunden. Byt inte en färg utan att kontrollera
+  grannarna igen.
 
 ## /val/ – valnattssidan (undantag)
 

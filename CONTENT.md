@@ -147,6 +147,36 @@ Kom ihåg:
 
 ---
 
+## Skill tree: uppdatera datan
+
+`/skilltree/` visar en ögonblicksbild av skills.sh. Den blir gammal, så uppdatera
+den då och då:
+
+```bash
+python3 tools/skilltree.py
+```
+
+Det hämtar topplistan (en sida från skills.sh) och varje skills SKILL.md från
+GitHub, sorterar in dem i grenar och skriver `content/skilltree/skills.json`.
+Verktyget lånar GitHub-inloggningen från `gh` (eller `$GITHUB_TOKEN`); utan den
+tar GitHubs gräns på 60 anrop i timmen slut.
+
+**Grenarna** står i `content/skilltree/branches.json`: namn, kort namn (för
+mobilen), färg och nyckelord. Hamnar en skill i fel gren, lägg till den under
+`pin` (`"ägare/repo/skill": "gren"`, eller `"ägare/repo": "gren"` för ett helt
+repo) och kör
+
+```bash
+python3 tools/skilltree.py --offline
+```
+
+som sorterar om utan att hämta något. Verktyget säger till om en `pin` inte
+längre matchar någon skill. Ett repo som inte ska vara med alls läggs i `exclude`.
+
+Granska sedan i webbläsaren som vanligt och committa båda JSON-filerna.
+
+---
+
 ## Sidtexter
 
 - Startsidans introtext: `content/pages/home.md`

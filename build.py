@@ -20,6 +20,7 @@ import shutil
 import sys
 from datetime import date, datetime
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).parent
 CONTENT = ROOT / "content"
@@ -252,6 +253,17 @@ def load_games() -> list[dict]:
     return games
 
 
+def load_skilltree() -> dict | None:
+    """The skill tree snapshot and its branches. Written by tools/skilltree.py;
+    the build only reads it, so building never touches the network."""
+    folder = CONTENT / "skilltree"
+    if not (folder / "skills.json").exists():
+        return None
+    tree = load_json(folder / "skills.json")
+    tree["branches"] = load_json(folder / "branches.json")["branches"]
+    return tree
+
+
 def pretty_date(iso: str) -> str:
     try:
         return datetime.strptime(iso, "%Y-%m-%d").strftime("%d %b %Y").upper()
@@ -341,6 +353,69 @@ def series_block(s: dict, games: list[dict]) -> str:
 </section>"""
 
 
+def skill_url(skill: dict) -> str:
+    """The skill's own folder on GitHub: what Claude is asked to download."""
+    base = f"https://github.com/{skill['repo']}"
+    return f"{base}/tree/{quote(skill['ref'])}/{quote(skill['path'])}" if skill["path"] else base
+
+
+def short_count(n: int) -> str:
+    if n >= 1_000_000:
+        return f"{n / 1_000_000:.1f}M".replace(".0M", "M")
+    return f"{round(n / 1000)}K" if n >= 1000 else str(n)
+
+
+def skilltree_data(tree: dict) -> dict:
+    """What the page's script loads: branches, skills, and the threads between
+    them as index pairs, which keeps the file a third of the size of ids."""
+    branch_at = {b["id"]: i for i, b in enumerate(tree["branches"])}
+    index = {s["id"]: i for i, s in enumerate(tree["skills"])}
+    links: dict = {}
+    for i, skill in enumerate(tree["skills"]):
+        for kind, others in ((0, skill.get("similar", [])), (1, skill.get("mentions", []))):
+            for other in others:
+                if other in index and index[other] != i:
+                    key = (min(i, index[other]), max(i, index[other]))
+                    links[key] = max(links.get(key, 0), kind)
+    return {
+        "snapshot": tree["snapshot"],
+        "branches": [{"id": b["id"], "label": b["label"], "short": b.get("short", b["label"]),
+                      "color": b["color"]} for b in tree["branches"]],
+        "skills": [{
+            "id": s["id"], "name": s["name"], "repo": s["repo"], "url": skill_url(s),
+            "page": "https://skills.sh/" + s["id"],
+            # Goes into the request Claude reads, so only the characters a
+            # folder name needs, whatever the repository called it.
+            "folder": re.sub(r"[^A-Za-z0-9._:-]", "-",
+                             s["path"].rsplit("/", 1)[-1] if s["path"] else s["repo"].split("/")[1]),
+            "installs": s["installs"], "official": s["official"], "license": s["license"],
+            "description": s["description"], "branch": branch_at[s["branch"]],
+            "also": [branch_at[b] for b in s.get("also", []) if b in branch_at],
+            "points": [index[m] for m in s.get("mentions", []) if m in index],
+        } for s in tree["skills"]],
+        "links": [[a, b, kind] for (a, b), kind in sorted(links.items())],
+    }
+
+
+def skilltree_atlas(tree: dict) -> str:
+    """The whole tree as plain lists, one per branch. It is what a screen
+    reader gets, and what a phone is easier to browse than the web."""
+    blocks = []
+    for branch in tree["branches"]:
+        members = [(i, s) for i, s in enumerate(tree["skills"]) if s["branch"] == branch["id"]]
+        if not members:
+            continue
+        items = "".join(
+            f'<li><a href="{html.escape(skill_url(s), quote=True)}" data-skill="{i}">{html.escape(s["name"])}</a>'
+            f'<span class="atlas__meta">{html.escape(s["repo"])} &middot; {short_count(s["installs"])}</span></li>'
+            for i, s in members)
+        blocks.append(
+            f'<section class="atlas__branch" style="--branch:{html.escape(branch["color"], quote=True)}">'
+            f'<h3><span class="atlas__swatch" aria-hidden="true"></span>{html.escape(branch["label"])}'
+            f' <span class="atlas__count">{len(members)}</span></h3><ul>{items}</ul></section>')
+    return "".join(blocks)
+
+
 # --------------------------------------------------------------------------
 # Build
 # --------------------------------------------------------------------------
@@ -350,6 +425,7 @@ def build() -> None:
     posts = load_devlog()
     games = load_games()
     anime = load_json(CONTENT / "anime" / "watchlist.json")
+    tree = load_skilltree()
 
     base = read_template("base.html")
     # Empty dist/ without removing the directory itself — a preview server may
@@ -446,6 +522,20 @@ def build() -> None:
          body=render(read_template("anime.html"), intro=markdown(anime_body),
                      series="".join(series_block(s, games) for s in anime["series"])))
 
+    # Skill tree --------------------------------------------------------------
+    if tree:
+        page("/skilltree/", title=f"Skill Tree — {site['name']}",
+             description=(f"The {len(tree['skills'])} most-installed agent skills for Claude and other "
+                          "coding agents, woven into one web. Pick the ones you want and send them "
+                          "to Claude on your computer."),
+             active="skilltree",
+             body=render(read_template("skilltree.html"),
+                         count=len(tree["skills"]),
+                         branches=len(tree["branches"]),
+                         repos=len({s["repo"] for s in tree["skills"]}),
+                         snapshot=html.escape(pretty_date(tree["snapshot"]).title()),
+                         atlas=skilltree_atlas(tree)))
+
     # About -----------------------------------------------------------------
     about_meta, about_body = page_source("about.md")
     page("/about/", title=f"About — {site['name']}",
@@ -529,6 +619,9 @@ def build() -> None:
                 shutil.copy(item, DIST / item.name)
     write(DIST / "static" / "js" / "config.js",
           "window.RASTEGAR = " + json.dumps(site.get("backend", {}), indent=2) + ";\n")
+    if tree:
+        write(DIST / "static" / "skilltree.json",
+              json.dumps(skilltree_data(tree), ensure_ascii=False, separators=(",", ":")))
     write(DIST / "404.html", render(base, title=f"404 — {site['name']}", site_name=site["name"],
                                     description="Page not found", nav=nav_html("", site),
                                     body=read_template("404.html"), year=date.today().year,
@@ -569,7 +662,7 @@ def sitemap(site: dict, posts: list[dict], games: list[dict]) -> str:
     # /about/ is built and reachable, but deliberately left out until it is
     # finished — off the nav, off the footer, and out of here so search
     # engines are not handed a half-written page.
-    urls = ["/", "/games/", "/devlog/", "/anime/", "/padel/", "/guestbook/"]
+    urls = ["/", "/games/", "/skilltree/", "/devlog/", "/anime/", "/padel/", "/guestbook/"]
     urls += [g["url"] for g in games] + [p["url"] for p in posts]
     base = site["url"].rstrip("/")
     body = "".join(f"<url><loc>{base}{u}</loc></url>" for u in urls)

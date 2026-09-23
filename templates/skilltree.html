@@ -1,0 +1,89 @@
+<div class="skilltree" id="skilltree">
+
+<section class="tree" aria-labelledby="tree-title">
+  <div class="tree__head">
+    <span class="kicker">An atlas of agent skills</span>
+    <h1 class="tree__title" id="tree-title">Skill Tree</h1>
+    <p class="tree__intro">The {{count}} most-installed skills for Claude and other coding agents, woven into one web. Drag to move, pinch to zoom, tap a skill to read it. Gather the ones you want and send them to Claude on your computer.</p>
+    <div class="tree__search">
+      <label class="sr-only" for="tree-q">Search the skills</label>
+      <input id="tree-q" type="search" placeholder="Search by name or author" autocomplete="off" autocapitalize="off" spellcheck="false" aria-controls="tree-hits" disabled>
+      <ul class="tree__hits" id="tree-hits" hidden></ul>
+    </div>
+    <p class="tree__legend"><b>Rings</b> &mdash; the nearer the middle, the more installs. <b>Threads</b> &mdash; solid where one skill&rsquo;s author points to another, faint where two describe the same work.</p>
+  </div>
+
+  <div class="tree__stage" id="tree-stage">
+    <canvas class="tree__canvas" id="tree-canvas" aria-hidden="true"></canvas>
+    <div class="tree__labels" id="tree-labels"></div>
+    <button class="tree__hub" id="tree-hub" type="button" disabled>
+      <b id="tree-hub-count">{{count}}</b>
+      <span id="tree-hub-text">skills &middot; one web</span>
+    </button>
+    <p class="tree__hint" aria-hidden="true">Pinch, or hold Ctrl or &#8984; and scroll, to zoom</p>
+    <noscript><p class="tree__noscript">The web needs JavaScript. Every skill is also in the lists further down.</p></noscript>
+  </div>
+
+  <div class="tree__zoom" role="group" aria-label="Zoom">
+    <button type="button" data-zoom="in" aria-label="Zoom in">+</button>
+    <button type="button" data-zoom="out" aria-label="Zoom out">&minus;</button>
+    <button type="button" data-zoom="reset">Reset</button>
+  </div>
+
+  <p class="tree__credit">Data from <a href="https://skills.sh">skills.sh</a>, snapshot {{snapshot}}. Every skill belongs to its author; names and descriptions are theirs. The idea comes from <a href="https://www.johanslekstuga.com/skilltree">Johan&rsquo;s skill tree</a>.</p>
+</section>
+
+<aside class="skillcard" id="skillcard" aria-labelledby="skillcard-title" hidden>
+  <button class="skillcard__close" type="button" data-close aria-label="Close">&times;</button>
+  <div class="skillcard__body" id="skillcard-body"></div>
+</aside>
+
+<div class="picks" id="picks" hidden>
+  <p class="picks__count" id="picks-count" role="status"></p>
+  <button class="picks__clear" type="button" id="picks-clear">Clear</button>
+  <button class="btn btn--small picks__send" type="button" id="picks-send">Send to Claude</button>
+</div>
+
+<dialog class="send" id="send" aria-labelledby="send-title">
+  <button class="skillcard__close" type="button" data-close aria-label="Close">&times;</button>
+  <span class="kicker">Send to Claude</span>
+  <h2 class="send__title" id="send-title">Your picks</h2>
+  <p class="send__lede">This opens Claude Code on your own computer with a request already typed in: fetch these skills from their authors on GitHub, read each one, and install it. Nothing happens until you press Enter.</p>
+  <ul class="send__list" id="send-list"></ul>
+  <div class="send__actions">
+    <a class="btn send__go" id="send-app" href="#">Open in the Claude app</a>
+    <a class="btn btn--line send__go" id="send-cli" href="#">Open in the terminal</a>
+    <button class="btn btn--line" type="button" id="send-copy">Copy the request</button>
+  </div>
+  <p class="send__status" id="send-status" role="status"></p>
+  <p class="send__note">The app button needs the Claude desktop app. The terminal button needs Claude Code, started at least once so your computer knows the link. Copying works anywhere Claude Code does: paste it in and press Enter.</p>
+  <details class="send__request">
+    <summary>Read the request first</summary>
+    <pre id="send-request"></pre>
+  </details>
+  <button class="send__share" type="button" id="send-share">Copy a link to these picks</button>
+</dialog>
+
+<section class="section wrap atlas" aria-labelledby="atlas-title">
+  <div class="section-head">
+    <hr class="rule">
+    <h2 id="atlas-title">Every skill, branch by branch</h2>
+    <p>The same {{count}} skills from {{repos}} authors, as lists. Easier on a phone than the web, and what a screen reader gets. Tap a name to open it.</p>
+  </div>
+  <div class="atlas__grid">{{atlas}}</div>
+</section>
+
+<section class="section wrap">
+  <div class="section-head">
+    <hr class="rule">
+    <h2>How the sending works</h2>
+  </div>
+  <div class="prose measure">
+    <p>Pick skills in the web or the lists, then press <strong>Send to Claude</strong>. Your browser hands a request to Claude Code on your own machine, the desktop app or the terminal, with your list already typed in. Claude downloads each skill straight from its author&rsquo;s GitHub, reads it before installing it, and puts it in <code>~/.claude/skills</code>, where every session after that can use it.</p>
+    <p>Nothing is sent until you press Enter, and nothing passes through this site: it only writes the request. Skills are other people&rsquo;s code and instructions, so the request tells Claude to stop and tell you if a skill does something its description does not explain.</p>
+  </div>
+</section>
+
+</div>
+
+<script src="/static/js/skilltree.js" defer></script>
