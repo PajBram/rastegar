@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<title>Lediga hyresrätter i Stockholm</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Lediga förstahandskontrakt i Stockholms län från Bostadsförmedlingen, Homeq och privata hyresvärdar, samlade på ett ställe och uppdaterade var 15:e minut.">
+<link rel="canonical" href="https://rastegar.se/hyra/">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="/static/img/favicon.svg" type="image/svg+xml">
+<!--
+  Standalone page, like /val/. The data is written every 15 minutes by the
+  scraper in github.com/PajBram/hyresbotten to its "data" branch; this page
+  only reads it and filters in the browser. Everything that comes from the
+  data is set with textContent, never innerHTML.
+-->
+<style>
+@font-face {
+  font-family: 'Noto Serif Display';
+  src: url('/static/fonts/noto-serif-display.woff2') format('woff2');
+  font-weight: 100 900;
+  font-display: swap;
+}
+:root {
+  --ink: #16120f;
+  --ink-soft: #6d635b;
+  --hair: rgba(22, 18, 15, .14);
+  --paper: #ffffff;
+  --sand: #f7f2ec;
+  --tan: #c9a582;
+  --red: #ff2d55;
+  --red-deep: #cf0035;
+  --serif: 'Noto Serif Display', 'Iowan Old Style', Georgia, 'Times New Roman', serif;
+  --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--paper); color: var(--ink);
+  font-family: var(--sans); font-size: 16px; line-height: 1.5;
+  font-variant-numeric: tabular-nums; overflow-x: hidden;
+}
+a { color: inherit; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--red); outline-offset: 3px; }
+h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-spacing: -.01em; margin: 0; }
+.sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+.kicker {
+  display: block; font-size: .72rem; font-weight: 600; letter-spacing: .22em;
+  text-transform: uppercase; color: var(--ink-soft); margin: 0 0 .7rem;
+}
+.kicker a { text-decoration: none; }
+.kicker a:hover { color: var(--red); }
+
+.wrap { max-width: 1180px; margin: 0 auto; padding: 0 16px; }
+
+/* ---------------------------------------------------------------- head */
+.top { padding: 2.2rem 0 1.4rem; border-bottom: 1px solid var(--hair); }
+.top h1 { font-size: clamp(2rem, 6vw, 3.2rem); margin-bottom: .6rem; }
+.lede { color: var(--ink-soft); max-width: 62ch; margin: 0 0 .5rem; }
+.status { font-size: .9rem; color: var(--ink-soft); margin: .2rem 0 0; }
+.status b { color: var(--ink); font-weight: 600; }
+.warn { margin: .6rem 0 0; padding: .55rem .8rem; background: var(--sand); font-size: .9rem; }
+.warn:empty { display: none; }
+
+/* ---------------------------------------------------------------- layout */
+.layout { display: grid; gap: 1.6rem; padding-top: 1.4rem; padding-bottom: 3rem; }
+@media (min-width: 900px) {
+  .layout { grid-template-columns: 290px minmax(0, 1fr); gap: 2.4rem; }
+  .filters { position: sticky; top: 1rem; align-self: start; max-height: calc(100vh - 2rem); overflow: auto; }
+  .filters > summary { display: none; }
+}
+
+/* ---------------------------------------------------------------- filters */
+.filters { background: var(--sand); padding: 0 1rem; }
+.filters > summary {
+  list-style: none; cursor: pointer; padding: .85rem 0; font-weight: 600;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.filters > summary::-webkit-details-marker { display: none; }
+.filters > summary::after { content: '+'; font-size: 1.3rem; line-height: 1; color: var(--ink-soft); }
+.filters[open] > summary::after { content: '–'; }
+.filters form { padding: .4rem 0 1rem; }
+.field { margin: 0 0 1rem; }
+.field > label, .field > .label {
+  display: block; font-size: .72rem; font-weight: 600; letter-spacing: .14em;
+  text-transform: uppercase; color: var(--ink-soft); margin-bottom: .35rem;
+}
+.field input[type=number], .field input[type=search], .field select {
+  width: 100%; padding: .5rem .6rem; background: var(--paper);
+  border: 1px solid var(--hair); border-radius: 0; font-size: 16px; /* 16px stops iOS zoom */
+}
+.check { display: flex; gap: .55rem; align-items: flex-start; margin: 0 0 .5rem; cursor: pointer; line-height: 1.35; }
+.check input { margin: .2rem 0 0; accent-color: var(--ink); width: 1rem; height: 1rem; flex: none; }
+.areas { background: var(--paper); border: 1px solid var(--hair); max-height: 300px; overflow: auto; padding: .3rem 0; }
+.areas details { border-bottom: 1px solid var(--hair); }
+.areas details:last-child { border-bottom: 0; }
+.areas summary { display: flex; align-items: center; gap: .3rem; padding: .3rem .6rem; cursor: pointer; list-style: none; }
+.areas summary::-webkit-details-marker { display: none; }
+.areas summary .tog { color: var(--ink-soft); width: 1rem; text-align: center; flex: none; }
+.areas details[open] > summary .tog { transform: rotate(90deg); }
+.areas .check { margin: 0; flex: 1; font-size: .95rem; }
+.areas .subs { padding: 0 .6rem .4rem 2.2rem; }
+.areas .subs .check { margin: .15rem 0; font-size: .9rem; }
+.count { color: var(--ink-soft); font-size: .8rem; margin-left: auto; padding-left: .4rem; }
+.picked { font-size: .85rem; color: var(--ink-soft); margin: .4rem 0 0; }
+.linkbtn { background: none; border: 0; padding: 0; color: var(--red-deep); text-decoration: underline; cursor: pointer; font-size: .9rem; }
+
+/* ---------------------------------------------------------------- results */
+.bar { display: flex; flex-wrap: wrap; gap: .6rem 1rem; align-items: baseline; justify-content: space-between; margin-bottom: .8rem; }
+.bar h2 { font-size: 1.35rem; }
+.bar label { font-size: .9rem; color: var(--ink-soft); }
+.bar select { padding: .35rem .4rem; border: 1px solid var(--hair); background: var(--paper); font-size: 16px; }
+.list { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--hair); }
+.item { padding: 1rem 0; border-bottom: 1px solid var(--hair); display: grid; gap: .35rem; }
+.item h3 { font-family: var(--serif); font-size: 1.2rem; margin: 0; line-height: 1.2; display: flex; flex-wrap: wrap; gap: .3rem .6rem; align-items: baseline; }
+.where { color: var(--ink-soft); font-size: .95rem; }
+.facts { display: flex; flex-wrap: wrap; gap: .2rem 1.2rem; margin: .1rem 0; }
+.facts span { white-space: nowrap; }
+.facts .rent { font-weight: 700; }
+.meta { display: flex; flex-wrap: wrap; gap: .3rem .9rem; align-items: center; font-size: .85rem; color: var(--ink-soft); }
+.tag { display: inline-block; padding: .05rem .45rem; background: var(--sand); color: var(--ink); font-size: .78rem; font-weight: 600; letter-spacing: .02em; }
+.tag--new { background: var(--ink); color: #fff; }
+.tag--free { background: none; box-shadow: inset 0 0 0 1px var(--tan); }
+.go { color: var(--red-deep); font-weight: 600; text-decoration: none; justify-self: start; }
+.go:hover { text-decoration: underline; }
+.empty { padding: 2rem 0; color: var(--ink-soft); }
+.more { margin: 1.4rem 0 0; padding: .6rem 1.2rem; background: var(--ink); color: #fff; border: 0; cursor: pointer; }
+.more[hidden] { display: none; }
+
+.foot { border-top: 1px solid var(--hair); padding: 1.4rem 0 2.4rem; font-size: .85rem; color: var(--ink-soft); }
+.foot p { margin: 0 0 .5rem; max-width: 70ch; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <span class="kicker"><a href="/">rastegar.se</a> &middot; bevakning</span>
+    <h1>Lediga hyresrätter i Stockholms län</h1>
+    <p class="lede">Förstahandskontrakt från Bostadsförmedlingen, Homeq och privata hyresvärdar på ett ställe. Datan hämtas från respektive källa och ansökan görs alltid där – klicka dig vidare till annonsen.</p>
+    <p class="status" id="status">Hämtar annonser…</p>
+    <p class="warn" id="warn" role="status"></p>
+  </div>
+</header>
+
+<main class="wrap layout" id="main">
+  <details class="filters" id="filters" open>
+    <summary><span>Filter <span id="activeCount"></span></span></summary>
+    <form id="form" autocomplete="off">
+      <div class="field">
+        <span class="label">Område</span>
+        <input type="search" id="areaSearch" placeholder="Sök kommun eller stadsdel" aria-label="Sök område">
+        <div class="areas" id="areas"></div>
+        <p class="picked" id="picked"></p>
+      </div>
+      <div class="field">
+        <label for="maxhyra">Max hyra (kr/mån)</label>
+        <input type="number" id="maxhyra" name="maxhyra" inputmode="numeric" min="0" step="500" placeholder="Ingen gräns">
+      </div>
+      <div class="field">
+        <label for="minkvm">Minsta yta (kvm)</label>
+        <input type="number" id="minkvm" name="minkvm" inputmode="numeric" min="0" step="5" placeholder="Ingen gräns">
+      </div>
+      <div class="field">
+        <label for="minrum">Minsta antal rum</label>
+        <select id="minrum" name="minrum">
+          <option value="">Alla</option>
+          <option value="1">1+</option>
+          <option value="2">2+</option>
+          <option value="3">3+</option>
+          <option value="4">4+</option>
+          <option value="5">5+</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="check"><input type="checkbox" id="ejbv" name="ejbv"> Ej bottenvåning</label>
+        <label class="check"><input type="checkbox" id="utanko" name="utanko"> Bara utan kökrav</label>
+        <label class="check"><input type="checkbox" id="doljspec" name="doljspec" checked> Dölj specialbostäder (ungdom, student, senior, korttid)</label>
+      </div>
+      <button type="button" class="linkbtn" id="reset">Rensa alla filter</button>
+    </form>
+  </details>
+
+  <section aria-labelledby="resultTitle">
+    <div class="bar">
+      <h2 id="resultTitle" aria-live="polite">&nbsp;</h2>
+      <label>Sortera
+        <select id="sort" name="sort">
+          <option value="nyast">Nyast först</option>
+          <option value="hyra">Lägst hyra</option>
+          <option value="yta">Störst yta</option>
+        </select>
+      </label>
+    </div>
+    <ul class="list" id="list"></ul>
+    <p class="empty" id="empty" hidden>Inga lediga hyresrätter matchar filtren just nu. Prova att vidga sökningen.</p>
+    <button type="button" class="more" id="more" hidden>Visa fler</button>
+  </section>
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Sidan bevakar källornas öppna annonslistor ungefär var 15:e minut och visar bara nyckelfakta. Bilder och annonstexter finns hos källan. Den här sidan loggar aldrig in någonstans och anmäler aldrig intresse åt någon – det gör du själv hos hyresvärden eller förmedlingen.</p>
+    <p>Uppgifterna kan vara inaktuella eller fel. Kontrollera alltid annonsen hos källan innan du söker. Annonser som försvunnit hos källan döljs här vid nästa uppdatering.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  'use strict';
+
+  var DATA_URL = 'https://raw.githubusercontent.com/PajBram/hyresbotten/data/listings.json';
+  // On a local preview, read a copy next to the page instead.
+  if (/^(localhost|127\.0\.0\.1)$/.test(location.hostname)) DATA_URL = 'listings.json';
+
+  var PAGE = 50;
+  var DAY = 864e5;
+  var SPECIAL = { ungdom: 'Ungdom', student: 'Student', senior: 'Senior', korttid: 'Korttid', annat: 'Special' };
+  var TZ = 'Europe/Stockholm';
+
+  var data = null;
+  var sources = {};
+  var areaTree = [];        // [{name, count, subs: [{name, count}]}]
+  var picked = {};          // "Solna" or "Stockholm/Kungsholmen" -> true
+  var shown = PAGE;
+  var now = Date.now();
+
+  var $ = function (id) { return document.getElementById(id); };
+  var form = $('form');
+
+  // ------------------------------------------------------------ helpers
+
+  function el(tag, cls, text) {
+    var node = document.createElement(tag);
+    if (cls) node.className = cls;
+    if (text != null) node.textContent = text;
+    return node;
+  }
+  function kr(n) { return Math.round(n).toLocaleString('sv-SE'); }
+  function num(n) { return String(n).replace('.', ','); }
+  function range(lo, hi, fmt) {
+    if (lo == null && hi == null) return null;
+    if (lo == null) return fmt(hi);
+    if (hi == null || hi === lo) return fmt(lo);
+    return fmt(lo) + '–' + fmt(hi);
+  }
+  function floorText(lo, hi) {
+    function one(f) { return f === 0 ? 'BV' : f < 0 ? 'källarplan' : String(f); }
+    if (lo == null) return null;
+    if (hi == null || hi === lo) return lo === 0 ? 'Bottenvåning' : lo < 0 ? 'Källarplan' : 'Våning ' + lo;
+    return 'Våning ' + one(lo) + '–' + one(hi);
+  }
+  function day(iso) {
+    // Date-only strings are calendar dates in Sweden; show them as such.
+    var d = new Date(iso.length === 10 ? iso + 'T12:00:00Z' : iso);
+    return d.toLocaleDateString('sv-SE', { day: 'numeric', month: 'short', timeZone: TZ });
+  }
+  function when(iso) {
+    var d = new Date(iso);
+    var time = d.toLocaleTimeString('sv-SE', { hour: '2-digit', minute: '2-digit', timeZone: TZ });
+    var today = new Date(now).toLocaleDateString('sv-SE', { timeZone: TZ });
+    return d.toLocaleDateString('sv-SE', { timeZone: TZ }) === today ? 'i dag ' + time : day(iso) + ' ' + time;
+  }
+  // "undated" marks ads from a source's first import whose publish date is not
+  // known yet: they are not new, they were just new to us.
+  function isNew(item) { return !item.undated && now - Date.parse(item.first_seen) < DAY; }
+  function seen(item) { return item.undated ? '' : item.first_seen; }
+  function areaKey(item) { return item.municipality + '/' + (item.area || ''); }
+
+  // ------------------------------------------------------------ state <-> URL
+
+  function readUrl() {
+    var q = new URLSearchParams(location.search);
+    picked = {};
+    q.getAll('omr').forEach(function (v) { if (v) picked[v] = true; });
+    $('maxhyra').value = q.get('maxhyra') || '';
+    $('minkvm').value = q.get('minkvm') || '';
+    $('minrum').value = q.get('minrum') || '';
+    $('ejbv').checked = q.get('ejbv') === '1';
+    $('utanko').checked = q.get('utanko') === '1';
+    $('doljspec').checked = q.get('spec') !== '1';   // on unless the URL says otherwise
+    $('sort').value = /^(hyra|yta)$/.test(q.get('sort')) ? q.get('sort') : 'nyast';
+  }
+
+  function writeUrl() {
+    var q = new URLSearchParams();
+    Object.keys(picked).sort().forEach(function (v) { q.append('omr', v); });
+    ['maxhyra', 'minkvm', 'minrum'].forEach(function (id) {
+      var v = $(id).value.trim();
+      if (v !== '' && +v > 0) q.set(id, String(+v));
+    });
+    if ($('ejbv').checked) q.set('ejbv', '1');
+    if ($('utanko').checked) q.set('utanko', '1');
+    if (!$('doljspec').checked) q.set('spec', '1');
+    if ($('sort').value !== 'nyast') q.set('sort', $('sort').value);
+    var s = q.toString();
+    history.replaceState(null, '', location.pathname + (s ? '?' + s : ''));
+  }
+
+  function filters() {
+    return {
+      maxhyra: +$('maxhyra').value || 0,
+      minkvm: +$('minkvm').value || 0,
+      minrum: +$('minrum').value || 0,
+      ejbv: $('ejbv').checked,
+      utanko: $('utanko').checked,
+      doljspec: $('doljspec').checked,
+      areas: Object.keys(picked)
+    };
+  }
+
+  // ------------------------------------------------------------ filtering
+
+  function matches(item, f) {
+    if (f.areas.length) {
+      if (!picked[item.municipality] && !picked[areaKey(item)]) return false;
+    }
+    // Projects are ranges: keep them if any flat in the range could match.
+    // Unknown values never pass a filter that asks about them.
+    if (f.maxhyra && !(item.rent != null && item.rent <= f.maxhyra)) return false;
+    var sqm = item.sqm_max != null ? item.sqm_max : item.sqm;
+    if (f.minkvm && !(sqm != null && sqm >= f.minkvm)) return false;
+    var rooms = item.rooms_max != null ? item.rooms_max : item.rooms;
+    if (f.minrum && !(rooms != null && rooms >= f.minrum)) return false;
+    var top = item.floor_max != null ? item.floor_max : item.floor;
+    if (f.ejbv && !(top != null && top > 0)) return false;
+    if (f.utanko && item.requires_queue !== false) return false;
+    if (f.doljspec && item.type !== 'vanlig') return false;
+    return true;
+  }
+
+  var SORTS = {
+    nyast: function (a, b) { var x = seen(a), y = seen(b); return x < y ? 1 : x > y ? -1 : 0; },
+    hyra: function (a, b) { return (a.rent == null ? 1e9 : a.rent) - (b.rent == null ? 1e9 : b.rent); },
+    yta: function (a, b) {
+      var x = a.sqm_max != null ? a.sqm_max : a.sqm, y = b.sqm_max != null ? b.sqm_max : b.sqm;
+      return (y == null ? -1 : y) - (x == null ? -1 : x);
+    }
+  };
+
+  // ------------------------------------------------------------ rendering
+
+  function renderItem(item) {
+    var li = el('li', 'item');
+    var h = el('h3');
+    h.appendChild(el('span', null, item.address || item.area || item.municipality || 'Adress saknas'));
+    if (isNew(item)) h.appendChild(el('span', 'tag tag--new', 'Ny'));
+    li.appendChild(h);
+
+    var where = [item.area, item.municipality].filter(function (x, i, all) { return x && all.indexOf(x) === i; });
+    if (item.units > 1) where.push(item.units + ' lägenheter');
+    li.appendChild(el('div', 'where', where.join(' · ')));
+
+    var facts = el('div', 'facts');
+    var rent = range(item.rent, item.rent_max, kr);
+    facts.appendChild(el('span', 'rent', rent ? (item.rent_max > item.rent ? 'från ' + kr(item.rent) : rent) + ' kr/mån' : 'Hyra saknas'));
+    var sqm = range(item.sqm, item.sqm_max, num);
+    if (sqm) facts.appendChild(el('span', null, sqm + ' kvm'));
+    var rooms = range(item.rooms, item.rooms_max, num);
+    if (rooms) facts.appendChild(el('span', null, rooms + ' rum'));
+    var fl = floorText(item.floor, item.floor_max);
+    facts.appendChild(el('span', null, fl || (item.pending ? 'Våning hämtas' : 'Våning okänd')));
+    li.appendChild(facts);
+
+    var meta = el('div', 'meta');
+    if (item.requires_queue === true) meta.appendChild(el('span', 'tag', 'Kötid krävs'));
+    else if (item.requires_queue === false) meta.appendChild(el('span', 'tag tag--free', 'Ingen kötid'));
+    else meta.appendChild(el('span', 'tag', item.pending ? 'Kökrav hämtas' : 'Kökrav okänt'));
+    if (SPECIAL[item.type]) meta.appendChild(el('span', 'tag', SPECIAL[item.type]));
+    var src = sources[item.source];
+    meta.appendChild(el('span', null, src ? src.label : item.source));
+    if (item.deadline) meta.appendChild(el('span', null, 'Sista ansökan ' + day(item.deadline)));
+    else if (item.published) meta.appendChild(el('span', null, 'Publicerad ' + day(item.published)));
+    li.appendChild(meta);
+
+    var a = el('a', 'go', 'Till annonsen hos ' + (src ? src.label : item.source) + ' →');
+    a.href = item.url;
+    a.rel = 'noopener';
+    a.target = '_blank';
+    li.appendChild(a);
+    return li;
+  }
+
+  function render() {
+    var f = filters();
+    var hits = data.listings.filter(function (item) { return matches(item, f); });
+    hits.sort(SORTS[$('sort').value] || SORTS.nyast);
+
+    $('resultTitle').textContent = hits.length === 1 ? '1 ledig bostad' : kr(hits.length) + ' lediga bostäder';
+    var list = $('list');
+    var frag = document.createDocumentFragment();
+    hits.slice(0, shown).forEach(function (item) { frag.appendChild(renderItem(item)); });
+    list.textContent = '';
+    list.appendChild(frag);
+    $('empty').hidden = hits.length > 0;
+    $('more').hidden = hits.length <= shown;
+    $('more').textContent = 'Visa fler (' + kr(hits.length - shown) + ' till)';
+
+    var active = f.areas.length + [f.maxhyra, f.minkvm, f.minrum, f.ejbv, f.utanko].filter(Boolean).length;
+    $('activeCount').textContent = active ? '(' + active + ' aktiva)' : '';
+    var names = f.areas.map(function (k) { return k.split('/').pop(); });
+    $('picked').textContent = names.length ? 'Valda: ' + names.join(', ') : 'Alla områden';
+  }
+
+  function update() { shown = PAGE; writeUrl(); render(); }
+
+  // ------------------------------------------------------------ areas
+
+  function buildAreaTree() {
+    var byKommun = {};
+    data.listings.forEach(function (item) {
+      if (!item.municipality) return;
+      var k = byKommun[item.municipality] || (byKommun[item.municipality] = { name: item.municipality, count: 0, subs: {} });
+      k.count++;
+      if (item.area) k.subs[item.area] = (k.subs[item.area] || 0) + 1;
+    });
+    areaTree = Object.keys(byKommun).sort(function (a, b) { return a.localeCompare(b, 'sv'); }).map(function (name) {
+      var k = byKommun[name];
+      return {
+        name: name, count: k.count,
+        subs: Object.keys(k.subs).sort(function (a, b) { return a.localeCompare(b, 'sv'); })
+          .map(function (s) { return { name: s, count: k.subs[s] }; })
+      };
+    });
+  }
+
+  function checkbox(value, label, count) {
+    var lab = el('label', 'check');
+    var box = el('input');
+    box.type = 'checkbox';
+    box.value = value;
+    box.checked = !!picked[value];
+    box.addEventListener('change', function () {
+      if (box.checked) picked[value] = true; else delete picked[value];
+      update();
+    });
+    lab.appendChild(box);
+    lab.appendChild(el('span', null, label));
+    lab.appendChild(el('span', 'count', String(count)));
+    return lab;
+  }
+
+  function renderAreas() {
+    var term = $('areaSearch').value.trim().toLowerCase();
+    var box = $('areas');
+    box.textContent = '';
+    areaTree.forEach(function (k) {
+      var kHit = !term || k.name.toLowerCase().indexOf(term) !== -1;
+      var subs = k.subs.filter(function (s) { return kHit || s.name.toLowerCase().indexOf(term) !== -1; });
+      if (!kHit && !subs.length) return;
+      var det = el('details');
+      var anySubPicked = subs.some(function (s) { return picked[k.name + '/' + s.name]; });
+      if ((term && subs.length) || anySubPicked) det.open = true;
+      var sum = el('summary');
+      sum.appendChild(el('span', 'tog', k.subs.length ? '›' : ''));
+      var whole = checkbox(k.name, k.name, k.count);
+      // Clicking the label must toggle the box, not open the group.
+      whole.addEventListener('click', function (e) { e.stopPropagation(); });
+      sum.appendChild(whole);
+      det.appendChild(sum);
+      if (k.subs.length) {
+        var wrap = el('div', 'subs');
+        subs.forEach(function (s) { wrap.appendChild(checkbox(k.name + '/' + s.name, s.name, s.count)); });
+        det.appendChild(wrap);
+      }
+      box.appendChild(det);
+    });
+  }
+
+  // ------------------------------------------------------------ status
+
+  function renderStatus() {
+    $('status').textContent = '';
+    $('status').appendChild(document.createTextNode('Senast uppdaterad '));
+    $('status').appendChild(el('b', null, when(data.generated_at)));
+    var names = Object.keys(sources).map(function (k) { return sources[k].label; });
+    $('status').appendChild(document.createTextNode(' · Källor: ' + names.join(', ')));
+
+    var problems = [];
+    Object.keys(sources).forEach(function (k) {
+      var s = sources[k];
+      if (s.ok === false) {
+        problems.push(s.label + ' gick inte att läsa vid senaste uppdateringen' +
+          (s.last_success ? ', så annonserna därifrån är från ' + when(s.last_success) + '.' : '.'));
+      }
+    });
+    if (now - Date.parse(data.generated_at) > 3 * 36e5) {
+      problems.unshift('Datan har inte uppdaterats på ett tag – kontrollera alltid annonsen hos källan.');
+    }
+    $('warn').textContent = problems.join(' ');
+  }
+
+  // ------------------------------------------------------------ boot
+
+  readUrl();
+  if (window.matchMedia('(max-width: 899px)').matches) $('filters').open = false;
+
+  form.addEventListener('input', function (e) {
+    if (e.target.id === 'areaSearch') { renderAreas(); return; }
+    if (e.target.type === 'checkbox' && e.target.closest('#areas')) return;
+    if (data) update();
+  });
+  form.addEventListener('submit', function (e) { e.preventDefault(); });
+  $('sort').addEventListener('change', function () { if (data) update(); });
+  $('more').addEventListener('click', function () { shown += PAGE * 2; render(); });
+  $('reset').addEventListener('click', function () {
+    history.replaceState(null, '', location.pathname);
+    readUrl();
+    $('areaSearch').value = '';
+    renderAreas();
+    update();
+  });
+
+  fetch(DATA_URL + '?t=' + Math.floor(now / 3e5), { cache: 'no-cache' })
+    .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+    .then(function (json) {
+      data = json;
+      sources = json.sources || {};
+      buildAreaTree();
+      renderAreas();
+      renderStatus();
+      render();
+    })
+    .catch(function () {
+      $('status').textContent = 'Annonserna gick inte att hämta just nu. Försök igen om en stund.';
+    });
+})();
+</script>
+</body>
+</html>
