@@ -133,6 +133,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
 
 .foot { border-top: 1px solid var(--hair); padding: 1.4rem 0 2.4rem; font-size: .85rem; color: var(--ink-soft); }
 .foot p { margin: 0 0 .5rem; max-width: 70ch; }
+.foot a { color: var(--ink); }
 </style>
 </head>
 <body>
@@ -141,7 +142,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
   <div class="wrap">
     <span class="kicker"><a href="/">rastegar.se</a> &middot; bevakning</span>
     <h1>Lediga hyresrätter i Stockholms län</h1>
-    <p class="lede">Förstahandskontrakt från Bostadsförmedlingen, Homeq och privata hyresvärdar på ett ställe. Datan hämtas från respektive källa och ansökan görs alltid där – klicka dig vidare till annonsen.</p>
+    <p class="lede">Förstahandskontrakt från Bostadsförmedlingen, Homeq, kommunala bostadsbolag och privata hyresvärdar på ett ställe. Datan hämtas från respektive källa och ansökan görs alltid där – klicka dig vidare till annonsen.</p>
     <p class="status" id="status">Hämtar annonser…</p>
     <p class="warn" id="warn" role="status"></p>
   </div>
@@ -205,6 +206,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
 <footer class="foot">
   <div class="wrap">
     <p>Sidan bevakar källornas öppna annonslistor ungefär var 15:e minut och visar bara nyckelfakta. Bilder och annonstexter finns hos källan. Den här sidan loggar aldrig in någonstans och anmäler aldrig intresse åt någon – det gör du själv hos hyresvärden eller förmedlingen.</p>
+    <p id="sourceList"></p>
     <p>Uppgifterna kan vara inaktuella eller fel. Kontrollera alltid annonsen hos källan innan du söker. Annonser som försvunnit hos källan döljs här vid nästa uppdatering.</p>
   </div>
 </footer>
@@ -240,6 +242,8 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
     if (text != null) node.textContent = text;
     return node;
   }
+  // Links come from scraped data: only ever let http(s) through.
+  function safeUrl(u) { return /^https?:\/\//i.test(u || '') ? u : '#'; }
   function kr(n) { return Math.round(n).toLocaleString('sv-SE'); }
   function num(n) { return String(n).replace('.', ','); }
   function range(lo, hi, fmt) {
@@ -378,7 +382,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
     li.appendChild(meta);
 
     var a = el('a', 'go', 'Till annonsen hos ' + (src ? src.label : item.source) + ' →');
-    a.href = item.url;
+    a.href = safeUrl(item.url);
     a.rel = 'noopener';
     a.target = '_blank';
     li.appendChild(a);
@@ -477,8 +481,18 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
     $('status').textContent = '';
     $('status').appendChild(document.createTextNode('Senast uppdaterad '));
     $('status').appendChild(el('b', null, when(data.generated_at)));
-    var names = Object.keys(sources).map(function (k) { return sources[k].label; });
-    $('status').appendChild(document.createTextNode(' · Källor: ' + names.join(', ')));
+    var keys = Object.keys(sources).sort(function (a, b) { return sources[a].label.localeCompare(sources[b].label, 'sv'); });
+    $('status').appendChild(document.createTextNode(' · ' + keys.length + ' källor'));
+
+    var list = $('sourceList');
+    list.textContent = 'Källor: ';
+    keys.forEach(function (k, i) {
+      var link = el('a', null, sources[k].label);
+      link.href = safeUrl(sources[k].homepage);
+      link.rel = 'noopener';
+      list.appendChild(link);
+      list.appendChild(document.createTextNode(i < keys.length - 1 ? ', ' : '.'));
+    });
 
     var problems = [];
     Object.keys(sources).forEach(function (k) {
