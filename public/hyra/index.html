@@ -101,10 +101,15 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
 .areas summary { display: flex; align-items: center; gap: .3rem; padding: .3rem .6rem; cursor: pointer; list-style: none; }
 .areas summary::-webkit-details-marker { display: none; }
 .areas summary .tog { color: var(--ink-soft); width: 1rem; text-align: center; flex: none; }
+.areas summary .name { flex: 1; font-size: .95rem; }
+.areas .single { padding: .3rem .6rem .3rem 1.9rem; border-bottom: 1px solid var(--hair); }
+.areas .single:last-child { border-bottom: 0; }
+.areas .single .check { margin: 0; }
 .areas details[open] > summary .tog { transform: rotate(90deg); }
 .areas .check { margin: 0; flex: 1; font-size: .95rem; }
 .areas .subs { padding: 0 .6rem .4rem 2.2rem; }
 .areas .subs .check { margin: .15rem 0; font-size: .9rem; }
+.areas .subs .check--all { font-weight: 600; }
 .count { color: var(--ink-soft); font-size: .8rem; margin-left: auto; padding-left: .4rem; }
 .picked { font-size: .85rem; color: var(--ink-soft); margin: .4rem 0 0; }
 .linkbtn { background: none; border: 0; padding: 0; color: var(--red-deep); text-decoration: underline; cursor: pointer; font-size: .9rem; }
@@ -154,7 +159,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
     <form id="form" autocomplete="off">
       <div class="field">
         <span class="label">Område</span>
-        <input type="search" id="areaSearch" placeholder="Sök kommun eller stadsdel" aria-label="Sök område">
+        <input type="search" id="areaSearch" name="sok" placeholder="Sök område, stadsdel eller gata" aria-label="Sök område, stadsdel eller gata">
         <div class="areas" id="areas"></div>
         <p class="picked" id="picked"></p>
       </div>
@@ -227,7 +232,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
   var data = null;
   var sources = {};
   var areaTree = [];        // [{name, count, subs: [{name, count}]}]
-  var picked = {};          // "Solna" or "Stockholm/Kungsholmen" -> true
+  var picked = {};          // "Solna" or "Stockholm/Hägersten-Älvsjö" -> true
   var shown = PAGE;
   var now = Date.now();
 
@@ -273,7 +278,16 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
   // known yet: they are not new, they were just new to us.
   function isNew(item) { return !item.undated && now - Date.parse(item.first_seen) < DAY; }
   function seen(item) { return item.undated ? '' : item.first_seen; }
-  function areaKey(item) { return item.municipality + '/' + (item.area || ''); }
+  // Stockholm city is grouped by stadsdelsområde (district); other
+  // municipalities by the area the source gives.
+  function subName(item) { return item.district || item.area || ''; }
+  function inPicked(item) {
+    var k = item.municipality;
+    return !!(picked[k] || picked[k + '/' + subName(item)] || (item.area && picked[k + '/' + item.area]));
+  }
+  function searchText(item) {
+    return [item.address, item.area, item.district, item.municipality].join(' ').toLowerCase();
+  }
 
   // ------------------------------------------------------------ state <-> URL
 
@@ -281,6 +295,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
     var q = new URLSearchParams(location.search);
     picked = {};
     q.getAll('omr').forEach(function (v) { if (v) picked[v] = true; });
+    $('areaSearch').value = q.get('sok') || '';
     $('maxhyra').value = q.get('maxhyra') || '';
     $('minkvm').value = q.get('minkvm') || '';
     $('minrum').value = q.get('minrum') || '';
@@ -293,6 +308,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
   function writeUrl() {
     var q = new URLSearchParams();
     Object.keys(picked).sort().forEach(function (v) { q.append('omr', v); });
+    if ($('areaSearch').value.trim()) q.set('sok', $('areaSearch').value.trim());
     ['maxhyra', 'minkvm', 'minrum'].forEach(function (id) {
       var v = $(id).value.trim();
       if (v !== '' && +v > 0) q.set(id, String(+v));
@@ -313,16 +329,16 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
       ejbv: $('ejbv').checked,
       utanko: $('utanko').checked,
       doljspec: $('doljspec').checked,
-      areas: Object.keys(picked)
+      areas: Object.keys(picked),
+      text: $('areaSearch').value.trim().toLowerCase()
     };
   }
 
   // ------------------------------------------------------------ filtering
 
   function matches(item, f) {
-    if (f.areas.length) {
-      if (!picked[item.municipality] && !picked[areaKey(item)]) return false;
-    }
+    if (f.areas.length && !inPicked(item)) return false;
+    if (f.text && searchText(item).indexOf(f.text) === -1) return false;
     // Projects are ranges: keep them if any flat in the range could match.
     // Unknown values never pass a filter that asks about them.
     if (f.maxhyra && !(item.rent != null && item.rent <= f.maxhyra)) return false;
@@ -404,10 +420,11 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
     $('more').hidden = hits.length <= shown;
     $('more').textContent = 'Visa fler (' + kr(hits.length - shown) + ' till)';
 
-    var active = f.areas.length + [f.maxhyra, f.minkvm, f.minrum, f.ejbv, f.utanko].filter(Boolean).length;
+    var active = f.areas.length + [f.text, f.maxhyra, f.minkvm, f.minrum, f.ejbv, f.utanko].filter(Boolean).length;
     $('activeCount').textContent = active ? '(' + active + ' aktiva)' : '';
-    var names = f.areas.map(function (k) { return k.split('/').pop(); });
-    $('picked').textContent = names.length ? 'Valda: ' + names.join(', ') : 'Alla områden';
+    var names = f.areas.map(function (k) { return k.indexOf('/') === -1 ? 'hela ' + k : k.split('/').pop(); });
+    if (f.text) names.unshift('”' + $('areaSearch').value.trim() + '”');
+    $('picked').textContent = names.length ? 'Visar: ' + names.join(', ') : 'Alla områden';
   }
 
   function update() { shown = PAGE; writeUrl(); render(); }
@@ -420,7 +437,8 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
       if (!item.municipality) return;
       var k = byKommun[item.municipality] || (byKommun[item.municipality] = { name: item.municipality, count: 0, subs: {} });
       k.count++;
-      if (item.area) k.subs[item.area] = (k.subs[item.area] || 0) + 1;
+      var sub = subName(item);
+      if (sub) k.subs[sub] = (k.subs[sub] || 0) + 1;
     });
     areaTree = Object.keys(byKommun).sort(function (a, b) { return a.localeCompare(b, 'sv'); }).map(function (name) {
       var k = byKommun[name];
@@ -432,8 +450,8 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
     });
   }
 
-  function checkbox(value, label, count) {
-    var lab = el('label', 'check');
+  function checkbox(value, label, count, cls) {
+    var lab = el('label', 'check' + (cls ? ' ' + cls : ''));
     var box = el('input');
     box.type = 'checkbox';
     box.value = value;
@@ -456,21 +474,28 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
       var kHit = !term || k.name.toLowerCase().indexOf(term) !== -1;
       var subs = k.subs.filter(function (s) { return kHit || s.name.toLowerCase().indexOf(term) !== -1; });
       if (!kHit && !subs.length) return;
-      var det = el('details');
-      var anySubPicked = subs.some(function (s) { return picked[k.name + '/' + s.name]; });
-      if ((term && subs.length) || anySubPicked) det.open = true;
-      var sum = el('summary');
-      sum.appendChild(el('span', 'tog', k.subs.length ? '›' : ''));
-      var whole = checkbox(k.name, k.name, k.count);
-      // Clicking the label must toggle the box, not open the group.
-      whole.addEventListener('click', function (e) { e.stopPropagation(); });
-      sum.appendChild(whole);
-      det.appendChild(sum);
-      if (k.subs.length) {
-        var wrap = el('div', 'subs');
-        subs.forEach(function (s) { wrap.appendChild(checkbox(k.name + '/' + s.name, s.name, s.count)); });
-        det.appendChild(wrap);
+      if (!k.subs.length) {
+        // Nothing to unfold: one row that selects the whole municipality.
+        var row = el('div', 'single');
+        row.appendChild(checkbox(k.name, k.name, k.count));
+        box.appendChild(row);
+        return;
       }
+      // The municipality row only unfolds. "Hela X" is a box of its own
+      // inside, so opening Stockholm to find Hägersten never selects all
+      // of Stockholm by mistake.
+      var det = el('details');
+      var anyPicked = picked[k.name] || k.subs.some(function (s) { return picked[k.name + '/' + s.name]; });
+      if ((term && subs.length) || anyPicked) det.open = true;
+      var sum = el('summary');
+      sum.appendChild(el('span', 'tog', '›'));
+      sum.appendChild(el('span', 'name', k.name));
+      sum.appendChild(el('span', 'count', String(k.count)));
+      det.appendChild(sum);
+      var wrap = el('div', 'subs');
+      wrap.appendChild(checkbox(k.name, 'Hela ' + k.name, k.count, 'check--all'));
+      subs.forEach(function (s) { wrap.appendChild(checkbox(k.name + '/' + s.name, s.name, s.count)); });
+      det.appendChild(wrap);
       box.appendChild(det);
     });
   }
@@ -514,7 +539,7 @@ h1, h2 { font-family: var(--serif); font-weight: 700; line-height: 1.12; letter-
   if (window.matchMedia('(max-width: 899px)').matches) $('filters').open = false;
 
   form.addEventListener('input', function (e) {
-    if (e.target.id === 'areaSearch') { renderAreas(); return; }
+    if (e.target.id === 'areaSearch') { renderAreas(); if (data) update(); return; }
     if (e.target.type === 'checkbox' && e.target.closest('#areas')) return;
     if (data) update();
   });
